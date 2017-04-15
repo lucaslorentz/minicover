@@ -58,12 +58,12 @@ namespace MiniCover.Instrumentation
             if (!File.Exists(pdbFile))
                 return;
 
-            if (!HasSourceFiles(assemblyFile))
-                return;
-
             var backupFile = $"{assemblyFile}.original";
             if (File.Exists(backupFile))
                 File.Copy(backupFile, assemblyFile, true);
+
+            if (!HasSourceFiles(assemblyFile))
+                return;
 
             if (IsInstrumented(assemblyFile))
                 throw new Exception($"Assembly file ${assemblyFile} is already instrumented");
