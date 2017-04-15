@@ -10,7 +10,7 @@ Heavily based on: https://github.com/gaillard/SharpCover
 ## Introduction
 Currently no Code Coverage Tool supports .NET Core on Linux.
 
-MiniCover is here to fill that gap. It is focused on very simple code base, usage and installation.
+MiniCover is here to fill that gap. It is focused on simple code base, usage and installation.
 
 ## Installation
 MiniCover was created to be installed as a .NET Cli Tool. You can do that by adding this to a csproj file:
