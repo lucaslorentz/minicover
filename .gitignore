@@ -1,0 +1,6 @@
+coverage-html
+coverage.json
+coverage-hits.txt
+bin
+obj
+.vs
