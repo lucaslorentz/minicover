@@ -91,8 +91,7 @@ namespace MiniCover
                     var coverageFile = GetCoverageFile(coverageFileOption);
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
-                    ConsoleReport.Execute(result, threshold);
-                    return 0;
+                    return ConsoleReport.Execute(result, threshold);
                 });
             });
 
