@@ -39,7 +39,7 @@ The **tools.csproj** will be similar to:
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="MiniCover" Version="1.0.0-ci-*" />
