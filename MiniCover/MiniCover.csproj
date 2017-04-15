@@ -4,8 +4,18 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <AssemblyName>dotnet-minicover</AssemblyName>
-    <PackageId>MiniCover</PackageId>
     <VersionPrefix>1.0.0</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>MiniCover</PackageId>
+    <Title>MiniCover</Title>
+    <Authors>Lucas Lorentz</Authors>
+    <AssemblyTitle>MiniCover</AssemblyTitle>
+    <Description>Minimalist Code Coverage Tool for .NET Core</Description>
+    <PackageProjectUrl>https://github.com/lucaslorentz/minicover</PackageProjectUrl>
+    <PackageType>DotnetCliTool</PackageType>
+    <PackageTags>coverage,cover,minicover</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
