@@ -62,12 +62,12 @@ dotnet build
 
 pushd tools
 
-# Instrument all assemblies inside 'tests' folder to detect hits for source files inside 'src' folder
-dotnet minicover instrument --workdir ../ --assemblies tests/**/*.dll --sources src/**/*.cs 
+# Instrument all assemblies inside 'test' folder to detect hits for source files inside 'src' folder
+dotnet minicover instrument --workdir ../ --assemblies test/**/*.dll --sources src/**/*.cs 
 
 popd
 
-for project in tests/**/*.csproj; do dotnet test --no-build $project; done
+for project in test/**/*.csproj; do dotnet test --no-build $project; done
 
 pushd tools
 
