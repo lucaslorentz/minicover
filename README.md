@@ -5,7 +5,7 @@ Minimalist Code Coverage Tool for .NET Core
 
 Heavily based on: https://github.com/gaillard/SharpCover
 
-**THIS PROJECT IS WIP, FOR NOW, THERE IS ONLY PRE-RELEASE NUGET PACKAGES**
+**THIS PROJECT IS WIP, THERE ARE ONLY PRE-RELEASE NUGET PACKAGES**
 
 ## Introduction
 Currently no Code Coverage Tool supports .NET Core on Linux.
