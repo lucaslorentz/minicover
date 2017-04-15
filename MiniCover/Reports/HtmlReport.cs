@@ -10,7 +10,7 @@ namespace MiniCover.Reports
 {
     public class HtmlReport
     {
-        public static void Execute(InstrumentationResult result, float threshold)
+        public static void Execute(InstrumentationResult result, string output, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
                    ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
@@ -20,7 +20,7 @@ namespace MiniCover.Reports
             {
                 var lines = File.ReadAllLines(Path.Combine(result.SourcePath, kvFile.Key));
 
-                var fileName = Path.Combine("coverage-html", kvFile.Key + ".html");
+                var fileName = Path.Combine(output, kvFile.Key + ".html");
 
                 Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 

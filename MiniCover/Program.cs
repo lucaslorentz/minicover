@@ -113,7 +113,7 @@ namespace MiniCover
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
                     var output = GetHtmlReportOutput(outputOption);
-                    HtmlReport.Execute(result, threshold);
+                    HtmlReport.Execute(result, output, threshold);
                     return 0;
                 });
             });
@@ -156,7 +156,7 @@ namespace MiniCover
             return command.Option("--coverage-file", "Coverage file name [default: coverage.json]", CommandOptionType.SingleValue);
         }
 
-        private static object GetHtmlReportOutput(CommandOption outputOption)
+        private static string GetHtmlReportOutput(CommandOption outputOption)
         {
             return outputOption.Value() ?? "coverage-html";
         }
