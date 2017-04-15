@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <AssemblyName>dotnet-minicover</AssemblyName>
     <PackageId>MiniCover</PackageId>
+    <VersionPrefix>1.0.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
