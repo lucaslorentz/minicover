@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace Test
+namespace MiniCover.Tests
 {
     public class UnitTest1
     {

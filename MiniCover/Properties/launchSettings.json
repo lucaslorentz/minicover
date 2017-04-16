@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "MiniCover": {
-      "commandName": "Project",
-      "commandLineArgs": "instrument --workdir .. --sources Test/**/*.cs --assemblies Test/**/*.dll"
-    }
-  }
-}

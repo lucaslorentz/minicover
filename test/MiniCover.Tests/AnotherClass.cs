@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Test
+namespace MiniCover.Tests
 {
     public class AnotherClass
     {
