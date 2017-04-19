@@ -60,16 +60,16 @@ After the last command you should see minicover help instructions on your consol
 dotnet restore
 dotnet build
 
-pushd tools
+cd tools
 
 # Instrument all assemblies inside 'test' folder to detect hits for source files inside 'src' folder
 dotnet minicover instrument --workdir ../ --assemblies test/**/*.dll --sources src/**/*.cs 
 
-popd
+cd ..
 
 for project in test/**/*.csproj; do dotnet test --no-build $project; done
 
-pushd tools
+cd tools
 
 # Uninstrument assemblies, it's important if you're going to publish or deploy build outputs
 dotnet minicover uninstrument --workdir ../
@@ -81,7 +81,7 @@ dotnet minicover htmlreport --workdir ../ --threshold 90
 # This command returns failure if the coverage is lower than the threshold
 dotnet minicover report --workdir ../ --threshold 90
 
-popd
+cd ..
 ```
 
 ## Ignore Coverage Files
