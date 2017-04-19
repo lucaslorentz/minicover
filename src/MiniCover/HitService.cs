@@ -18,7 +18,7 @@ namespace MiniCover
             {
                 if (!writers.ContainsKey(fileName))
                 {
-                    writers[fileName] = new StreamWriter(File.Open(fileName, FileMode.Create));
+                    writers[fileName] = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate));
                 }
             }
         }
