@@ -139,7 +139,6 @@ namespace MiniCover
             if (workDirOption.Value() != null)
             {
                 var fullWorkDir = Path.GetFullPath(workDirOption.Value());
-                Console.WriteLine($"Working directory: {fullWorkDir}");
                 Directory.SetCurrentDirectory(fullWorkDir);
             }
 
