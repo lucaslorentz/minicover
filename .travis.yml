@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 1.0.1
+dotnet: 2.0.0
 os: linux
 dist: trusty
 sudo: false
