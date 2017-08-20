@@ -16,7 +16,7 @@ MiniCover is here to fill that gap. It is focused on simple code base, usage and
 MiniCover was created to be installed as a .NET Cli Tool. You can do that by adding this to a csproj file:
 ```
   <ItemGroup>
-    <DotNetCliToolReference Include="MiniCover" Version="1.0.0-ci-*" />
+    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-*" />
   </ItemGroup>
 ```
 
@@ -39,10 +39,10 @@ The **tools.csproj** will be similar to:
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="MiniCover" Version="1.0.0-ci-*" />
+    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-*" />
   </ItemGroup>
 </Project>
 ```
