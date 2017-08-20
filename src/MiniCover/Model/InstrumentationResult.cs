@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace MiniCover.Instrumentation
+namespace MiniCover.Model
 {
     public class InstrumentationResult
     {
@@ -41,26 +39,5 @@ namespace MiniCover.Instrumentation
 
             Files[file].Instructions.Add(instruction);
         }
-    }
-
-    public class InstrumentedAssembly
-    {
-        public string BackupFile { get; set; }
-        public string File { get; set; }
-    }
-
-    public class SourceFile
-    {
-        public List<InstrumentedInstruction> Instructions = new List<InstrumentedInstruction>();
-    }
-
-    public class InstrumentedInstruction
-    {
-        public int Id { get; set; }
-        public int StartLine { get; set; }
-        public int EndLine { get; set; }
-        public int StartColumn { get; set; }
-        public int EndColumn { get; set; }
-        public string Instruction { get; set; }
     }
 }

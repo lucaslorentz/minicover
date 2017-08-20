@@ -29,7 +29,7 @@ namespace MiniCover.Tests
                 Assert.Equal(a, b);
             }
 
-            new AnotherClass().SomeMethod();
+            new AnotherClass().AnotherMethod();
         }
     }
 }

@@ -65,6 +65,9 @@ cd tools
 # Instrument all assemblies inside 'test' folder to detect hits for source files inside 'src' folder
 dotnet minicover instrument --workdir ../ --assemblies test/**/*.dll --sources src/**/*.cs 
 
+# Reset hits count in case minicover was run for this project
+dotnet minicover reset
+
 cd ..
 
 for project in test/**/*.csproj; do dotnet test --no-build $project; done
