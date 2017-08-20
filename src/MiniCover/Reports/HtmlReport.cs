@@ -1,10 +1,7 @@
-﻿using MiniCover.Instrumentation;
-using System;
-using System.Collections.Generic;
+﻿using MiniCover.Model;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 
 namespace MiniCover.Reports
 {
@@ -27,7 +24,7 @@ namespace MiniCover.Reports
                 using (var htmlWriter = (TextWriter)File.CreateText(fileName))
                 {
                     htmlWriter.WriteLine("<html>");
-                    htmlWriter.WriteLine("<body>");
+                    htmlWriter.WriteLine("<body style=\"font-family: sans-serif;\">");
 
                     var instrumentedLineNumbers = kvFile.Value.Instructions
                         .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
@@ -61,7 +58,14 @@ namespace MiniCover.Reports
                             style += "background-color: #EEF4ED;";
                         }
 
-                        htmlWriter.WriteLine($"<div style=\"{style}\">{WebUtility.HtmlEncode(line)}</div>");
+                        if (!string.IsNullOrEmpty(line))
+                        {
+                            htmlWriter.WriteLine($"<div style=\"{style}\">{WebUtility.HtmlEncode(line)}</div>");
+                        }
+                        else
+                        {
+                            htmlWriter.WriteLine($"<div style=\"{style}\">&nbsp;</div>");
+                        }
                     }
 
                     htmlWriter.WriteLine("</body>");

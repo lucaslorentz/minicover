@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+﻿using MiniCover.Extensions;
+using MiniCover.Model;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace MiniCover.Instrumentation
 {
@@ -66,7 +66,9 @@ namespace MiniCover.Instrumentation
                 return;
 
             if (IsInstrumented(assemblyFile))
-                throw new Exception($"Assembly file ${assemblyFile} is already instrumented");
+                throw new Exception($"Assembly \"{assemblyFile}\" is already instrumented");
+
+            Console.WriteLine($"Instrumenting assembly \"{assemblyFile}\"");
 
             File.Copy(assemblyFile, backupFile, true);
             result.AddInstrumentedAssembly(Path.GetFullPath(backupFile), Path.GetFullPath(assemblyFile));
@@ -91,9 +93,74 @@ namespace MiniCover.Instrumentation
                 var hitMethodInfo = typeof(HitService).GetMethod("Hit");
                 var hitMethodReference = assemblyDefinition.MainModule.ImportReference(hitMethodInfo);
 
-                foreach (var type in assemblyDefinition.MainModule.GetTypes())
+                var methods = assemblyDefinition.GetAllMethods();
+
+                var documentsGroups = methods
+                    .SelectMany(m => m.DebugInformation.SequencePoints, (m, s) => new
+                    {
+                        Method = m,
+                        SequencePoint = s,
+                        Document = s.Document
+                    })
+                    .GroupBy(j => j.Document)
+                    .ToArray();
+
+                foreach (var documentGroup in documentsGroups)
                 {
-                    InstrumentType(type, hitMethodReference);
+                    var sourceRelativePath = GetSourceRelativePath(documentGroup.Key.Url);
+                    if (sourceRelativePath == null)
+                        continue;
+
+                    if (documentGroup.Key.FileHasChanged())
+                    {
+                        Console.WriteLine($"Ignoring modified file \"{documentGroup.Key.Url}\"");
+                        continue;
+                    }
+
+                    var fileLines = File.ReadAllLines(documentGroup.Key.Url);
+
+                    var methodGroups = documentGroup
+                        .GroupBy(j => j.Method, j => j.SequencePoint)
+                        .ToArray();
+
+                    foreach (var methodGroup in methodGroups)
+                    {
+                        var ilProcessor = methodGroup.Key.Body.GetILProcessor();
+
+                        ilProcessor.Body.SimplifyMacros();
+
+                        var instructions = methodGroup.Key.Body.Instructions.ToDictionary(i => i.Offset);
+
+                        foreach (var sequencePoint in methodGroup)
+                        {
+                            var code = ExtractCode(fileLines, sequencePoint);
+                            if (code == null || code == "{" || code == "}")
+                                continue;
+
+                            var instruction = instructions[sequencePoint.Offset];
+
+                            // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
+                            // we cannot put an instruction between the two.
+                            if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
+                                return;
+
+                            var instructionId = ++id;
+
+                            result.AddInstruction(sourceRelativePath, new InstrumentedInstruction
+                            {
+                                Id = instructionId,
+                                StartLine = sequencePoint.StartLine,
+                                EndLine = sequencePoint.EndLine,
+                                StartColumn = sequencePoint.StartColumn,
+                                EndColumn = sequencePoint.EndColumn,
+                                Instruction = instruction.ToString()
+                            });
+
+                            InstrumentInstruction(instructionId, instruction, hitMethodReference, methodGroup.Key, ilProcessor);
+                        }
+
+                        ilProcessor.Body.OptimizeMacros();
+                    }
                 }
 
                 using (var memoryStream = new MemoryStream())
@@ -114,7 +181,7 @@ namespace MiniCover.Instrumentation
             var initMethodInfo = typeof(HitService).GetMethod("Init");
             var initMethodReference = assemblyDefinition.MainModule.ImportReference(initMethodInfo);
             var moduleType = assemblyDefinition.MainModule.GetType("<Module>");
-            var moduleConstructor = FindOrCreateCctor(moduleType);
+            var moduleConstructor = moduleType.FindOrCreateCctor();
             var ilProcessor = moduleConstructor.Body.GetILProcessor();
 
             var initInstruction = ilProcessor.Create(OpCodes.Call, initMethodReference);
@@ -131,38 +198,14 @@ namespace MiniCover.Instrumentation
         {
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true }))
             {
-                foreach (var type in assemblyDefinition.MainModule.GetTypes())
-                {
-                    if (HasSourceFiles(type))
-                        return true;
-                }
+                var methods = assemblyDefinition.GetAllMethods();
 
-                return false;
+                return methods
+                    .SelectMany(m => m.DebugInformation.SequencePoints)
+                    .Select(s => s.Document.Url)
+                    .Distinct()
+                    .Any(d => GetSourceRelativePath(d) != null);
             }
-        }
-
-        private bool HasSourceFiles(TypeDefinition type)
-        {
-            foreach (var method in type.Methods.Where(m => m.HasBody))
-            {
-                if (HasSourceFiles(method))
-                    return true;
-            }
-
-            foreach (var subType in type.NestedTypes)
-            {
-                if (HasSourceFiles(subType))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private bool HasSourceFiles(MethodDefinition methodDefinition)
-        {
-            return methodDefinition.DebugInformation.SequencePoints
-                .Select(s => s.Document.Url)
-                .Any(d => GetSourceRelativePath(d) != null);
         }
 
         private bool IsInstrumented(string assemblyFile)
@@ -171,65 +214,6 @@ namespace MiniCover.Instrumentation
             {
                 return assemblyDefinition.CustomAttributes.Any(a => a.AttributeType.Name == "InstrumentedAttribute");
             }
-        }
-
-        private void InstrumentType(TypeDefinition type, MethodReference hitMethodReference)
-        {
-            if (type.FullName == "<Module>" || type.FullName == "AutoGeneratedProgram")
-                return;
-
-            foreach (var subType in type.NestedTypes)
-                InstrumentType(subType, hitMethodReference);
-
-            foreach (var method in type.Methods.Where(m => m.HasBody))
-                InstrumentMethod(method, hitMethodReference);
-        }
-
-        private void InstrumentMethod(MethodDefinition method, MethodReference hitMethodReference)
-        {
-            var ilProcessor = method.Body.GetILProcessor();
-
-            ilProcessor.Body.SimplifyMacros();
-
-            var instructions = method.Body.Instructions.ToDictionary(i => i.Offset);
-            foreach (var fileGroup in method.DebugInformation.SequencePoints.GroupBy(s => s.Document.Url))
-            {
-                var sourceRelativePath = GetSourceRelativePath(fileGroup.Key);
-                if (sourceRelativePath == null)
-                    return;
-
-                var fileLines = File.ReadAllLines(fileGroup.Key);
-
-                foreach (var sequencePoint in fileGroup)
-                {
-                    var code = ExtractCode(fileLines, sequencePoint);
-                    if (code == null || code == "{" || code == "}")
-                        continue;
-
-                    var instruction = instructions[sequencePoint.Offset];
-
-                    // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
-                    // we cannot put an instruction between the two.
-                    if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
-                        return;
-
-                    var instructionId = ++id;
-
-                    result.AddInstruction(sourceRelativePath, new InstrumentedInstruction
-                    {
-                        Id = instructionId,
-                        StartLine = sequencePoint.StartLine,
-                        EndLine = sequencePoint.EndLine,
-                        StartColumn = sequencePoint.StartColumn,
-                        EndColumn = sequencePoint.EndColumn,
-                        Instruction = instruction.ToString()
-                    });
-
-                    InstrumentInstruction(instructionId, instruction, hitMethodReference, method, ilProcessor);
-                }
-            }
-
-            ilProcessor.Body.OptimizeMacros();
         }
 
         private void InstrumentInstruction(int instructionId, Instruction instruction,
@@ -315,21 +299,6 @@ namespace MiniCover.Instrumentation
                 result.Add(fileLines[sequencePoint.EndLine - 1].Substring(0, sequencePoint.EndColumn - 1));
                 return string.Join(Environment.NewLine, result);
             }
-        }
-
-        private static MethodDefinition FindOrCreateCctor(TypeDefinition typeDefinition)
-        {
-            var cctor = typeDefinition.Methods.FirstOrDefault(x => x.Name == ".cctor");
-            if (cctor == null)
-            {
-                var attributes = Mono.Cecil.MethodAttributes.Static
-                                 | Mono.Cecil.MethodAttributes.SpecialName
-                                 | Mono.Cecil.MethodAttributes.RTSpecialName;
-                cctor = new MethodDefinition(".cctor", attributes, typeDefinition.Module.TypeSystem.Void);
-                typeDefinition.Methods.Add(cctor);
-                cctor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
-            }
-            return cctor;
         }
     }
 }

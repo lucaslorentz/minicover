@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using MiniCover.Instrumentation;
+using MiniCover.Model;
 using MiniCover.Reports;
 using Newtonsoft.Json;
 using System;
@@ -114,6 +115,28 @@ namespace MiniCover
                     var result = LoadCoverageFile(coverageFile);
                     var output = GetHtmlReportOutput(outputOption);
                     HtmlReport.Execute(result, output, threshold);
+                    return 0;
+                });
+            });
+
+            commandLineApplication.Command("reset", command =>
+            {
+                command.Description = "Reset hits count";
+
+                var workDirOption = CreateWorkdirOption(command);
+                var coverageFileOption = CreateCoverageFileOption(command);
+                command.HelpOption("-h | --help");
+
+                command.OnExecute(() =>
+                {
+                    UpdateWorkingDirectory(workDirOption);
+
+                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var result = LoadCoverageFile(coverageFile);
+
+                    if (File.Exists(result.HitsFile))
+                        File.Delete(result.HitsFile);
+
                     return 0;
                 });
             });

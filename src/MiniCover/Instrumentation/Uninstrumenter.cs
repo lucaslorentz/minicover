@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MiniCover.Model;
 using System.IO;
-using System.Text;
 
 namespace MiniCover.Instrumentation
 {

@@ -1,9 +1,7 @@
-﻿using MiniCover.Instrumentation;
+﻿using MiniCover.Model;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace MiniCover.Reports
 {
