@@ -58,9 +58,16 @@ namespace MiniCover.Instrumentation
             if (!File.Exists(pdbFile))
                 return;
 
-            var backupFile = $"{assemblyFile}.original";
-            if (File.Exists(backupFile))
-                File.Copy(backupFile, assemblyFile, true);
+            if (assemblyFile.EndsWith("uninstrumented.dll"))
+                return;
+
+            var assemblyBackupFile = Path.ChangeExtension(assemblyFile, "uninstrumented.dll");
+            if (File.Exists(assemblyBackupFile))
+                File.Copy(assemblyBackupFile, assemblyFile, true);
+
+            var pdbBackupFile = Path.ChangeExtension(pdbFile, "uninstrumented.pdb");
+            if (File.Exists(pdbBackupFile))
+                File.Copy(pdbBackupFile, pdbFile, true);
 
             if (!HasSourceFiles(assemblyFile))
                 return;
@@ -69,14 +76,15 @@ namespace MiniCover.Instrumentation
                 throw new Exception($"Assembly \"{assemblyFile}\" is already instrumented");
 
             Console.WriteLine($"Instrumenting assembly \"{assemblyFile}\"");
+            
+            File.Copy(assemblyFile, assemblyBackupFile, true);
+            File.Copy(pdbFile, pdbBackupFile, true);
 
-            File.Copy(assemblyFile, backupFile, true);
-            result.AddInstrumentedAssembly(Path.GetFullPath(backupFile), Path.GetFullPath(assemblyFile));
+            result.AddInstrumentedAssembly(Path.GetFullPath(assemblyBackupFile), Path.GetFullPath(assemblyFile), Path.GetFullPath(pdbBackupFile), Path.GetFullPath(pdbFile));
 
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
-            byte[] bytes = null;
 
-            using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true }))
+            using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true }))
             {
                 var instrumentedConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
                 var instrumentedReference = assemblyDefinition.MainModule.ImportReference(instrumentedConstructor);
@@ -163,16 +171,7 @@ namespace MiniCover.Instrumentation
                     }
                 }
 
-                using (var memoryStream = new MemoryStream())
-                {
-                    assemblyDefinition.Write(memoryStream);
-                    bytes = memoryStream.ToArray();
-                }
-            }
-
-            if (bytes != null)
-            {
-                File.WriteAllBytes(assemblyFile, bytes);
+                assemblyDefinition.Write(assemblyFile, new WriterParameters { WriteSymbols = true });
             }
         }
 

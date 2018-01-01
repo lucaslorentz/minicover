@@ -14,6 +14,12 @@ namespace MiniCover.Instrumentation
                     File.Copy(assembly.BackupFile, assembly.File, true);
                     File.Delete(assembly.BackupFile);
                 }
+
+                if (File.Exists(assembly.BackupPdbFile))
+                {
+                    File.Copy(assembly.BackupPdbFile, assembly.PdbFile, true);
+                    File.Delete(assembly.BackupPdbFile);
+                }
             }
 
             foreach (var extraAssembly in result.ExtraAssemblies)

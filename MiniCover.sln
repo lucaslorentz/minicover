@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover", "src\MiniCover\MiniCover.csproj", "{CE06DCCF-32DB-44F2-B6D8-37DD0395C406}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover", "src\MiniCover\MiniCover.csproj", "{CE06DCCF-32DB-44F2-B6D8-37DD0395C406}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.Tests", "test\MiniCover.Tests\MiniCover.Tests.csproj", "{78E87245-EB9E-4B68-BB3C-75ED0BA4E1FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.XUnit.Tests", "test\MiniCover.XUnit.Tests\MiniCover.XUnit.Tests.csproj", "{78E87245-EB9E-4B68-BB3C-75ED0BA4E1FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.NUnit.Tests", "test\MiniCover.NUnit.Tests\MiniCover.NUnit.Tests.csproj", "{01757BB0-81E7-496F-AA0C-8CB3AB4C9760}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{78E87245-EB9E-4B68-BB3C-75ED0BA4E1FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78E87245-EB9E-4B68-BB3C-75ED0BA4E1FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78E87245-EB9E-4B68-BB3C-75ED0BA4E1FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01757BB0-81E7-496F-AA0C-8CB3AB4C9760}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01757BB0-81E7-496F-AA0C-8CB3AB4C9760}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01757BB0-81E7-496F-AA0C-8CB3AB4C9760}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01757BB0-81E7-496F-AA0C-8CB3AB4C9760}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9809608-5E38-4E98-80B5-7CD7859FF4E8}
 	EndGlobalSection
 EndGlobal

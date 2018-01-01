@@ -8,7 +8,8 @@ dotnet restore
 dotnet build
 $MiniCover instrument --sources "test/**/*.cs" --assemblies "test/**/*.dll"
 $MiniCover reset
-dotnet test --no-build test/MiniCover.Tests/MiniCover.Tests.csproj
+dotnet test --no-build test/MiniCover.XUnit.Tests/MiniCover.XUnit.Tests.csproj
+dotnet test --no-build test/MiniCover.NUnit.Tests/MiniCover.NUnit.Tests.csproj
 $MiniCover uninstrument
 $MiniCover htmlreport --threshold 90 
 $MiniCover report --threshold 90

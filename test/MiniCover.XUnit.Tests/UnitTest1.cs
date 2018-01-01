@@ -6,7 +6,7 @@ namespace MiniCover.Tests
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+        public void XUnitTest1()
         {
             var a = 2;
             var b = 2;
@@ -19,7 +19,7 @@ namespace MiniCover.Tests
         }
 
         [Fact]
-        public void Test2()
+        public void XUnitTest2()
         {
             var a = 2;
             var b = 2;

@@ -15,12 +15,14 @@ namespace MiniCover.Model
         public List<InstrumentedAssembly> Assemblies = new List<InstrumentedAssembly>();
         public Dictionary<string, SourceFile> Files = new Dictionary<string, SourceFile>();
 
-        public void AddInstrumentedAssembly(string originalFile, string instrumentedFile)
+        public void AddInstrumentedAssembly(string backupFile, string file, string backupPdbFile, string pdbFile)
         {
             Assemblies.Add(new InstrumentedAssembly
             {
-                BackupFile = originalFile,
-                File = instrumentedFile
+                BackupFile = backupFile,
+                File = file,
+                BackupPdbFile = backupPdbFile,
+                PdbFile = pdbFile
             });
         }
 
