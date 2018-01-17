@@ -15,7 +15,12 @@ namespace MiniCover.Extensions
 
             using (var stream = File.OpenRead(document.Url))
             {
-                using (var hasher = CreateHashAlgorithm(document.HashAlgorithm))
+                var hasher = CreateHashAlgorithm(document.HashAlgorithm);
+
+                if (hasher == null)
+                    return false;
+
+                using (hasher)
                 {
                     var newHash = hasher.ComputeHash(stream);
                     return !newHash.SequenceEqual(document.Hash);
@@ -30,7 +35,7 @@ namespace MiniCover.Extensions
                 case DocumentHashAlgorithm.SHA1: return new SHA1Managed();
                 case DocumentHashAlgorithm.SHA256: return new SHA256Managed();
                 case DocumentHashAlgorithm.MD5: return new MD5CryptoServiceProvider();
-                default: throw new Exception($"Hash algorithm {algorithm} is not supported.");
+                default: return null;
             }
         }
     }

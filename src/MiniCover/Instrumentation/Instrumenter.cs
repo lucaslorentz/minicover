@@ -76,7 +76,7 @@ namespace MiniCover.Instrumentation
                 throw new Exception($"Assembly \"{assemblyFile}\" is already instrumented");
 
             Console.WriteLine($"Instrumenting assembly \"{assemblyFile}\"");
-            
+
             File.Copy(assemblyFile, assemblyBackupFile, true);
             File.Copy(pdbFile, pdbBackupFile, true);
 
@@ -280,22 +280,52 @@ namespace MiniCover.Instrumentation
 
         private string ExtractCode(string[] fileLines, SequencePoint sequencePoint)
         {
-            if (sequencePoint.StartLine > fileLines.Length)
+            if (sequencePoint.IsHidden)
                 return null;
 
             if (sequencePoint.StartLine == sequencePoint.EndLine)
             {
-                return fileLines[sequencePoint.StartLine - 1].Substring(sequencePoint.StartColumn - 1, sequencePoint.EndColumn - sequencePoint.StartColumn);
+                var lineIndex = sequencePoint.StartLine - 1;
+                if (lineIndex < 0 || lineIndex >= fileLines.Length)
+                    return null;
+
+                var startIndex = sequencePoint.StartColumn - 1;
+                if (startIndex < 0 || startIndex >= fileLines[lineIndex].Length)
+                    return null;
+
+                var length = sequencePoint.EndColumn - sequencePoint.StartColumn;
+                if (length <= 0 || startIndex + length > fileLines[lineIndex].Length)
+                    return null;
+
+                return fileLines[lineIndex].Substring(startIndex, length);
             }
             else
             {
                 var result = new List<string>();
-                result.Add(fileLines[sequencePoint.StartLine - 1].Substring(sequencePoint.StartColumn - 1));
-                for (var l = sequencePoint.StartLine; l <= sequencePoint.EndLine - 2; l++)
-                {
+
+                var firstLineIndex = sequencePoint.StartLine - 1;
+                if (firstLineIndex < 0 || firstLineIndex >= fileLines.Length)
+                    return null;
+
+                var startColumnIndex = sequencePoint.StartColumn - 1;
+                if (startColumnIndex < 0 || startColumnIndex >= fileLines[firstLineIndex].Length)
+                    return null;
+
+                var lastLineIndex = sequencePoint.EndLine - 1;
+                if (lastLineIndex < firstLineIndex || lastLineIndex >= fileLines.Length)
+                    return null;
+
+                var endLineLength = sequencePoint.EndColumn - 1;
+                if (endLineLength <= 0 || endLineLength > fileLines[lastLineIndex].Length)
+                    return null;
+
+                result.Add(fileLines[firstLineIndex].Substring(startColumnIndex));
+
+                for (var l = firstLineIndex + 1; l < lastLineIndex; l++)
                     result.Add(fileLines[l]);
-                }
-                result.Add(fileLines[sequencePoint.EndLine - 1].Substring(0, sequencePoint.EndColumn - 1));
+
+                result.Add(fileLines[lastLineIndex].Substring(0, endLineLength));
+
                 return string.Join(Environment.NewLine, result);
             }
         }
