@@ -7,6 +7,10 @@
         public int EndLine { get; set; }
         public int StartColumn { get; set; }
         public int EndColumn { get; set; }
+        public string Assembly { get; set; }
+        public string Class { get; set; }
+        public string Method { get; set; }
+        public string MethodFullName { get; set; }
         public string Instruction { get; set; }
     }
 }

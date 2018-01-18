@@ -119,6 +119,29 @@ namespace MiniCover
                 });
             });
 
+            commandLineApplication.Command("xmlreport", command =>
+            {
+                command.Description = "Write an NCover-formatted XML report to folder";
+
+                var workDirOption = CreateWorkdirOption(command);
+                var coverageFileOption = CreateCoverageFileOption(command);
+                var thresholdOption = CreateThresholdOption(command);
+                var outputOption = command.Option("--output", "Output file for NCover report [default: coverage.xml]", CommandOptionType.SingleValue);
+                command.HelpOption("-h | --help");
+
+                command.OnExecute(() =>
+                {
+                    UpdateWorkingDirectory(workDirOption);
+
+                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var threshold = GetThreshold(thresholdOption);
+                    var result = LoadCoverageFile(coverageFile);
+                    var output = GetXmlReportOutput(outputOption);
+                    XmlReport.Execute(result, output, threshold);
+                    return 0;
+                });
+            });
+
             commandLineApplication.Command("reset", command =>
             {
                 command.Description = "Reset hits count";
@@ -181,6 +204,11 @@ namespace MiniCover
         private static string GetHtmlReportOutput(CommandOption outputOption)
         {
             return outputOption.Value() ?? "coverage-html";
+        }
+
+        private static string GetXmlReportOutput(CommandOption outputOption)
+        {
+            return outputOption.Value() ?? "coverage.xml";
         }
 
         private static string GetCoverageFile(CommandOption coverageFileOption)

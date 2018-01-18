@@ -9,16 +9,16 @@ namespace MiniCover.Instrumentation
         {
             foreach (var assembly in result.Assemblies)
             {
-                if (File.Exists(assembly.BackupFile))
+                if (File.Exists(assembly.Value.BackupFile))
                 {
-                    File.Copy(assembly.BackupFile, assembly.File, true);
-                    File.Delete(assembly.BackupFile);
+                    File.Copy(assembly.Value.BackupFile, assembly.Value.File, true);
+                    File.Delete(assembly.Value.BackupFile);
                 }
 
-                if (File.Exists(assembly.BackupPdbFile))
+                if (File.Exists(assembly.Value.BackupPdbFile))
                 {
-                    File.Copy(assembly.BackupPdbFile, assembly.PdbFile, true);
-                    File.Delete(assembly.BackupPdbFile);
+                    File.Copy(assembly.Value.BackupPdbFile, assembly.Value.PdbFile, true);
+                    File.Delete(assembly.Value.BackupPdbFile);
                 }
             }
 

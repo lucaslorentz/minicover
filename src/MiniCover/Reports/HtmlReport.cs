@@ -13,7 +13,14 @@ namespace MiniCover.Reports
                    ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
                    : new int[0];
 
-            foreach (var kvFile in result.Files)
+            var files = result.Assemblies
+                .SelectMany(assembly => assembly.Value.Files)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Value
+                );
+
+            foreach (var kvFile in files)
             {
                 var lines = File.ReadAllLines(Path.Combine(result.SourcePath, kvFile.Key));
 

@@ -47,7 +47,10 @@ namespace MiniCover.Instrumentation
                 InstrumentAssembly(fileName);
             }
 
-            result.Files = result.Files.OrderBy(kv => kv.Key).ToDictionary(kv => kv.Key, kv => kv.Value);
+            foreach (var assembly in result.Assemblies)
+            {
+                assembly.Value.Files = assembly.Value.Files.OrderBy(kv => kv.Key).ToDictionary(kv => kv.Key, kv => kv.Value);
+            }
 
             return result;
         }
@@ -80,12 +83,12 @@ namespace MiniCover.Instrumentation
             File.Copy(assemblyFile, assemblyBackupFile, true);
             File.Copy(pdbFile, pdbBackupFile, true);
 
-            result.AddInstrumentedAssembly(Path.GetFullPath(assemblyBackupFile), Path.GetFullPath(assemblyFile), Path.GetFullPath(pdbBackupFile), Path.GetFullPath(pdbFile));
-
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
 
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true }))
             {
+                result.AddInstrumentedAssembly(assemblyDefinition.Name.Name, Path.GetFullPath(assemblyBackupFile), Path.GetFullPath(assemblyFile), Path.GetFullPath(pdbBackupFile), Path.GetFullPath(pdbFile));
+
                 var instrumentedConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
                 var instrumentedReference = assemblyDefinition.MainModule.ImportReference(instrumentedConstructor);
                 assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedReference));
@@ -154,13 +157,17 @@ namespace MiniCover.Instrumentation
 
                             var instructionId = ++id;
 
-                            result.AddInstruction(sourceRelativePath, new InstrumentedInstruction
+                            result.Assemblies[assemblyDefinition.Name.Name].AddInstruction(sourceRelativePath, new InstrumentedInstruction
                             {
                                 Id = instructionId,
                                 StartLine = sequencePoint.StartLine,
                                 EndLine = sequencePoint.EndLine,
                                 StartColumn = sequencePoint.StartColumn,
                                 EndColumn = sequencePoint.EndColumn,
+                                Assembly = assemblyDefinition.Name.Name,
+                                Class = methodGroup.Key.DeclaringType.FullName,
+                                Method = methodGroup.Key.Name,
+                                MethodFullName = methodGroup.Key.FullName,
                                 Instruction = instruction.ToString()
                             });
 

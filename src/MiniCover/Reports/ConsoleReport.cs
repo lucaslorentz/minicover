@@ -13,7 +13,14 @@ namespace MiniCover.Reports
                    ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
                    : new int[0];
 
-            var fileColumnLength = result.Files.Keys.Select(s => s.Length).Concat(new[] { 10 }).Max();
+            var files = result.Assemblies
+                .SelectMany(assembly => assembly.Value.Files)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Value
+                );
+
+            var fileColumnLength = files.Keys.Select(s => s.Length).Concat(new[] { 10 }).Max();
 
             WriteHorizontalLine(fileColumnLength);
 
@@ -33,7 +40,7 @@ namespace MiniCover.Reports
             var totalLines = 0;
             var totalCoveredLines = 0;
 
-            foreach (var kvFile in result.Files)
+            foreach (var kvFile in files)
             {
                 var lines = kvFile.Value.Instructions
                     .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
