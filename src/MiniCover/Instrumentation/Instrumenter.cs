@@ -87,7 +87,13 @@ namespace MiniCover.Instrumentation
 
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true }))
             {
-                result.AddInstrumentedAssembly(assemblyDefinition.Name.Name, Path.GetFullPath(assemblyBackupFile), Path.GetFullPath(assemblyFile), Path.GetFullPath(pdbBackupFile), Path.GetFullPath(pdbFile));
+                var instrumentedAssembly = result.AddInstrumentedAssembly(
+                    assemblyDefinition.Name.Name,
+                    Path.GetFullPath(assemblyBackupFile),
+                    Path.GetFullPath(assemblyFile),
+                    Path.GetFullPath(pdbBackupFile),
+                    Path.GetFullPath(pdbFile)
+                );
 
                 var instrumentedConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
                 var instrumentedReference = assemblyDefinition.MainModule.ImportReference(instrumentedConstructor);
@@ -157,7 +163,7 @@ namespace MiniCover.Instrumentation
 
                             var instructionId = ++id;
 
-                            result.Assemblies[assemblyDefinition.Name.Name].AddInstruction(sourceRelativePath, new InstrumentedInstruction
+                            instrumentedAssembly.AddInstruction(sourceRelativePath, new InstrumentedInstruction
                             {
                                 Id = instructionId,
                                 StartLine = sequencePoint.StartLine,

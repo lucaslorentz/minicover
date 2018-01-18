@@ -14,20 +14,24 @@ namespace MiniCover.Model
         public List<string> ExtraAssemblies = new List<string>();
         public Dictionary<string, InstrumentedAssembly> Assemblies = new Dictionary<string, InstrumentedAssembly>();
 
-        public void AddInstrumentedAssembly(string name, string backupFile, string file, string backupPdbFile, string pdbFile)
+        public InstrumentedAssembly AddInstrumentedAssembly(string name, string backupFile, string file, string backupPdbFile, string pdbFile)
         {
             if (Assemblies.ContainsKey(name))
             {
-                return;
+                return Assemblies[name];
             }
 
-            Assemblies.Add(name, new InstrumentedAssembly
+            var instrumentedAssembly = new InstrumentedAssembly
             {
                 BackupFile = backupFile,
                 File = file,
                 BackupPdbFile = backupPdbFile,
                 PdbFile = pdbFile
-            });
+            };
+
+            Assemblies.Add(name, instrumentedAssembly);
+
+            return instrumentedAssembly;
         }
 
         public void AddExtraAssembly(string file)
