@@ -132,10 +132,17 @@ namespace MiniCover
                     UpdateWorkingDirectory(workDirOption);
 
                     var coverageFile = GetCoverageFile(coverageFileOption);
-                    var result = LoadCoverageFile(coverageFile);
+                    try
+                    {
+                        var result = LoadCoverageFile(coverageFile);
 
-                    if (File.Exists(result.HitsFile))
-                        File.Delete(result.HitsFile);
+                        if (File.Exists(result.HitsFile))
+                            File.Delete(result.HitsFile);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // In this case, it is ok that the file is not found.
+                    }
 
                     return 0;
                 });
@@ -234,7 +241,7 @@ namespace MiniCover
         private static InstrumentationResult LoadCoverageFile(string coverageFile)
         {
             if (!File.Exists(coverageFile))
-                throw new Exception($"Coverage file {coverageFile} doesn't exist");
+                throw new FileNotFoundException($"Coverage file {coverageFile} doesn't exist");
 
             return JsonConvert.DeserializeObject<InstrumentationResult>(File.ReadAllText(coverageFile));
         }
