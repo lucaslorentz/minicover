@@ -12,34 +12,32 @@ namespace MiniCover.Model
         public string HitsFile { get; set; }
 
         public List<string> ExtraAssemblies = new List<string>();
-        public List<InstrumentedAssembly> Assemblies = new List<InstrumentedAssembly>();
-        public Dictionary<string, SourceFile> Files = new Dictionary<string, SourceFile>();
+        public Dictionary<string, InstrumentedAssembly> Assemblies = new Dictionary<string, InstrumentedAssembly>();
 
-        public void AddInstrumentedAssembly(string backupFile, string file, string backupPdbFile, string pdbFile)
+        public InstrumentedAssembly AddInstrumentedAssembly(string name, string backupFile, string file, string backupPdbFile, string pdbFile)
         {
-            Assemblies.Add(new InstrumentedAssembly
+            if (Assemblies.ContainsKey(name))
+            {
+                return Assemblies[name];
+            }
+
+            var instrumentedAssembly = new InstrumentedAssembly
             {
                 BackupFile = backupFile,
                 File = file,
                 BackupPdbFile = backupPdbFile,
                 PdbFile = pdbFile
-            });
+            };
+
+            Assemblies.Add(name, instrumentedAssembly);
+
+            return instrumentedAssembly;
         }
 
         public void AddExtraAssembly(string file)
         {
             if (!ExtraAssemblies.Contains(file))
                 ExtraAssemblies.Add(file);
-        }
-
-        public void AddInstruction(string file, InstrumentedInstruction instruction)
-        {
-            if (!Files.ContainsKey(file))
-            {
-                Files[file] = new SourceFile();
-            }
-
-            Files[file].Instructions.Add(instruction);
         }
     }
 }

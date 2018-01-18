@@ -12,6 +12,7 @@ dotnet test --no-build test/MiniCover.XUnit.Tests/MiniCover.XUnit.Tests.csproj
 dotnet test --no-build test/MiniCover.NUnit.Tests/MiniCover.NUnit.Tests.csproj
 $MiniCover uninstrument
 $MiniCover htmlreport --threshold 90 
+$MiniCover xmlreport --threshold 90
 $MiniCover report --threshold 90
 
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then

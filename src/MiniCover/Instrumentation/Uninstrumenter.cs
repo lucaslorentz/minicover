@@ -7,7 +7,7 @@ namespace MiniCover.Instrumentation
     {
         public static void Execute(InstrumentationResult result)
         {
-            foreach (var assembly in result.Assemblies)
+            foreach (var assembly in result.Assemblies.Values)
             {
                 if (File.Exists(assembly.BackupFile))
                 {
