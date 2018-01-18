@@ -132,17 +132,9 @@ namespace MiniCover
                     UpdateWorkingDirectory(workDirOption);
 
                     var coverageFile = GetCoverageFile(coverageFileOption);
-                    try
-                    {
-                        var result = LoadCoverageFile(coverageFile);
 
-                        if (File.Exists(result.HitsFile))
-                            File.Delete(result.HitsFile);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        // In this case, it is ok that the file is not found.
-                    }
+                    if (File.Exists(coverageFile))
+                        File.Delete(coverageFile);
 
                     return 0;
                 });
