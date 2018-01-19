@@ -84,7 +84,10 @@ namespace MiniCover.Instrumentation
 
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
 
-            using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true }))
+            var resolver = new DefaultAssemblyResolver();
+            resolver.AddSearchDirectory(assemblyDirectory);
+
+            using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
                 var instrumentedConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
                 var instrumentedReference = assemblyDefinition.MainModule.ImportReference(instrumentedConstructor);

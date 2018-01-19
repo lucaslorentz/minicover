@@ -20,7 +20,7 @@ namespace MiniCover
 
             var commandLineApplication = new CommandLineApplication();
             commandLineApplication.Name = "MiniCover";
-            commandLineApplication.Description = "MiniCover - Code coverate for .NET Core via assembly instrumentation";
+            commandLineApplication.Description = "MiniCover - Code coverage for .NET Core via assembly instrumentation";
 
             commandLineApplication.Command("instrument", command =>
             {
