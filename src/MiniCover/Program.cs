@@ -157,7 +157,12 @@ namespace MiniCover
                     var coverageFile = GetCoverageFile(coverageFileOption);
 
                     if (File.Exists(coverageFile))
-                        File.Delete(coverageFile);
+                    {
+                        var result = LoadCoverageFile(coverageFile);
+
+                        if (File.Exists(result.HitsFile))
+                            File.Delete(result.HitsFile);
+                    }
 
                     return 0;
                 });
