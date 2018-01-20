@@ -20,7 +20,7 @@ namespace MiniCover
 
             var commandLineApplication = new CommandLineApplication();
             commandLineApplication.Name = "MiniCover";
-            commandLineApplication.Description = "MiniCover - Code coverate for .NET Core via assembly instrumentation";
+            commandLineApplication.Description = "MiniCover - Code coverage for .NET Core via assembly instrumentation";
 
             commandLineApplication.Command("instrument", command =>
             {
@@ -155,10 +155,9 @@ namespace MiniCover
                     UpdateWorkingDirectory(workDirOption);
 
                     var coverageFile = GetCoverageFile(coverageFileOption);
-                    var result = LoadCoverageFile(coverageFile);
 
-                    if (File.Exists(result.HitsFile))
-                        File.Delete(result.HitsFile);
+                    if (File.Exists(coverageFile))
+                        File.Delete(coverageFile);
 
                     return 0;
                 });
@@ -262,7 +261,7 @@ namespace MiniCover
         private static InstrumentationResult LoadCoverageFile(string coverageFile)
         {
             if (!File.Exists(coverageFile))
-                throw new Exception($"Coverage file {coverageFile} doesn't exist");
+                throw new FileNotFoundException($"Coverage file {coverageFile} doesn't exist");
 
             return JsonConvert.DeserializeObject<InstrumentationResult>(File.ReadAllText(coverageFile));
         }
