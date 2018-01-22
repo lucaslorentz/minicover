@@ -1,5 +1,6 @@
 ﻿using MiniCover.Model;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -7,7 +8,9 @@ namespace MiniCover.Reports
 {
     public class ConsoleReport
     {
-        public static int Execute(InstrumentationResult result, float threshold)
+        private int _fileColumnLength;
+
+        public virtual int Execute(InstrumentationResult result, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
                    ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
@@ -20,22 +23,9 @@ namespace MiniCover.Reports
                     x => x.Value
                 );
 
-            var fileColumnLength = files.Keys.Select(s => s.Length).Concat(new[] { 10 }).Max();
+            _fileColumnLength = files.Keys.Select(s => s.Length).Concat(new[] { 10 }).Max();
 
-            WriteHorizontalLine(fileColumnLength);
-
-            Write("| ");
-            Write(Pad("File", fileColumnLength));
-            Write(" | ");
-            Write(Pad("Lines", 5, Align.Center));
-            Write(" | ");
-            Write(Pad("Covered Lines", 13, Align.Center));
-            Write(" | ");
-            Write(Pad("Percentage", 10, Align.Center));
-            Write(" |");
-            Write(Environment.NewLine);
-
-            WriteHorizontalLine(fileColumnLength);
+            WriteHeader();
 
             var totalLines = 0;
             var totalCoveredLines = 0;
@@ -56,44 +46,78 @@ namespace MiniCover.Reports
                 totalLines += lines;
                 totalCoveredLines += coveredLines;
 
-                var coveragePercentage = (float)coveredLines / (float)lines;
+                var coveragePercentage = (float)coveredLines / lines;
                 var fileColor = coveragePercentage >= threshold ? ConsoleColor.Green : ConsoleColor.Red;
 
-                Write("| ");
-                Write(Pad(kvFile.Key, fileColumnLength), fileColor);
-                Write(" | ");
-                Write(Pad(lines.ToString().PadLeft(3), 5, Align.Center), fileColor);
-                Write(" | ");
-                Write(Pad(coveredLines.ToString().PadLeft(3), 13, Align.Center), fileColor);
-                Write(" | ");
-                Write(Pad(coveragePercentage.ToString("P").PadLeft(8), 10, Align.Center), fileColor);
-                Write(" |");
-                Write(Environment.NewLine);
+                WriteReport(kvFile, lines, coveredLines, coveragePercentage, fileColor);
+
+                WriteDetailedReport(result, files, hits);
             }
 
-            WriteHorizontalLine(fileColumnLength);
-
-            var totalCoveragePercentage = (float)totalCoveredLines / (float)totalLines;
+            var totalCoveragePercentage = (float)totalCoveredLines / totalLines;
             var isHigherThanThreshold = totalCoveragePercentage >= threshold;
             var totalsColor = isHigherThanThreshold ? ConsoleColor.Green : ConsoleColor.Red;
 
-            Write("| ");
-            Write(Pad("All files", fileColumnLength), totalsColor);
-            Write(" | ");
-            Write(Pad(totalLines.ToString().PadLeft(3), 5, Align.Center), totalsColor);
-            Write(" | ");
-            Write(Pad(totalCoveredLines.ToString().PadLeft(3), 13, Align.Center), totalsColor);
-            Write(" | ");
-            Write(Pad(totalCoveragePercentage.ToString("P").PadLeft(8), 10, Align.Center), totalsColor);
-            Write(" |");
-            Write(Environment.NewLine);
-
-            WriteHorizontalLine(fileColumnLength);
+            WriteFooter(totalLines, totalCoveredLines, totalCoveragePercentage, threshold,totalsColor);
 
             return isHigherThanThreshold ? 0 : 1;
         }
 
-        private static void WriteHorizontalLine(int fileColumnLength)
+        protected virtual void WriteHeader()
+        {
+            WriteHorizontalLine(_fileColumnLength);
+
+            Write("| ");
+            Write(Pad("File", _fileColumnLength));
+            Write(" | ");
+            Write(Pad("Lines", 5, Align.Center));
+            Write(" | ");
+            Write(Pad("Covered Lines", 13, Align.Center));
+            Write(" | ");
+            Write(Pad("Percentage", 10, Align.Center));
+            Write(" |");
+            Write(Environment.NewLine);
+
+            WriteHorizontalLine(_fileColumnLength);
+        }
+
+        protected virtual void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
+        {
+            Write("| ");
+            Write(Pad(kvFile.Key, _fileColumnLength), color);
+            Write(" | ");
+            Write(Pad(lines.ToString().PadLeft(3), 5, Align.Center), color);
+            Write(" | ");
+            Write(Pad(coveredLines.ToString().PadLeft(3), 13, Align.Center), color);
+            Write(" | ");
+            Write(Pad(coveragePercentage.ToString("P").PadLeft(8), 10, Align.Center), color);
+            Write(" |");
+            Write(Environment.NewLine);
+        }
+
+        protected virtual void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, int[] hits)
+        {
+        }
+
+        protected virtual void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color)
+        {
+            WriteHorizontalLine(_fileColumnLength);
+
+            Write("| ");
+            Write(Pad("All files", _fileColumnLength), color);
+            Write(" | ");
+            Write(Pad(lines.ToString().PadLeft(3), 5, Align.Center), color);
+            Write(" | ");
+            Write(Pad(coveredLines.ToString().PadLeft(3), 13, Align.Center), color);
+            Write(" | ");
+            Write(Pad(coveragePercentage.ToString("P").PadLeft(8), 10, Align.Center), color);
+            Write(" |");
+            Write(Environment.NewLine);
+
+            WriteHorizontalLine(_fileColumnLength);
+        }
+
+        private void WriteHorizontalLine(int fileColumnLength)
         {
             Write("+-");
             Write(new string('-', fileColumnLength));
@@ -107,7 +131,7 @@ namespace MiniCover.Reports
             Write(Environment.NewLine);
         }
 
-        private static string Pad(string text, int length, Align alignment = Align.Left)
+        private string Pad(string text, int length, Align alignment = Align.Left)
         {
             switch (alignment)
             {
@@ -123,12 +147,12 @@ namespace MiniCover.Reports
             }
         }
 
-        private static void Write(string text)
+        private void Write(string text)
         {
             Console.Write(text);
         }
 
-        private static void Write(string text, ConsoleColor color)
+        private void Write(string text, ConsoleColor color)
         {
             var originalColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
@@ -136,7 +160,7 @@ namespace MiniCover.Reports
             Console.ForegroundColor = originalColor;
         }
 
-        enum Align
+        private enum Align
         {
             Left,
             Center,
