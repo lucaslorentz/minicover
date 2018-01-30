@@ -8,7 +8,7 @@ using System.Text;
 
 namespace MiniCover.Reports
 {
-    public class HtmlReport : ConsoleReport
+    public class HtmlReport : BaseReport
     {
         private const string BgColorGreen = "background-color: #D2EACE;";
         private const string BgColorRed = "background-color: #EACECC;";
@@ -20,6 +20,10 @@ namespace MiniCover.Reports
         {
             _output = output;
             _htmlReport = new StringBuilder();
+        }
+
+        protected override void SetFileColumnLength(int fileColumnsLength)
+        {
         }
 
         protected override void WriteHeader()

@@ -1,69 +1,19 @@
 ﻿using MiniCover.Model;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace MiniCover.Reports
 {
-    public class ConsoleReport
+    public class ConsoleReport : BaseReport
     {
         private int _fileColumnLength;
 
-        public virtual int Execute(InstrumentationResult result, float threshold)
+        protected override void SetFileColumnLength(int fileColumnsLength)
         {
-            var hits = File.Exists(result.HitsFile)
-                   ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
-                   : new int[0];
-
-            var files = result.Assemblies
-                .SelectMany(assembly => assembly.Value.Files)
-                .ToDictionary(
-                    x => x.Key,
-                    x => x.Value
-                );
-
-            _fileColumnLength = files.Keys.Select(s => s.Length).Concat(new[] { 10 }).Max();
-
-            WriteHeader();
-
-            var totalLines = 0;
-            var totalCoveredLines = 0;
-
-            foreach (var kvFile in files)
-            {
-                var lines = kvFile.Value.Instructions
-                    .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
-                    .Distinct()
-                    .Count();
-
-                var hitInstructions = kvFile.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
-                var coveredLines = hitInstructions
-                    .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
-                    .Distinct()
-                    .Count();
-
-                totalLines += lines;
-                totalCoveredLines += coveredLines;
-
-                var coveragePercentage = (float)coveredLines / lines;
-                var fileColor = coveragePercentage >= threshold ? ConsoleColor.Green : ConsoleColor.Red;
-
-                WriteReport(kvFile, lines, coveredLines, coveragePercentage, fileColor);
-
-                WriteDetailedReport(result, files, hits);
-            }
-
-            var totalCoveragePercentage = (float)totalCoveredLines / totalLines;
-            var isHigherThanThreshold = totalCoveragePercentage >= threshold;
-            var totalsColor = isHigherThanThreshold ? ConsoleColor.Green : ConsoleColor.Red;
-
-            WriteFooter(totalLines, totalCoveredLines, totalCoveragePercentage, threshold,totalsColor);
-
-            return isHigherThanThreshold ? 0 : 1;
+            _fileColumnLength = fileColumnsLength;
         }
 
-        protected virtual void WriteHeader()
+        protected override void WriteHeader()
         {
             WriteHorizontalLine(_fileColumnLength);
 
@@ -81,7 +31,7 @@ namespace MiniCover.Reports
             WriteHorizontalLine(_fileColumnLength);
         }
 
-        protected virtual void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
+        protected override void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
         {
             Write("| ");
             Write(Pad(kvFile.Key, _fileColumnLength), color);
@@ -95,11 +45,11 @@ namespace MiniCover.Reports
             Write(Environment.NewLine);
         }
 
-        protected virtual void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, int[] hits)
+        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, int[] hits)
         {
         }
 
-        protected virtual void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color)
+        protected override void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color)
         {
             WriteHorizontalLine(_fileColumnLength);
 
