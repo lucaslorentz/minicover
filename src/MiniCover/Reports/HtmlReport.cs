@@ -53,7 +53,7 @@ namespace MiniCover.Reports
                 using (var htmlWriter = (TextWriter)File.CreateText(fileName))
                 {
                     htmlWriter.WriteLine("<html>");
-                    htmlWriter.WriteLine("<body style=\"font-family: sans-serif;\">");
+                    htmlWriter.WriteLine("<body style=\"font-family: monospace;\">");
 
                     var uncoveredLineNumbers = new HashSet<int>();
                     var coveredLineNumbers = new HashSet<int>();
