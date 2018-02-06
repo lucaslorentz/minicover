@@ -11,7 +11,7 @@ namespace MiniCover.Reports
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
-                               ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).Distinct().ToHashSet()
+                               ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToHashSet()
                                : new HashSet<int>();
 
             var files = result.Assemblies
@@ -49,8 +49,9 @@ namespace MiniCover.Reports
 
                 WriteReport(kvFile, lines, coveredLines, coveragePercentage, fileColor);
 
-                WriteDetailedReport(result, files, hits);
             }
+
+            WriteDetailedReport(result, files, hits);
 
             var totalCoveragePercentage = (float)totalCoveredLines / totalLines;
             var isHigherThanThreshold = totalCoveragePercentage >= threshold;
