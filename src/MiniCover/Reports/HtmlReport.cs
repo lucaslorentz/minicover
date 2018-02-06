@@ -56,16 +56,20 @@ namespace MiniCover.Reports
                     htmlWriter.WriteLine("<body style=\"font-family: sans-serif;\">");
 
                     var uncoveredLineNumbers = new HashSet<int>();
-                    foreach(var i in kvFile.Value.Instructions)
-                        if (!hits.Contains(i.Id))
-                            for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
-                                uncoveredLineNumbers.Add(lineIndex);
-
                     var coveredLineNumbers = new HashSet<int>();
-                    foreach (var i in kvFile.Value.Instructions)
+                    foreach(var i in kvFile.Value.Instructions)
+                    {
                         if (hits.Contains(i.Id))
+                        {
                             for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
                                 coveredLineNumbers.Add(lineIndex);
+                        }
+                        else
+                        {
+                            for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
+                                uncoveredLineNumbers.Add(lineIndex);
+                        }
+                    }
 
                     var l = 0;
                     foreach (var line in lines)
