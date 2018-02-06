@@ -40,7 +40,7 @@ namespace MiniCover.Reports
             _htmlReport.AppendLine("</tr>");
         }
 
-        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, int[] hits)
+        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HashSet<int> hits)
         {
             foreach (var kvFile in files)
             {
@@ -55,32 +55,34 @@ namespace MiniCover.Reports
                     htmlWriter.WriteLine("<html>");
                     htmlWriter.WriteLine("<body style=\"font-family: sans-serif;\">");
 
-                    var instrumentedLineNumbers = kvFile.Value.Instructions
-                        .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
-                        .Distinct()
-                        .ToArray();
-
-                    var hitInstructions = kvFile.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
-                    var coveredLineNumbers = hitInstructions
-                        .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
-                        .Distinct()
-                        .ToArray();
+                    var uncoveredLineNumbers = new HashSet<int>();
+                    var coveredLineNumbers = new HashSet<int>();
+                    foreach(var i in kvFile.Value.Instructions)
+                    {
+                        if (hits.Contains(i.Id))
+                        {
+                            for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
+                                coveredLineNumbers.Add(lineIndex);
+                        }
+                        else
+                        {
+                            for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
+                                uncoveredLineNumbers.Add(lineIndex);
+                        }
+                    }
 
                     var l = 0;
                     foreach (var line in lines)
                     {
                         l++;
                         var style = "white-space: pre;";
-                        if (instrumentedLineNumbers.Contains(l))
+                        if (coveredLineNumbers.Contains(l))
                         {
-                            if (coveredLineNumbers.Contains(l))
-                            {
-                                style += BgColorGreen;
-                            }
-                            else
-                            {
-                                style += BgColorRed;
-                            }
+                            style += BgColorGreen;
+                        }
+                        else if (uncoveredLineNumbers.Contains(l))
+                        {
+                            style += BgColorRed;
                         }
                         else
                         {

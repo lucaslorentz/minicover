@@ -11,8 +11,8 @@ namespace MiniCover.Reports
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
-                               ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
-                               : new int[0];
+                               ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToHashSet()
+                               : new HashSet<int>();
 
             var files = result.Assemblies
                 .SelectMany(assembly => assembly.Value.Files)
@@ -49,8 +49,9 @@ namespace MiniCover.Reports
 
                 WriteReport(kvFile, lines, coveredLines, coveragePercentage, fileColor);
 
-                WriteDetailedReport(result, files, hits);
             }
+
+            WriteDetailedReport(result, files, hits);
 
             var totalCoveragePercentage = (float)totalCoveredLines / totalLines;
             var isHigherThanThreshold = totalCoveragePercentage >= threshold;
@@ -67,7 +68,7 @@ namespace MiniCover.Reports
 
         protected abstract void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color);
 
-        protected abstract void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, int[] hits);
+        protected abstract void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HashSet<int> hits);
 
         protected abstract void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color);
     }

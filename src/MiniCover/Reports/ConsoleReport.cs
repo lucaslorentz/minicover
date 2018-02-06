@@ -45,7 +45,7 @@ namespace MiniCover.Reports
             Write(Environment.NewLine);
         }
 
-        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, int[] hits)
+        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HashSet<int> hits)
         {
         }
 
