@@ -57,17 +57,15 @@ namespace MiniCover.Reports
 
                     var uncoveredLineNumbers = new HashSet<int>();
                     var coveredLineNumbers = new HashSet<int>();
-                    foreach(var i in kvFile.Value.Instructions)
+                    foreach (var i in kvFile.Value.Instructions)
                     {
                         if (hits.Contains(i.Id))
                         {
-                            for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
-                                coveredLineNumbers.Add(lineIndex);
+                            coveredLineNumbers.UnionWith(i.GetLines());
                         }
                         else
                         {
-                            for (var lineIndex = i.StartLine; lineIndex <= i.EndLine; lineIndex++)
-                                uncoveredLineNumbers.Add(lineIndex);
+                            uncoveredLineNumbers.UnionWith(i.GetLines());
                         }
                     }
 

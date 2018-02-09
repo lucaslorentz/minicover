@@ -1,4 +1,6 @@
-﻿namespace MiniCover.Model
+﻿using System.Collections.Generic;
+
+namespace MiniCover.Model
 {
     public class InstrumentedInstruction
     {
@@ -12,5 +14,13 @@
         public string Method { get; set; }
         public string MethodFullName { get; set; }
         public string Instruction { get; set; }
+
+        public IEnumerable<int> GetLines()
+        {
+            for (var lineIndex = StartLine; lineIndex <= EndLine; lineIndex++)
+            {
+                yield return lineIndex;
+            }
+        }
     }
 }

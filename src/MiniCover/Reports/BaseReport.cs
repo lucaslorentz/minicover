@@ -31,13 +31,13 @@ namespace MiniCover.Reports
             foreach (var kvFile in files)
             {
                 var lines = kvFile.Value.Instructions
-                    .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
+                    .SelectMany(i => i.GetLines())
                     .Distinct()
                     .Count();
 
-                var hitInstructions = kvFile.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
-                var coveredLines = hitInstructions
-                    .SelectMany(i => Enumerable.Range(i.StartLine, i.EndLine - i.StartLine + 1))
+                var coveredLines = kvFile.Value.Instructions
+                    .Where(h => hits.Contains(h.Id))
+                    .SelectMany(i => i.GetLines())
                     .Distinct()
                     .Count();
 
@@ -48,7 +48,6 @@ namespace MiniCover.Reports
                 var fileColor = coveragePercentage >= threshold ? ConsoleColor.Green : ConsoleColor.Red;
 
                 WriteReport(kvFile, lines, coveredLines, coveragePercentage, fileColor);
-
             }
 
             WriteDetailedReport(result, files, hits);
