@@ -15,7 +15,7 @@ namespace MiniCover.Reports
                                : new HashSet<int>();
 
             var files = result.Assemblies
-                .SelectMany(assembly => assembly.Value.Files)
+                .SelectMany(assembly => assembly.SourceFiles)
                 .ToDictionary(
                     x => x.Key,
                     x => x.Value

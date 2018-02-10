@@ -1,43 +1,59 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace MiniCover.Model
 {
     public class InstrumentationResult
     {
+        private Dictionary<string, InstrumentedAssembly> _assemblies;
+
+        public InstrumentationResult()
+        {
+            _assemblies = new Dictionary<string, InstrumentedAssembly>();
+        }
+
+        [JsonConstructor]
+        public InstrumentationResult(IEnumerable<InstrumentedAssembly> assemblies)
+        {
+            _assemblies = assemblies.ToDictionary(a => a.Hash);
+        }
+
         [JsonProperty(Order = -2)]
         public string SourcePath { get; set; }
 
         [JsonProperty(Order = -2)]
         public string HitsFile { get; set; }
 
-        public List<string> ExtraAssemblies = new List<string>();
-        public Dictionary<string, InstrumentedAssembly> Assemblies = new Dictionary<string, InstrumentedAssembly>();
+        public HashSet<string> ExtraAssemblies = new HashSet<string>();
 
-        public InstrumentedAssembly AddInstrumentedAssembly(string name, string backupFile, string file, string backupPdbFile, string pdbFile)
+        public IEnumerable<InstrumentedAssembly> Assemblies => _assemblies.Values;
+
+        public InstrumentedAssembly GetInstrumentedAssembly(string hash)
         {
-            if (Assemblies.ContainsKey(name))
-            {
-                return Assemblies[name];
-            }
+            if (!_assemblies.TryGetValue(hash, out var instrumentedAssembly))
+                return null;
 
+            return instrumentedAssembly;
+        }
+
+        public InstrumentedAssembly AddInstrumentedAssembly(string hash, string name)
+        {
             var instrumentedAssembly = new InstrumentedAssembly
             {
-                BackupFile = backupFile,
-                File = file,
-                BackupPdbFile = backupPdbFile,
-                PdbFile = pdbFile
+                Hash = hash,
+                Name = name
             };
 
-            Assemblies.Add(name, instrumentedAssembly);
+            _assemblies.Add(hash, instrumentedAssembly);
 
             return instrumentedAssembly;
         }
 
         public void AddExtraAssembly(string file)
         {
-            if (!ExtraAssemblies.Contains(file))
-                ExtraAssemblies.Add(file);
+            ExtraAssemblies.Add(file);
         }
     }
 }

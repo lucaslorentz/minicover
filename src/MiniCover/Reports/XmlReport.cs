@@ -13,11 +13,11 @@ namespace MiniCover.Reports
             var hits = File.Exists(result.HitsFile)
                 ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
                 : new int[0];
-            
+
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
-            
+
             var document = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), data);
-            
+
             var coverageElement = new XElement(
                 XName.Get("coverage"),
                 new XAttribute(XName.Get("profilerVersion"), 0),
@@ -31,32 +31,32 @@ namespace MiniCover.Reports
                 var module = new XElement(
                     XName.Get("module"),
                     new XAttribute(XName.Get("moduleId"), Guid.NewGuid().ToString()),
-                    new XAttribute(XName.Get("name"), assembly.Key),
-                    new XAttribute(XName.Get("assembly"), assembly.Key),
-                    new XAttribute(XName.Get("assemblyIdentity"), assembly.Key)
+                    new XAttribute(XName.Get("name"), assembly.Name),
+                    new XAttribute(XName.Get("assembly"), assembly.Name),
+                    new XAttribute(XName.Get("assemblyIdentity"), assembly.Name)
                 );
 
-                var methods = assembly.Value.Files.Select(file =>
+                var methods = assembly.SourceFiles.Select(file =>
                 {
                     var hitInstructions = file.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
-                    
+
                     return file.Value.Instructions
-                        .GroupBy(instruction => new Tuple<string, string, string>(instruction.Class, instruction.Method, instruction.MethodFullName))
+                        .GroupBy(instruction => new { instruction.Class, instruction.Method, instruction.MethodFullName })
                         .Select(instruction =>
                     {
                         var method = new XElement(
                             XName.Get("method"),
-                            new XAttribute(XName.Get("name"), instruction.Key.Item2),
-                            new XAttribute(XName.Get("class"), instruction.Key.Item1),
+                            new XAttribute(XName.Get("name"), instruction.Key.Method),
+                            new XAttribute(XName.Get("class"), instruction.Key.Class),
                             new XAttribute(XName.Get("excluded"), "false"),
                             new XAttribute(XName.Get("instrumented"), "true"),
-                            new XAttribute(XName.Get("fullname"), instruction.Key.Item3)
+                            new XAttribute(XName.Get("fullname"), instruction.Key.MethodFullName)
                         );
 
                         var methodPoints = instruction.Select(methodPoint =>
                         {
                             var hitCount = hitInstructions.Count(hit => hit.Equals(methodPoint));
-                            
+
                             return new XElement(
                                 XName.Get("seqpnt"),
                                 new XAttribute(XName.Get("visitcount"), hitCount),
@@ -68,22 +68,22 @@ namespace MiniCover.Reports
                                 new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Key))
                             );
                         });
-                        
+
                         method.Add(methodPoints);
 
                         return method;
                     });
                 });
-                
+
                 module.Add(methods);
 
                 return module;
             });
-            
+
             coverageElement.Add(modules);
-            
+
             document.Add(coverageElement);
-            
+
             File.WriteAllText(output, document.ToString());
         }
     }

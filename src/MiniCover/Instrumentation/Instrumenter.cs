@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MiniCover.Utils;
 
 namespace MiniCover.Instrumentation
 {
@@ -47,30 +48,22 @@ namespace MiniCover.Instrumentation
                 InstrumentAssembly(fileName);
             }
 
-            foreach (var assembly in result.Assemblies)
-            {
-                assembly.Value.Files = assembly.Value.Files.OrderBy(kv => kv.Key).ToDictionary(kv => kv.Key, kv => kv.Value);
-            }
-
             return result;
         }
 
         private void InstrumentAssembly(string assemblyFile)
         {
-            var pdbFile = Path.ChangeExtension(assemblyFile, "pdb");
-            if (!File.Exists(pdbFile))
-                return;
-
             if (assemblyFile.EndsWith("uninstrumented.dll"))
                 return;
 
+            var pdbFile = Path.ChangeExtension(assemblyFile, "pdb");
             var assemblyBackupFile = Path.ChangeExtension(assemblyFile, "uninstrumented.dll");
-            if (File.Exists(assemblyBackupFile))
-                File.Copy(assemblyBackupFile, assemblyFile, true);
-
             var pdbBackupFile = Path.ChangeExtension(pdbFile, "uninstrumented.pdb");
-            if (File.Exists(pdbBackupFile))
-                File.Copy(pdbBackupFile, pdbFile, true);
+
+            RestoreBackups(assemblyFile, pdbFile, assemblyBackupFile, pdbBackupFile);
+
+            if (!File.Exists(pdbFile))
+                return;
 
             if (!HasSourceFiles(assemblyFile))
                 return;
@@ -85,109 +78,138 @@ namespace MiniCover.Instrumentation
 
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
 
-            var resolver = new DefaultAssemblyResolver();
-            resolver.AddSearchDirectory(assemblyDirectory);
+            var assemblyHash = FileUtils.GetFileHash(assemblyFile);
 
-            using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
+            var instrumentedAssembly = result.GetInstrumentedAssembly(assemblyHash);
+
+            if (instrumentedAssembly == null)
             {
-                var instrumentedAssembly = result.AddInstrumentedAssembly(
-                    assemblyDefinition.Name.Name,
-                    Path.GetFullPath(assemblyBackupFile),
-                    Path.GetFullPath(assemblyFile),
-                    Path.GetFullPath(pdbBackupFile),
-                    Path.GetFullPath(pdbFile)
-                );
+                var resolver = new DefaultAssemblyResolver();
+                resolver.AddSearchDirectory(assemblyDirectory);
 
-                var instrumentedConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
-                var instrumentedReference = assemblyDefinition.MainModule.ImportReference(instrumentedConstructor);
-                assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedReference));
-
-                var miniCoverAssemblyPath = typeof(HitService).GetTypeInfo().Assembly.Location;
-                var miniCoverAssemblyName = Path.GetFileName(miniCoverAssemblyPath);
-                var newMiniCoverAssemblyPath = Path.Combine(assemblyDirectory, miniCoverAssemblyName);
-                File.Copy(miniCoverAssemblyPath, newMiniCoverAssemblyPath, true);
-                result.AddExtraAssembly(newMiniCoverAssemblyPath);
-
-                CreateAssemblyInit(assemblyDefinition);
-
-                var hitMethodInfo = typeof(HitService).GetMethod("Hit");
-                var hitMethodReference = assemblyDefinition.MainModule.ImportReference(hitMethodInfo);
-
-                var methods = assemblyDefinition.GetAllMethods();
-
-                var documentsGroups = methods
-                    .SelectMany(m => m.DebugInformation.SequencePoints, (m, s) => new
-                    {
-                        Method = m,
-                        SequencePoint = s,
-                        Document = s.Document
-                    })
-                    .GroupBy(j => j.Document)
-                    .ToArray();
-
-                foreach (var documentGroup in documentsGroups)
+                using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyBackupFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
                 {
-                    var sourceRelativePath = GetSourceRelativePath(documentGroup.Key.Url);
-                    if (sourceRelativePath == null)
-                        continue;
+                    instrumentedAssembly = result.AddInstrumentedAssembly(assemblyHash, assemblyDefinition.Name.Name);
 
-                    if (documentGroup.Key.FileHasChanged())
-                    {
-                        Console.WriteLine($"Ignoring modified file \"{documentGroup.Key.Url}\"");
-                        continue;
-                    }
+                    var instrumentedConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
+                    var instrumentedReference = assemblyDefinition.MainModule.ImportReference(instrumentedConstructor);
+                    assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedReference));
 
-                    var fileLines = File.ReadAllLines(documentGroup.Key.Url);
+                    CreateAssemblyInit(assemblyDefinition);
 
-                    var methodGroups = documentGroup
-                        .GroupBy(j => j.Method, j => j.SequencePoint)
+                    var hitMethodInfo = typeof(HitService).GetMethod("Hit");
+                    var hitMethodReference = assemblyDefinition.MainModule.ImportReference(hitMethodInfo);
+
+                    var methods = assemblyDefinition.GetAllMethods();
+
+                    var documentsGroups = methods
+                        .SelectMany(m => m.DebugInformation.SequencePoints, (m, s) => new
+                        {
+                            Method = m,
+                            SequencePoint = s,
+                            Document = s.Document
+                        })
+                        .GroupBy(j => j.Document)
                         .ToArray();
 
-                    foreach (var methodGroup in methodGroups)
+                    foreach (var documentGroup in documentsGroups)
                     {
-                        var ilProcessor = methodGroup.Key.Body.GetILProcessor();
+                        var sourceRelativePath = GetSourceRelativePath(documentGroup.Key.Url);
+                        if (sourceRelativePath == null)
+                            continue;
 
-                        ilProcessor.Body.SimplifyMacros();
-
-                        var instructions = methodGroup.Key.Body.Instructions.ToDictionary(i => i.Offset);
-
-                        foreach (var sequencePoint in methodGroup)
+                        if (documentGroup.Key.FileHasChanged())
                         {
-                            var code = ExtractCode(fileLines, sequencePoint);
-                            if (code == null || code == "{" || code == "}")
-                                continue;
-
-                            var instruction = instructions[sequencePoint.Offset];
-
-                            // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
-                            // we cannot put an instruction between the two.
-                            if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
-                                return;
-
-                            var instructionId = ++id;
-
-                            instrumentedAssembly.AddInstruction(sourceRelativePath, new InstrumentedInstruction
-                            {
-                                Id = instructionId,
-                                StartLine = sequencePoint.StartLine,
-                                EndLine = sequencePoint.EndLine,
-                                StartColumn = sequencePoint.StartColumn,
-                                EndColumn = sequencePoint.EndColumn,
-                                Assembly = assemblyDefinition.Name.Name,
-                                Class = methodGroup.Key.DeclaringType.FullName,
-                                Method = methodGroup.Key.Name,
-                                MethodFullName = methodGroup.Key.FullName,
-                                Instruction = instruction.ToString()
-                            });
-
-                            InstrumentInstruction(instructionId, instruction, hitMethodReference, methodGroup.Key, ilProcessor);
+                            Console.WriteLine($"Ignoring modified file \"{documentGroup.Key.Url}\"");
+                            continue;
                         }
 
-                        ilProcessor.Body.OptimizeMacros();
-                    }
-                }
+                        var fileLines = File.ReadAllLines(documentGroup.Key.Url);
 
-                assemblyDefinition.Write(assemblyFile, new WriterParameters { WriteSymbols = true });
+                        var methodGroups = documentGroup
+                            .GroupBy(j => j.Method, j => j.SequencePoint)
+                            .ToArray();
+
+                        foreach (var methodGroup in methodGroups)
+                        {
+                            var ilProcessor = methodGroup.Key.Body.GetILProcessor();
+
+                            ilProcessor.Body.SimplifyMacros();
+
+                            var instructions = methodGroup.Key.Body.Instructions.ToDictionary(i => i.Offset);
+
+                            foreach (var sequencePoint in methodGroup)
+                            {
+                                var code = ExtractCode(fileLines, sequencePoint);
+                                if (code == null || code == "{" || code == "}")
+                                    continue;
+
+                                var instruction = instructions[sequencePoint.Offset];
+
+                                // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
+                                // we cannot put an instruction between the two.
+                                if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
+                                    return;
+
+                                var instructionId = ++id;
+
+                                instrumentedAssembly.AddInstruction(sourceRelativePath, new InstrumentedInstruction
+                                {
+                                    Id = instructionId,
+                                    StartLine = sequencePoint.StartLine,
+                                    EndLine = sequencePoint.EndLine,
+                                    StartColumn = sequencePoint.StartColumn,
+                                    EndColumn = sequencePoint.EndColumn,
+                                    Class = methodGroup.Key.DeclaringType.FullName,
+                                    Method = methodGroup.Key.Name,
+                                    MethodFullName = methodGroup.Key.FullName,
+                                    Instruction = instruction.ToString()
+                                });
+
+                                InstrumentInstruction(instructionId, instruction, hitMethodReference, methodGroup.Key, ilProcessor);
+                            }
+
+                            ilProcessor.Body.OptimizeMacros();
+                        }
+                    }
+
+                    assemblyDefinition.Write(assemblyFile, new WriterParameters { WriteSymbols = true });
+                }
+            }
+            else
+            {
+                var firstLocation = instrumentedAssembly.Locations.First();
+                File.Copy(firstLocation.File, assemblyFile, true);
+                File.Copy(firstLocation.PdbFile, pdbFile, true);
+            }
+
+            instrumentedAssembly.AddLocation(
+                Path.GetFullPath(assemblyFile),
+                Path.GetFullPath(assemblyBackupFile),
+                Path.GetFullPath(pdbFile),
+                Path.GetFullPath(pdbBackupFile)
+            );
+
+            //Copy instrumentation dependencies
+            var miniCoverAssemblyPath = typeof(HitService).GetTypeInfo().Assembly.Location;
+            var miniCoverAssemblyName = Path.GetFileName(miniCoverAssemblyPath);
+            var newMiniCoverAssemblyPath = Path.Combine(assemblyDirectory, miniCoverAssemblyName);
+            File.Copy(miniCoverAssemblyPath, newMiniCoverAssemblyPath, true);
+            result.AddExtraAssembly(newMiniCoverAssemblyPath);
+        }
+
+        private static void RestoreBackups(string assemblyFile, string pdbFile, string assemblyBackupFile, string pdbBackupFile)
+        {
+            if (File.Exists(assemblyBackupFile))
+            {
+                File.Copy(assemblyBackupFile, assemblyFile, true);
+                File.Delete(assemblyBackupFile);
+            }
+
+            if (File.Exists(pdbBackupFile))
+            {
+                File.Copy(pdbBackupFile, pdbFile, true);
+                File.Delete(pdbBackupFile);
             }
         }
 
