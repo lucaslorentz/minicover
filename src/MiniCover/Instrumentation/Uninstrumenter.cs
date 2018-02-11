@@ -7,18 +7,21 @@ namespace MiniCover.Instrumentation
     {
         public static void Execute(InstrumentationResult result)
         {
-            foreach (var assembly in result.Assemblies.Values)
+            foreach (var assembly in result.Assemblies)
             {
-                if (File.Exists(assembly.BackupFile))
+                foreach (var assemblyLocation in assembly.Locations)
                 {
-                    File.Copy(assembly.BackupFile, assembly.File, true);
-                    File.Delete(assembly.BackupFile);
-                }
+                    if (File.Exists(assemblyLocation.BackupFile))
+                    {
+                        File.Copy(assemblyLocation.BackupFile, assemblyLocation.File, true);
+                        File.Delete(assemblyLocation.BackupFile);
+                    }
 
-                if (File.Exists(assembly.BackupPdbFile))
-                {
-                    File.Copy(assembly.BackupPdbFile, assembly.PdbFile, true);
-                    File.Delete(assembly.BackupPdbFile);
+                    if (File.Exists(assemblyLocation.BackupPdbFile))
+                    {
+                        File.Copy(assemblyLocation.BackupPdbFile, assemblyLocation.PdbFile, true);
+                        File.Delete(assemblyLocation.BackupPdbFile);
+                    }
                 }
             }
 
