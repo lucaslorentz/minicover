@@ -7,19 +7,6 @@ namespace MiniCover.Model
 {
     public class InstrumentationResult
     {
-        private Dictionary<string, InstrumentedAssembly> _assemblies;
-
-        public InstrumentationResult()
-        {
-            _assemblies = new Dictionary<string, InstrumentedAssembly>();
-        }
-
-        [JsonConstructor]
-        public InstrumentationResult(IEnumerable<InstrumentedAssembly> assemblies)
-        {
-            _assemblies = assemblies.ToDictionary(a => a.Hash);
-        }
-
         [JsonProperty(Order = -2)]
         public string SourcePath { get; set; }
 
@@ -28,27 +15,11 @@ namespace MiniCover.Model
 
         public HashSet<string> ExtraAssemblies = new HashSet<string>();
 
-        public IEnumerable<InstrumentedAssembly> Assemblies => _assemblies.Values;
+        public List<InstrumentedAssembly> Assemblies = new List<InstrumentedAssembly>();
 
-        public InstrumentedAssembly GetInstrumentedAssembly(string hash)
+        public void AddInstrumentedAssembly(InstrumentedAssembly instrumentedAssembly)
         {
-            if (!_assemblies.TryGetValue(hash, out var instrumentedAssembly))
-                return null;
-
-            return instrumentedAssembly;
-        }
-
-        public InstrumentedAssembly AddInstrumentedAssembly(string hash, string name)
-        {
-            var instrumentedAssembly = new InstrumentedAssembly
-            {
-                Hash = hash,
-                Name = name
-            };
-
-            _assemblies.Add(hash, instrumentedAssembly);
-
-            return instrumentedAssembly;
+            Assemblies.Add(instrumentedAssembly);
         }
 
         public void AddExtraAssembly(string file)

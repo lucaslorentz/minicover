@@ -5,14 +5,23 @@ namespace MiniCover.Model
 {
     public class InstrumentedAssembly
     {
-        [JsonProperty(Order = -2)]
-        public string Name { get; set; }
+        [JsonConstructor]
+        public InstrumentedAssembly(string name)
+        {
+            Name = name;
+        }
 
         [JsonProperty(Order = -2)]
-        public string Hash { get; set; }
-        
+        public string Name { get; }
+
         public SortedDictionary<string, SourceFile> SourceFiles = new SortedDictionary<string, SourceFile>();
         public List<AssemblyLocation> Locations = new List<AssemblyLocation>();
+
+        [JsonIgnore]
+        public string TempAssemblyFile { get; set; }
+
+        [JsonIgnore]
+        public string TempPdbFile { get; set; }
 
         public void AddInstruction(string file, InstrumentedInstruction instruction)
         {
