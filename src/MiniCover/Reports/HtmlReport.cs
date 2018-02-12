@@ -134,6 +134,7 @@ namespace MiniCover.Reports
             result.AppendLine("</body>");
             result.AppendLine("</html>");
 
+            Directory.CreateDirectory(_output);
             var fileName = Path.Combine(_output, "index.html");
             using (var htmlWriter = (TextWriter)File.CreateText(fileName))
             {
