@@ -26,5 +26,13 @@ namespace MiniCover.Model
         {
             ExtraAssemblies.Add(file);
         }
+
+        public Dictionary<string, SourceFile> GetSourceFiles()
+        {
+            return Assemblies
+                .SelectMany(a => a.SourceFiles)
+                .GroupBy(kv => kv.Key, kv => kv.Value)
+                .ToDictionary(g => g.Key, g => SourceFile.Merge(g));
+        }
     }
 }

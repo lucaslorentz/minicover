@@ -11,15 +11,10 @@ namespace MiniCover.Reports
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
-                               ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToHashSet()
-                               : new HashSet<int>();
+                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToHashSet()
+                : new HashSet<int>();
 
-            var files = result.Assemblies
-                .SelectMany(assembly => assembly.SourceFiles)
-                .ToDictionary(
-                    x => x.Key,
-                    x => x.Value
-                );
+            var files = result.GetSourceFiles();
 
             SetFileColumnLength(files.Keys.Select(s => s.Length).Concat(new[] { 10 }).Max());
 
