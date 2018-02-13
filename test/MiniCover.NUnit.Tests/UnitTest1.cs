@@ -1,6 +1,7 @@
+using MiniCover.Tests;
 using NUnit.Framework;
 
-namespace MiniCover.Tests.NUnit
+namespace MiniCover.NUnit.Tests
 {
     [TestFixture]
     public class UnitTest1
