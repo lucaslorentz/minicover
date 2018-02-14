@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading;
 
 namespace MiniCover
 {
     public static class HitService
     {
-        private static object lockObject = new object();
+        private static readonly object lockObject = new object();
         private static Dictionary<string, StreamWriter> writers = new Dictionary<string, StreamWriter>();
 
         public static void Init(string fileName)

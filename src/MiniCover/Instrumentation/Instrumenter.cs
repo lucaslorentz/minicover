@@ -14,7 +14,7 @@ namespace MiniCover.Instrumentation
 {
     public class Instrumenter
     {
-        private int id = 0;
+        private int id;
         private IList<string> assemblies;
         private string hitsFile;
         private IList<string> sourceFiles;

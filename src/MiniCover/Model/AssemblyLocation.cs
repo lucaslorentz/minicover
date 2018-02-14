@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace MiniCover.Model
 {
     public class AssemblyLocation
