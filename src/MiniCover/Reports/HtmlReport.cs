@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MiniCover.Model;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 

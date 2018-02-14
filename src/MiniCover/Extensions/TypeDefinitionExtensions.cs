@@ -1,6 +1,5 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,9 +12,9 @@ namespace MiniCover.Extensions
             var cctor = typeDefinition.Methods.FirstOrDefault(x => x.Name == ".cctor");
             if (cctor == null)
             {
-                var attributes = Mono.Cecil.MethodAttributes.Static
-                                 | Mono.Cecil.MethodAttributes.SpecialName
-                                 | Mono.Cecil.MethodAttributes.RTSpecialName;
+                var attributes = MethodAttributes.Static
+                                 | MethodAttributes.SpecialName
+                                 | MethodAttributes.RTSpecialName;
                 cctor = new MethodDefinition(".cctor", attributes, typeDefinition.Module.TypeSystem.Void);
                 typeDefinition.Methods.Add(cctor);
                 cctor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
