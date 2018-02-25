@@ -88,14 +88,10 @@ namespace MiniCover.Reports
                                 );
 
                                 int sequencePointMiniCounter = 0;
-                                bool allLinesAreVisited = true;
 
                                 var sequencePoints = method.Select(methodPoint =>
                                 {
                                     var hitCount = hitInstructions.Count(hit => hit.Equals(methodPoint));
-
-                                    if (hitCount == 0)
-                                        allLinesAreVisited = false;
 
                                     return new XElement(
                                         XName.Get("SequencePoint"),
@@ -111,7 +107,7 @@ namespace MiniCover.Reports
 
                                 var methodElement = new XElement(
                                     XName.Get("Method"),
-                                    new XAttribute(XName.Get("visited"), allLinesAreVisited),
+                                    new XAttribute(XName.Get("visited"), method.Any(p => hitInstructions.Any(hit => hit == p))),
                                     new XAttribute(XName.Get("isConstructor"), method.Key.Method == ".ctor")
                                 );
                                 
