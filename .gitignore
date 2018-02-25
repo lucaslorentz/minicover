@@ -2,6 +2,7 @@ coverage-html
 coverage.json
 coverage.xml
 coverage-hits.txt
+opencovercoverage.xml
 bin
 obj
 .vs
