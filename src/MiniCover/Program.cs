@@ -143,6 +143,29 @@ namespace MiniCover
                 });
             });
 
+             commandLineApplication.Command("opencoverreport", command =>
+            {
+                command.Description = "Write an OpenCover-formatted XML report to folder";
+
+                var workDirOption = CreateWorkdirOption(command);
+                var coverageFileOption = CreateCoverageFileOption(command);
+                var thresholdOption = CreateThresholdOption(command);
+                var outputOption = command.Option("--output", "Output file for OpenCover report [default: coverage.xml]", CommandOptionType.SingleValue);
+                command.HelpOption("-h | --help");
+
+                command.OnExecute(() =>
+                {
+                    UpdateWorkingDirectory(workDirOption);
+
+                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var threshold = GetThreshold(thresholdOption);
+                    var result = LoadCoverageFile(coverageFile);
+                    var output = GetXmlReportOutput(outputOption);
+                    OpenCoverReport.Execute(result, output, threshold);
+                    return 0;
+                });
+            });
+
             commandLineApplication.Command("reset", command =>
             {
                 command.Description = "Reset hits count";
