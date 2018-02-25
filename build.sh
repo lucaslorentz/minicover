@@ -14,7 +14,7 @@ $MiniCover uninstrument
 $MiniCover htmlreport --threshold 90 
 $MiniCover xmlreport --threshold 90
 $MiniCover report --threshold 90
-$MiniCover opencoverreport --threshold 90 --output opencovercoverage.xml
+$MiniCover opencoverreport --threshold 90
 
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
 	dotnet pack src/MiniCover -c Release --output $PWD/artifacts --version-suffix ci-`date +%Y%m%d%H%M%S`

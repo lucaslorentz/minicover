@@ -150,7 +150,7 @@ namespace MiniCover
                 var workDirOption = CreateWorkdirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output file for OpenCover report [default: coverage.xml]", CommandOptionType.SingleValue);
+                var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
                 command.HelpOption("-h | --help");
 
                 command.OnExecute(() =>
@@ -160,7 +160,7 @@ namespace MiniCover
                     var coverageFile = GetCoverageFile(coverageFileOption);
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
-                    var output = GetXmlReportOutput(outputOption);
+                    var output = GetOpenCoverXmlReportOutput(outputOption);
                     OpenCoverReport.Execute(result, output, threshold);
                     return 0;
                 });
@@ -237,6 +237,11 @@ namespace MiniCover
         private static string GetXmlReportOutput(CommandOption outputOption)
         {
             return outputOption.Value() ?? "coverage.xml";
+        }
+
+        private static string GetOpenCoverXmlReportOutput(CommandOption outputOption)
+        {
+            return outputOption.Value() ?? "opencovercoverage.xml";
         }
 
         private static string GetCoverageFile(CommandOption coverageFileOption)
