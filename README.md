@@ -13,10 +13,10 @@ Currently no Code Coverage Tool supports .NET Core on Linux.
 MiniCover is here to fill that gap. It is focused on simple code base, usage and installation.
 
 ## Installation
-MiniCover was created to be installed as a .NET Cli Tool. You can do that by adding this to a csproj file:
+MiniCover was created to be installed as a .NET Cli Tool. You can do that by adding this to a csproj file, replacing VERSION by the latest version available on [Nuget](https://www.nuget.org/packages/MiniCover/):
 ```
   <ItemGroup>
-    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-*" />
+    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-VERSION" />
   </ItemGroup>
 ```
 
@@ -42,7 +42,7 @@ The **tools.csproj** will be similar to:
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-*" />
+    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-20180226190451" />
   </ItemGroup>
 </Project>
 ```
