@@ -333,15 +333,17 @@ namespace MiniCover.Instrumentation
 
         private string GetSourceRelativePath(string path)
         {
-            if (!path.StartsWith(normalizedWorkDir))
-                return null;
-
-            if (!sourceFiles.Contains(path))
-                return null;
-
-            return path.Substring(normalizedWorkDir.Length);
+            Uri file = new Uri(path);
+            Uri folder = new Uri(normalizedWorkDir);
+            string relativePath = 
+                Uri.UnescapeDataString(
+                    folder.MakeRelativeUri(file)
+                        .ToString()
+                        .Replace('/', Path.DirectorySeparatorChar)
+                );
+            return  relativePath;
         }
-
+        
         private string GetPdbFile(string assemblyFile)
         {
             return Path.ChangeExtension(assemblyFile, "pdb");
