@@ -11,7 +11,7 @@ namespace MiniCover.Reports
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToHashSet()
+                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h.Split(' ')[0])).ToHashSet()
                 : new HashSet<int>();
 
             var files = result.GetSourceFiles();
