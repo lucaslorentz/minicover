@@ -10,9 +10,11 @@ namespace MiniCover.Reports
     {
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
-            var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToHashSet()
-                : new HashSet<int>();
+            var hitLines = File.Exists(result.HitsFile)
+                ? File.ReadAllLines(result.HitsFile)
+                : new string[0];
+
+            var hits = new Hits(hitLines);
 
             var files = result.GetSourceFiles();
 
@@ -62,7 +64,7 @@ namespace MiniCover.Reports
 
         protected abstract void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color);
 
-        protected abstract void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HashSet<int> hits);
+        protected abstract void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, Hits hits);
 
         protected abstract void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color);
     }

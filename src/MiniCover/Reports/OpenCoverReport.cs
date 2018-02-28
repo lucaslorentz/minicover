@@ -12,7 +12,7 @@ namespace MiniCover.Reports
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
+                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h.Split(':').First())).ToArray()
                 : new int[0];
             int fileIndex = 0;   
             int sequencePointMegaCounter = 0;

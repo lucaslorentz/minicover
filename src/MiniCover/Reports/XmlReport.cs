@@ -10,9 +10,12 @@ namespace MiniCover.Reports
     {
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
-            var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
-                : new int[0];
+
+            var hitLines = File.Exists(result.HitsFile)
+                ? File.ReadAllLines(result.HitsFile)
+                : new string[0];
+
+            var hits = new Hits(hitLines);
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
 
@@ -55,18 +58,29 @@ namespace MiniCover.Reports
 
                         var methodPoints = instruction.Select(methodPoint =>
                         {
-                            var hitCount = hitInstructions.Count(hit => hit.Equals(methodPoint));
+                            var methodHits = hits.ForMethod(methodPoint.Id).ToArray();
 
-                            return new XElement(
+                            var point = new XElement(
                                 XName.Get("seqpnt"),
-                                new XAttribute(XName.Get("visitcount"), hitCount),
+                                new XAttribute(XName.Get("visitcount"), methodHits.Length),
                                 new XAttribute(XName.Get("line"), methodPoint.StartLine),
                                 new XAttribute(XName.Get("column"), methodPoint.StartColumn),
                                 new XAttribute(XName.Get("endline"), methodPoint.EndLine),
                                 new XAttribute(XName.Get("endcolumn"), methodPoint.EndColumn),
                                 new XAttribute(XName.Get("excluded"), "false"),
                                 new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Key))
-                            );
+                                );
+
+                            var tests = methodHits.Select(h => new XElement(XName.Get("tests"),
+                                new XAttribute(XName.Get("assembly"), h.AssemblyName),
+                                new XAttribute(XName.Get("class"), h.ClassName),
+                                new XAttribute(XName.Get("method"), h.MethodName),
+                                new XAttribute(XName.Get("assemblyLocation"), h.AssemblyLocation)
+                                ));
+
+                            point.Add(tests);
+
+                            return point;
                         });
 
                         method.Add(methodPoints);

@@ -39,7 +39,7 @@ namespace MiniCover.Reports
             _htmlReport.AppendLine("</tr>");
         }
 
-        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HashSet<int> hits)
+        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, Hits hits)
         {
             foreach (var kvFile in files)
             {

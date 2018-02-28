@@ -6,3 +6,5 @@ opencovercoverage.xml
 bin
 obj
 .vs
+/TestResults
+/MiniCover.v3.ncrunchsolution.user
