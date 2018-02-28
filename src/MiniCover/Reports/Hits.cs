@@ -3,17 +3,13 @@ using System.Linq;
 
 namespace MiniCover.Reports
 {
-    internal class Hits
+    public class Hits
     {
-        private readonly IList<Hit> hits = new List<Hit>();
+        private readonly IEnumerable<Hit> hits;
 
-        internal Hits(string[] lines)
+        private Hits(IEnumerable<Hit> hits)
         {
-            foreach (var line in lines)
-            {
-                var hit = Hit.Parse(line);
-                this.hits.Add(hit);
-            }
+            this.hits = hits;
         }
 
         internal bool Contains(int id)
@@ -24,6 +20,11 @@ namespace MiniCover.Reports
         internal IEnumerable<Hit> ForMethod(int methodPointId)
         {
             return hits.Where(hit => hit.InstrumentationId.Equals(methodPointId)).ToArray();
+        }
+
+        internal static Hits Parse(string[] lines)
+        {
+            return new Hits(lines.Select(Hit.Parse));
         }
     }
 }

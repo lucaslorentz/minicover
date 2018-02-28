@@ -15,7 +15,7 @@ namespace MiniCover.Reports
                 ? File.ReadAllLines(result.HitsFile)
                 : new string[0];
 
-            var hits = new Hits(hitLines);
+            var hits = Hits.Parse(hitLines);
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
 
