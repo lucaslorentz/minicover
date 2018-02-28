@@ -13,9 +13,13 @@ namespace MiniCover
         /// <summary>
         /// only have to save if a new hit is recorded (to avoid saving twice)
         /// </summary>
-        private static bool IsANewHitRecorded = false;        
+        private static bool isANewHitRecorded = false;        
 
         /// <summary>
+        /// summary: 
+        /// Init - End - Hit - Hit - Hit... - End => fast (usingSlowMode = false)
+        /// Init - Hit - Hit - Hit...             => slow (usingSlowMode = true)
+        /// 
         /// To go fast, some dll has to be outside the coverage test, this dlls are the "End" because
         /// they are the starter and finisher to save the middle dll that are under code coverage
         /// The save action is done in the outside dll's, the register action are in the inside dll
@@ -25,7 +29,12 @@ namespace MiniCover
         /// this variable start indicating that everything is inside, so in each step has to be saved
         /// When a End is called, implies than a outside dll's is alive and the fast version come to live
         /// </summary>
-        private static bool IsEverythingInsideTesting = true;
+        private static bool isEverythingInsideTesting = true;
+
+        /// <summary>
+        /// the slow mode indicated by previous parameter is active and it will remain active
+        /// </summary>
+        private static bool usingSlowMode = false;
 
         public static void Init(string fileName)
         {
@@ -56,7 +65,7 @@ namespace MiniCover
         {
             lock (lockObject)
             {   
-                IsANewHitRecorded = true;
+                isANewHitRecorded = true;
                 if (dctWritersIdCount[fileName].ContainsKey(id)) 
                 {
                     dctWritersIdCount[fileName][id]++;
@@ -66,8 +75,9 @@ namespace MiniCover
                     dctWritersIdCount[fileName].Add(id, 1);
                 }
 
-                if (IsEverythingInsideTesting) 
+                if (isEverythingInsideTesting) 
                 {
+                    usingSlowMode = true; 
                     Save(fileName);
                 }
             }
@@ -75,10 +85,13 @@ namespace MiniCover
 
         public static void End(string fileName, int id)
         {
+            if (usingSlowMode)
+                return;
+
             lock (lockObject)
-            {              
-                IsEverythingInsideTesting = false;  
-                if (IsANewHitRecorded) 
+            {                              
+                isEverythingInsideTesting = false;  
+                if (isANewHitRecorded) 
                 {
                    Save(fileName);
                 }                
