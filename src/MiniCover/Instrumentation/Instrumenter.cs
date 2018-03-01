@@ -145,6 +145,10 @@ namespace MiniCover.Instrumentation
                 var hitMethodInfo = typeof(HitService).GetMethod("Hit");
                 var hitMethodReference = assemblyDefinition.MainModule.ImportReference(hitMethodInfo);
 
+                var endMethodInfo = typeof(HitService).GetMethod("End");
+                var endMethodReference = assemblyDefinition.MainModule.ImportReference(endMethodInfo);
+
+
                 var methods = assemblyDefinition.GetAllMethods();
 
                 var documentsGroups = methods
@@ -161,6 +165,11 @@ namespace MiniCover.Instrumentation
                 {
                     if (!sourceFiles.Contains(documentGroup.Key.Url))
                         continue;
+
+
+                    bool isSourceInstrumented = true;
+                    if (!sourceFiles.Contains(documentGroup.Key.Url))
+                        isSourceInstrumented = false;
 
                     var sourceRelativePath = GetSourceRelativePath(documentGroup.Key.Url);
 
@@ -212,7 +221,10 @@ namespace MiniCover.Instrumentation
                                 Instruction = instruction.ToString()
                             });
 
-                            InstrumentInstruction(instructionId, instruction, hitMethodReference, methodGroup.Key, ilProcessor);
+                            if (isSourceInstrumented)
+                                InstrumentInstruction(instructionId, instruction, hitMethodReference, methodGroup.Key, ilProcessor);
+                            else
+                                InstrumentInstruction(instructionId, instruction, endMethodReference, methodGroup.Key, ilProcessor);
                         }
 
                         ilProcessor.Body.OptimizeMacros();

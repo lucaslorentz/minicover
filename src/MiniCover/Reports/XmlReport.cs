@@ -11,7 +11,7 @@ namespace MiniCover.Reports
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
             var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
+                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h.Split(' ')[0])).ToArray()
                 : new int[0];
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
