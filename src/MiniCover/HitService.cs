@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace MiniCover
@@ -10,15 +9,17 @@ namespace MiniCover
     public static class HitService
     {
         private static readonly object lockObject = new object();
-        private static Dictionary<string, StreamWriter> writers = new Dictionary<string, StreamWriter>();
+        private static Dictionary<string, Dictionary<int, HitTrace>> files = new Dictionary<string, Dictionary<int, HitTrace>>();
 
         public static void Init(string fileName)
         {
             lock (lockObject)
             {
-                if (!writers.ContainsKey(fileName))
+
+                if (!files.ContainsKey(fileName))
                 {
-                    writers[fileName] = new StreamWriter(File.Open(fileName, FileMode.Append));
+                    Console.WriteLine(fileName);
+                    files[fileName] = new Dictionary<int, HitTrace>();
                 }
             }
         }
@@ -34,17 +35,64 @@ namespace MiniCover
                 var frames = stackTrace.GetFrames();
                 foreach (var currentFrame in frames)
                 {
-                    if(currentFrame.GetMethod().Name == "InvokeMethod")
+                    if (currentFrame.GetMethod().Name == "InvokeMethod")
                         break;
                     currentIndex++;
                 }
-                var frame = frames[currentIndex-1];
-                var method = frame.GetMethod();
-                string methodName = method.Name;
-                Type methodClass = method.DeclaringType;
-                var streamWriter = writers[fileName];
-                streamWriter.WriteLine($"{id}:{methodClass.Assembly.FullName}:{methodClass.FullName}:{methodName}:{methodClass.Assembly.Location}");
-                streamWriter.Flush();
+                var frame = frames[currentIndex - 1];
+                var hits = files[fileName];
+                if (!hits.ContainsKey(id))
+                    hits.Add(id, new HitTrace(id));
+                hits[id].Hited(frame.GetMethod());
+            }
+        }
+
+        static void Save()
+        {
+            foreach (var fileName in files)
+            {
+                Console.WriteLine(fileName.Key);
+                using (var streamWriter = new StreamWriter(File.Open(fileName.Key, FileMode.Append)))
+                {
+                    foreach (var hitTrace in fileName.Value)
+                    {
+                        hitTrace.Value.WriteInformation(streamWriter);
+                    }
+
+                    streamWriter.Flush();
+                }
+            }
+
+        }
+
+        static HitService()
+        {
+            AppDomain.CurrentDomain.ProcessExit += (sender, args) => Save();
+        }
+    }
+
+    public class HitTrace
+    {
+        private readonly int integrationId;
+
+        private readonly IList<MethodBase> hits = new List<MethodBase>();
+
+        public HitTrace(int integrationId)
+        {
+            this.integrationId = integrationId;
+        }
+
+        internal void Hited(MethodBase method)
+        {
+            hits.Add(method);
+        }
+
+        internal void WriteInformation(StreamWriter writer)
+        {
+            foreach (var hit in hits)
+            {
+                writer.WriteLine(
+                    $"{integrationId}:{hit.DeclaringType.Assembly.FullName}:{hit.DeclaringType.Name}:{hit.Name}:{hit.DeclaringType.Assembly.Location}");
             }
         }
     }
