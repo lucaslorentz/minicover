@@ -163,14 +163,15 @@ namespace MiniCover.Instrumentation
 
                 foreach (var documentGroup in documentsGroups)
                 {
-                    var sourceRelativePath = GetSourceRelativePath(documentGroup.Key.Url);
-                    if (sourceRelativePath == null)
+                    if (!sourceFiles.Contains(documentGroup.Key.Url))
                         continue;
+
 
                     bool isSourceInstrumented = true;
                     if (!sourceFiles.Contains(documentGroup.Key.Url))
                         isSourceInstrumented = false;
 
+                    var sourceRelativePath = GetSourceRelativePath(documentGroup.Key.Url);
 
                     if (documentGroup.Key.FileHasChanged())
                     {
@@ -251,7 +252,7 @@ namespace MiniCover.Instrumentation
                 .SelectMany(m => m.DebugInformation.SequencePoints)
                 .Select(s => s.Document.Url)
                 .Distinct()
-                .Any(d => GetSourceRelativePath(d) != null);
+                .Any(d => sourceFiles.Contains(d));
         }
 
         private void RestoreBackup(string assemblyFile)
@@ -347,15 +348,15 @@ namespace MiniCover.Instrumentation
         {
             Uri file = new Uri(path);
             Uri folder = new Uri(normalizedWorkDir);
-            string relativePath = 
+            string relativePath =
                 Uri.UnescapeDataString(
                     folder.MakeRelativeUri(file)
                         .ToString()
                         .Replace('/', Path.DirectorySeparatorChar)
                 );
-            return  relativePath;
+            return relativePath;
         }
-        
+
         private string GetPdbFile(string assemblyFile)
         {
             return Path.ChangeExtension(assemblyFile, "pdb");
