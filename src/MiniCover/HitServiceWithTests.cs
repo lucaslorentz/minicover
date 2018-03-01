@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace MiniCover
 {
-    public static class HitService
+    public static class HitServiceWithTests
     {
         private static readonly object lockObject = new object();
         private static Dictionary<string, Dictionary<int, HitTrace>> files = new Dictionary<string, Dictionary<int, HitTrace>>();
@@ -27,10 +27,22 @@ namespace MiniCover
         {
             lock (lockObject)
             {
+                StackTrace stackTrace = new System.Diagnostics.StackTrace();
+
+                var currentIndex = 0;
+
+                var frames = stackTrace.GetFrames();
+                foreach (var currentFrame in frames)
+                {
+                    if (currentFrame.GetMethod().Name == "InvokeMethod")
+                        break;
+                    currentIndex++;
+                }
+                var frame = frames[currentIndex - 1];
                 var hits = files[fileName];
                 if (!hits.ContainsKey(id))
                     hits.Add(id, new HitTrace(id));
-                hits[id].Hited();
+                hits[id].Hited(frame.GetMethod());
             }
         }
 
@@ -51,7 +63,7 @@ namespace MiniCover
 
         }
 
-        static HitService()
+        static HitServiceWithTests()
         {
             AppDomain.CurrentDomain.ProcessExit += (sender, args) => Save();
         }
@@ -60,22 +72,25 @@ namespace MiniCover
         {
             private readonly int integrationId;
 
-            private int hits;
+            private readonly IList<MethodBase> hits = new List<MethodBase>();
 
             public HitTrace(int integrationId)
             {
                 this.integrationId = integrationId;
             }
 
-            internal void Hited()
+            internal void Hited(MethodBase method)
             {
-                hits++;
+                hits.Add(method);
             }
 
             internal void WriteInformation(StreamWriter writer)
             {
-                writer.WriteLine(
-                    $"{integrationId}:{hits}");
+                foreach (var hit in hits)
+                {
+                    writer.WriteLine(
+                        $"{integrationId}:{hit.DeclaringType.Assembly.FullName}:{hit.DeclaringType.Name}:{hit.Name}:{hit.DeclaringType.Assembly.Location}");
+                }
             }
         }
     }

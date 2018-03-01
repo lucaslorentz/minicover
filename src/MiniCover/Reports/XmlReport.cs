@@ -58,11 +58,12 @@ namespace MiniCover.Reports
 
                         var methodPoints = instruction.Select(methodPoint =>
                         {
-                            var methodHits = hits.ForMethod(methodPoint.Id).ToArray();
+                            
+                            var counter = hits.VisitedForMethod(methodPoint.Id);
 
                             var point = new XElement(
                                 XName.Get("seqpnt"),
-                                new XAttribute(XName.Get("visitcount"), methodHits.Length),
+                                new XAttribute(XName.Get("visitcount"), counter),
                                 new XAttribute(XName.Get("line"), methodPoint.StartLine),
                                 new XAttribute(XName.Get("column"), methodPoint.StartColumn),
                                 new XAttribute(XName.Get("endline"), methodPoint.EndLine),
@@ -70,8 +71,9 @@ namespace MiniCover.Reports
                                 new XAttribute(XName.Get("excluded"), "false"),
                                 new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Key))
                                 );
+                            var methodHits = hits.ForMethod(methodPoint.Id).ToArray();
 
-                            var tests = methodHits.Select(h => new XElement(XName.Get("tests"),
+                            var tests = methodHits.OfType<Hit.HitWithTestsInformation>().Select(h => new XElement(XName.Get("tests"),
                                 new XAttribute(XName.Get("assembly"), h.AssemblyName),
                                 new XAttribute(XName.Get("class"), h.ClassName),
                                 new XAttribute(XName.Get("method"), h.MethodName),

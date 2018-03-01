@@ -15,20 +15,22 @@ namespace MiniCover.Instrumentation
     public class Instrumenter
     {
         private int id;
-        private IList<string> assemblies;
-        private string hitsFile;
-        private IList<string> sourceFiles;
-        private string normalizedWorkDir;
+        private readonly IList<string> assemblies;
+        private readonly string hitsFile;
+        private readonly IList<string> sourceFiles;
+        private readonly string normalizedWorkDir;
+        private readonly Type hitServiceType;
 
         private InstrumentationResult result;
 
-        public Instrumenter(IList<string> assemblies, string hitsFile, IList<string> sourceFiles, string workdir)
+        public Instrumenter(IList<string> assemblies, string hitsFile, IList<string> sourceFiles, string workdir, Type hitServiceType)
         {
             this.assemblies = assemblies;
             this.hitsFile = hitsFile;
             this.sourceFiles = sourceFiles;
 
             normalizedWorkDir = workdir;
+            this.hitServiceType = hitServiceType;
             if (!normalizedWorkDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 normalizedWorkDir += Path.DirectorySeparatorChar;
         }
@@ -97,7 +99,7 @@ namespace MiniCover.Instrumentation
 
                 //Copy instrumentation dependencies
                 var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
-                var miniCoverAssemblyPath = typeof(HitService).GetTypeInfo().Assembly.Location;
+                var miniCoverAssemblyPath = hitServiceType.GetTypeInfo().Assembly.Location;
                 var miniCoverAssemblyName = Path.GetFileName(miniCoverAssemblyPath);
                 var newMiniCoverAssemblyPath = Path.Combine(assemblyDirectory, miniCoverAssemblyName);
                 File.Copy(miniCoverAssemblyPath, newMiniCoverAssemblyPath, true);
@@ -142,7 +144,7 @@ namespace MiniCover.Instrumentation
 
                 CreateAssemblyInit(assemblyDefinition);
 
-                var hitMethodInfo = typeof(HitService).GetMethod("Hit");
+                var hitMethodInfo = hitServiceType.GetMethod("Hit");
                 var hitMethodReference = assemblyDefinition.MainModule.ImportReference(hitMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
@@ -264,7 +266,7 @@ namespace MiniCover.Instrumentation
 
         private void CreateAssemblyInit(AssemblyDefinition assemblyDefinition)
         {
-            var initMethodInfo = typeof(HitService).GetMethod("Init");
+            var initMethodInfo = this.hitServiceType.GetMethod("Init");
             var initMethodReference = assemblyDefinition.MainModule.ImportReference(initMethodInfo);
             var moduleType = assemblyDefinition.MainModule.GetType("<Module>");
             var moduleConstructor = moduleType.FindOrCreateCctor();

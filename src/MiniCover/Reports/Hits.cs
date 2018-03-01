@@ -26,5 +26,12 @@ namespace MiniCover.Reports
         {
             return new Hits(lines.Select(Hit.Parse));
         }
+
+        public int VisitedForMethod(int methodPointId)
+        {
+            var visiteds = hits.Where(hit => hit.InstrumentationId.Equals(methodPointId)).ToArray();
+            if (hits.FirstOrDefault() is Hit.HitOnly visitOnly) return visitOnly.Counter;
+            return visiteds.Length;
+        }
     }
 }
