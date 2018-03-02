@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace MiniCover
@@ -10,12 +11,11 @@ namespace MiniCover
     {
         private static readonly object lockObject = new object();
         private static Dictionary<string, Dictionary<int, HitTrace>> files = new Dictionary<string, Dictionary<int, HitTrace>>();
-
+        private static Dictionary<string, bool> assemblyPdb = new Dictionary<string, bool>();
         public static void Init(string fileName)
         {
             lock (lockObject)
             {
-
                 if (!files.ContainsKey(fileName))
                 {
                     files[fileName] = new Dictionary<int, HitTrace>();
@@ -27,23 +27,39 @@ namespace MiniCover
         {
             lock (lockObject)
             {
-                StackTrace stackTrace = new System.Diagnostics.StackTrace();
+                StackTrace stackTrace = new StackTrace();
 
-                var currentIndex = 0;
-
-                var frames = stackTrace.GetFrames();
-                foreach (var currentFrame in frames)
-                {
-                    if (currentFrame.GetMethod().Name == "InvokeMethod")
-                        break;
-                    currentIndex++;
-                }
-                var frame = frames[currentIndex - 1];
+                var testMethod = GetTestMethod(stackTrace);
+                
                 var hits = files[fileName];
                 if (!hits.ContainsKey(id))
                     hits.Add(id, new HitTrace(id));
-                hits[id].Hited(frame.GetMethod());
+                hits[id].Hited(testMethod);
             }
+        }
+
+        private static MethodBase GetTestMethod(StackTrace stack)
+        {
+            var frames = stack.GetFrames();
+            for (int i = frames.Length - 1; i >= 0; i--)
+            {
+                var currentMethod = frames[i].GetMethod();
+                if (currentMethod.HasPdb())
+                    return currentMethod;
+            }
+
+            return null;
+        }
+
+        private static bool HasPdb(this MethodBase methodBase)
+        {
+            var location = methodBase.DeclaringType.Assembly.Location;
+
+            if (!assemblyPdb.TryGetValue(location, out var hasPdb))
+            {
+                assemblyPdb[location] = hasPdb = File.Exists(Path.ChangeExtension(location, ".pdb"));
+            }
+            return hasPdb;
         }
 
         static void Save()
@@ -60,7 +76,6 @@ namespace MiniCover
                     streamWriter.Flush();
                 }
             }
-
         }
 
         static HitServiceWithTests()
