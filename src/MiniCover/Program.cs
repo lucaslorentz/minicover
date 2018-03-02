@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using MiniCover.HitServices;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports;
@@ -9,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 
 namespace MiniCover
 {
@@ -147,28 +149,28 @@ namespace MiniCover
                 });
             });
 
-             commandLineApplication.Command("opencoverreport", command =>
-            {
-                command.Description = "Write an OpenCover-formatted XML report to folder";
+            commandLineApplication.Command("opencoverreport", command =>
+           {
+               command.Description = "Write an OpenCover-formatted XML report to folder";
 
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
-                command.HelpOption("-h | --help");
+               var workDirOption = CreateWorkdirOption(command);
+               var coverageFileOption = CreateCoverageFileOption(command);
+               var thresholdOption = CreateThresholdOption(command);
+               var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
+               command.HelpOption("-h | --help");
 
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
+               command.OnExecute(() =>
+               {
+                   UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var output = GetOpenCoverXmlReportOutput(outputOption);
-                    OpenCoverReport.Execute(result, output, threshold);
-                    return 0;
-                });
-            });
+                   var coverageFile = GetCoverageFile(coverageFileOption);
+                   var threshold = GetThreshold(thresholdOption);
+                   var result = LoadCoverageFile(coverageFile);
+                   var output = GetOpenCoverXmlReportOutput(outputOption);
+                   OpenCoverReport.Execute(result, output, threshold);
+                   return 0;
+               });
+           });
 
             commandLineApplication.Command("reset", command =>
             {
@@ -214,7 +216,7 @@ namespace MiniCover
                 return typeof(HitServiceWithTests);
             }
 
-            return typeof(HitService);
+            return typeof(MinimalHitService);
         }
 
         private static CommandOption CreateWorkdirOption(CommandLineApplication command)
