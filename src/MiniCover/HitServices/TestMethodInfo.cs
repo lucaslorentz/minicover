@@ -1,5 +1,4 @@
-﻿using MiniCover.HitServices;
-using MiniCover.Utils;
+﻿using MiniCover.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

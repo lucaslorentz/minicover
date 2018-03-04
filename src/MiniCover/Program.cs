@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using MiniCover.HitServices;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports;
