@@ -1,54 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MiniCover.HitServices;
+using System;
+using System.Collections.Concurrent;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MiniCover
 {
     public static class HitService
     {
-        private static readonly object lockObject = new object();
-        private static Dictionary<string, Hits> files = new Dictionary<string, Hits>();
-
+        private static readonly ConcurrentDictionary<string, Hits> files = new ConcurrentDictionary<string, Hits>();
 
         public static void Init(string fileName)
         {
-            lock (lockObject)
-            {
-                if (!files.ContainsKey(fileName))
-                {
-                    files[fileName] = new Hits();
-                }
-            }
+            files.GetOrAdd(fileName, f => new Hits());
         }
 
         public static void Hit(string fileName, int id)
         {
-            lock (lockObject)
-            {
-                var hits = files[fileName];
-                hits.Hited(id);
-            }
+            var hits = files[fileName];
+            hits.Hited(id);
         }
 
 
         static void Save()
         {
-            var binaryFormatter = new BinaryFormatter();
-
             foreach (var file in files)
             {
-                using (var stream = File.Open(file.Key, FileMode.Append, FileAccess.Write, FileShare.None))
+                using(var fileStream = File.Open(file.Key, FileMode.Append, FileAccess.Write, FileShare.None)) 
+                using (var streamWriter = new StreamWriter(fileStream))
                 {
-                    foreach (var kv in file.Value)
-                    {
-                        binaryFormatter.Serialize(stream, kv);
-                    }
-
-                    stream.Flush();
+                    if(fileStream.Position != 0) streamWriter.Write(",");
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(file.Value);
+                    json = json.Substring(1, json.Length - 2);
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
                 }
             }
-
         }
 
         static HitService()

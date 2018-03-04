@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using MiniCover.Utils;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MiniCover
 {
@@ -52,17 +52,10 @@ namespace MiniCover
         private static IEnumerable<Hit> ReadHitsFromFile(string file)
         {
             if (!File.Exists(file))
-                yield break;
+                return Enumerable.Empty<Hit>();
 
-            var binaryFormatter = new BinaryFormatter();
-
-            using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
-            {
-                while (stream.Position < stream.Length)
-                {
-                    yield return binaryFormatter.Deserialize(stream) as Hit;
-                }
-            }
+            var json = File.ReadAllText(file);
+            return ParsingUtils.Parse($"[{json}]"); 
         }
 
         public void Hited(int id)

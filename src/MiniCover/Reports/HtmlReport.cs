@@ -87,8 +87,11 @@ namespace MiniCover.Reports
                             style += BgColorBlue;
                         }
 
-                        var testMethods = kvFile.Value.Instructions
-                            .Where(i => i.GetLines().Contains(l))
+                        var instructions = kvFile.Value.Instructions.Where(i => i.GetLines().Contains(l)).ToArray();
+
+                        var counter = instructions.Sum(a => hits.GetInstructionHitCount(a.Id));
+
+                        var testMethods = instructions
                             .SelectMany(i => hits.GetInstructionTestMethods(i.Id))
                             .Distinct()
                             .ToArray();
@@ -96,7 +99,7 @@ namespace MiniCover.Reports
                         var testNames = string.Join(", ", testMethods.Select(m => $"{m.ClassName}.{m.MethodName} ({m.Counter})"));
 
                         var testNamesIcon = testMethods.Length > 0
-                            ? $"<span style=\"cursor: pointer; margin-right: 5px;\" title=\"Covered by tests: {testNames}\">&#9432;</span>"
+                            ? $"<span style=\"cursor: pointer; margin-right: 5px;\" title=\"Covered by tests: {testNames} for {counter}\">&#9432;</span>"
                             : $"<span style=\"margin-right: 5px;\">&nbsp;</span>";
 
                         if (!string.IsNullOrEmpty(line))

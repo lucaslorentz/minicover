@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using MiniCover.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Instrumentation
 {
@@ -20,6 +21,8 @@ namespace MiniCover.Instrumentation
         private readonly IList<string> sourceFiles;
         private readonly string normalizedWorkDir;
         private readonly Type hitServiceType = typeof(HitService);
+        private readonly IEnumerable<string> instrumentationDependencies;
+        
         private readonly ConstructorInfo instrumentedAttributeConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
         
         private InstrumentationResult result;
@@ -29,7 +32,11 @@ namespace MiniCover.Instrumentation
             this.assemblies = assemblies;
             this.hitsFile = hitsFile;
             this.sourceFiles = sourceFiles;
-
+            this.instrumentationDependencies = new[]
+            {
+                hitServiceType.Assembly.Location,
+                typeof(JObject).Assembly.Location
+            };
             normalizedWorkDir = workdir;
             if (!normalizedWorkDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 normalizedWorkDir += Path.DirectorySeparatorChar;
@@ -99,12 +106,15 @@ namespace MiniCover.Instrumentation
 
                 //Copy instrumentation dependencies
                 var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
-                var miniCoverAssemblyPath = hitServiceType.GetTypeInfo().Assembly.Location;
-                var miniCoverAssemblyName = Path.GetFileName(miniCoverAssemblyPath);
-                var newMiniCoverAssemblyPath = Path.Combine(assemblyDirectory, miniCoverAssemblyName);
-                File.Copy(miniCoverAssemblyPath, newMiniCoverAssemblyPath, true);
-                result.AddExtraAssembly(newMiniCoverAssemblyPath);
 
+                foreach (var dependencyPath in instrumentationDependencies)
+                {
+                    var dependencyAssemblyName = Path.GetFileName(dependencyPath);
+                    var newDependencyPath = Path.Combine(assemblyDirectory, dependencyAssemblyName);
+                    File.Copy(dependencyPath, newDependencyPath, true);
+                    result.AddExtraAssembly(newDependencyPath);
+                }
+                
                 instrumentedAssembly.AddLocation(
                     Path.GetFullPath(assemblyFile),
                     Path.GetFullPath(assemblyBackupFile),

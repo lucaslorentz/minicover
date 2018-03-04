@@ -9,7 +9,7 @@ namespace MiniCover.UnitTests.HitServices.TestMethodInfoTests
         public void Return_this_test_method_method_info()
         {
             var method = TestMethodInfo.GetCurrentTestMethodInfo();
-            var expected = new TestMethodInfo(typeof(GetCurrentTestMethodInfoShould).Assembly.FullName,
+            var expected = TestMethodInfo.Build(typeof(GetCurrentTestMethodInfoShould).Assembly.FullName,
                 nameof(GetCurrentTestMethodInfoShould), nameof(Return_this_test_method_method_info),
                 typeof(GetCurrentTestMethodInfoShould).Assembly.Location);
             Assert.AreEqual(expected, method);
