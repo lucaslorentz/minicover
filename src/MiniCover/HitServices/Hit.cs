@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MiniCover.HitServices;
 
 namespace MiniCover
 {
@@ -10,6 +11,8 @@ namespace MiniCover
     public sealed class Hit
     {
         private HashSet<TestMethodInfo> testMethodInfos = new HashSet<TestMethodInfo>();
+        private int leaveCounter;
+        private int executionCounter;
         public int InstructionId { get; }
         public int Counter { get; private set; }
 
@@ -41,6 +44,8 @@ namespace MiniCover
         public void HitedBy(TestMethodInfo testMethod)
         {
             Counter++;
+
+            executionCounter++;
             var existing = testMethodInfos.SingleOrDefault(a => a.Equals(testMethod));
             if (existing == null)
             {
@@ -50,6 +55,17 @@ namespace MiniCover
             else
             {
                 existing.HasCall();
+            }
+        }
+
+        public void Leave()
+        {
+            this.leaveCounter++;
+            if (this.executionCounter == this.leaveCounter)
+            {
+                HitContext.Set(null);
+                this.leaveCounter = 0;
+                this.executionCounter = 0;
             }
         }
     } 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Net;
 
 namespace MiniCover
 {
@@ -14,10 +15,15 @@ namespace MiniCover
             files.GetOrAdd(fileName, f => new Hits());
         }
 
-        public static void Hit(string fileName, int id)
+        public static void Enter(string fileName, int id)
         {
             var hits = files[fileName];
             hits.Hited(id);
+        }
+
+        public static void Leave(string fileName, int id)
+        {
+            files[fileName].Leave(id);
         }
 
 

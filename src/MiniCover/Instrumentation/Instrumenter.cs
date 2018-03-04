@@ -153,8 +153,10 @@ namespace MiniCover.Instrumentation
 
                 CreateAssemblyInit(assemblyDefinition);
 
-                var hitMethodInfo = hitServiceType.GetMethod("Hit");
-                var hitMethodReference = assemblyDefinition.MainModule.ImportReference(hitMethodInfo);
+                var enterMethodInfo = hitServiceType.GetMethod("Enter");
+                var enterMethodReference = assemblyDefinition.MainModule.ImportReference(enterMethodInfo);
+                var leaveMethodInfo = hitServiceType.GetMethod("Leave");
+                var leaveMethodReference = assemblyDefinition.MainModule.ImportReference(leaveMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
 
@@ -223,7 +225,7 @@ namespace MiniCover.Instrumentation
                                 Instruction = instruction.ToString()
                             });
 
-                            InstrumentInstruction(instructionId, instruction, hitMethodReference, methodGroup.Key, ilProcessor);
+                            InstrumentInstruction(instructionId, instruction, enterMethodReference, leaveMethodReference, methodGroup.Key, ilProcessor);
                         }
 
                         ilProcessor.Body.OptimizeMacros();
@@ -292,16 +294,22 @@ namespace MiniCover.Instrumentation
         }
 
         private void InstrumentInstruction(int instructionId, Instruction instruction,
-            MethodReference hitMethodReference, MethodDefinition method, ILProcessor ilProcessor)
+            MethodReference hitMethodReference, MethodReference leaveMethodReference, MethodDefinition method,
+            ILProcessor ilProcessor)
         {
             var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
             var lineParamLoadInstruction = ilProcessor.Create(OpCodes.Ldc_I4, instructionId);
             var registerInstruction = ilProcessor.Create(OpCodes.Call, hitMethodReference);
+            var unregisterInstruction = ilProcessor.Create(OpCodes.Call, leaveMethodReference);
+            var leavePathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
+            var leaveLineParamLoadInstruction = ilProcessor.Create(OpCodes.Ldc_I4, instructionId);
 
             ilProcessor.InsertBefore(instruction, registerInstruction);
             ilProcessor.InsertBefore(registerInstruction, lineParamLoadInstruction);
             ilProcessor.InsertBefore(lineParamLoadInstruction, pathParamLoadInstruction);
-
+            ilProcessor.InsertAfter(instruction, leavePathParamLoadInstruction);
+            ilProcessor.InsertAfter(leavePathParamLoadInstruction, leaveLineParamLoadInstruction);
+            ilProcessor.InsertAfter(leaveLineParamLoadInstruction, unregisterInstruction);
             var newFirstInstruction = pathParamLoadInstruction;
 
             //change try/finally etc to point to our first instruction if they referenced the one we inserted before

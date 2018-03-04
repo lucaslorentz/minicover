@@ -61,7 +61,7 @@ namespace MiniCover
         public void Hited(int id)
         {
             if (!this.hits.ContainsKey(id))
-            {
+            {   
                 this.hits.Add(id, new Hit(id));
             }
 
@@ -76,6 +76,11 @@ namespace MiniCover
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Leave(int id)
+        {
+            this.hits[id].Leave();
         }
     }
 }
