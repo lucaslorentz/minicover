@@ -1,5 +1,6 @@
 ﻿using MiniCover.Extensions;
 using MiniCover.Model;
+using MiniCover.Utils;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -8,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MiniCover.Utils;
 using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Instrumentation
@@ -21,10 +21,11 @@ namespace MiniCover.Instrumentation
         private readonly IList<string> sourceFiles;
         private readonly string normalizedWorkDir;
         private readonly Type hitServiceType = typeof(HitService);
+        private readonly Type methodContextType = typeof(HitService.MethodContext);
         private readonly IEnumerable<string> instrumentationDependencies;
         
         private readonly ConstructorInfo instrumentedAttributeConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
-        
+
         private InstrumentationResult result;
 
         public Instrumenter(IList<string> assemblies, string hitsFile, IList<string> sourceFiles, string workdir)
@@ -114,7 +115,7 @@ namespace MiniCover.Instrumentation
                     File.Copy(dependencyPath, newDependencyPath, true);
                     result.AddExtraAssembly(newDependencyPath);
                 }
-                
+
                 instrumentedAssembly.AddLocation(
                     Path.GetFullPath(assemblyFile),
                     Path.GetFullPath(assemblyBackupFile),
@@ -153,10 +154,15 @@ namespace MiniCover.Instrumentation
 
                 CreateAssemblyInit(assemblyDefinition);
 
-                var enterMethodInfo = hitServiceType.GetMethod("Enter");
+                var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
+                var exitMethodInfo = methodContextType.GetMethod("Exit");
+                var hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
+
+                var methodContextClassReference = assemblyDefinition.MainModule.ImportReference(methodContextType);
                 var enterMethodReference = assemblyDefinition.MainModule.ImportReference(enterMethodInfo);
-                var leaveMethodInfo = hitServiceType.GetMethod("Leave");
-                var leaveMethodReference = assemblyDefinition.MainModule.ImportReference(leaveMethodInfo);
+                var exitMethodReference = assemblyDefinition.MainModule.ImportReference(exitMethodInfo);
+
+                var hitInstructionReference = assemblyDefinition.MainModule.ImportReference(hitInstructionMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
 
@@ -191,11 +197,35 @@ namespace MiniCover.Instrumentation
 
                     foreach (var methodGroup in methodGroups)
                     {
-                        var ilProcessor = methodGroup.Key.Body.GetILProcessor();
+                        var methodDefinition = methodGroup.Key;
+
+                        var ilProcessor = methodDefinition.Body.GetILProcessor();
 
                         ilProcessor.Body.SimplifyMacros();
 
-                        var instructions = methodGroup.Key.Body.Instructions.ToDictionary(i => i.Offset);
+                        var instructions = methodDefinition.Body.Instructions.ToDictionary(i => i.Offset);
+
+                        var methodContextVariable = new VariableDefinition(methodContextClassReference);
+                        methodDefinition.Body.Variables.Add(methodContextVariable);
+                        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
+                        var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
+                        var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
+                        ilProcessor.InsertBefore(instructions[0], storeMethodResultInstruction);
+                        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
+                        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
+                        UpdateInstructionReferences(methodDefinition, instructions[0], pathParamLoadInstruction);
+
+                        foreach (var instruction in instructions.Values)
+                        {
+                            if (instruction.OpCode == OpCodes.Ret)
+                            {
+                                var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+                                var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
+                                ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                                ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+                                UpdateInstructionReferences(methodDefinition, instruction, loadMethodContextInstruction);
+                            }
+                        }
 
                         foreach (var sequencePoint in methodGroup)
                         {
@@ -219,13 +249,13 @@ namespace MiniCover.Instrumentation
                                 EndLine = sequencePoint.EndLine,
                                 StartColumn = sequencePoint.StartColumn,
                                 EndColumn = sequencePoint.EndColumn,
-                                Class = methodGroup.Key.DeclaringType.FullName,
-                                Method = methodGroup.Key.Name,
-                                MethodFullName = methodGroup.Key.FullName,
+                                Class = methodDefinition.DeclaringType.FullName,
+                                Method = methodDefinition.Name,
+                                MethodFullName = methodDefinition.FullName,
                                 Instruction = instruction.ToString()
                             });
 
-                            InstrumentInstruction(instructionId, instruction, enterMethodReference, leaveMethodReference, methodGroup.Key, ilProcessor);
+                            InstrumentInstruction(instructionId, instruction, hitInstructionReference, methodDefinition, ilProcessor, methodContextVariable);
                         }
 
                         ilProcessor.Body.OptimizeMacros();
@@ -294,48 +324,48 @@ namespace MiniCover.Instrumentation
         }
 
         private void InstrumentInstruction(int instructionId, Instruction instruction,
-            MethodReference hitMethodReference, MethodReference leaveMethodReference, MethodDefinition method,
-            ILProcessor ilProcessor)
+            MethodReference hitInstructionReference, MethodDefinition method, ILProcessor ilProcessor,
+            VariableDefinition methodContextVariable)
         {
-            var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
+            var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
             var lineParamLoadInstruction = ilProcessor.Create(OpCodes.Ldc_I4, instructionId);
-            var registerInstruction = ilProcessor.Create(OpCodes.Call, hitMethodReference);
-            var unregisterInstruction = ilProcessor.Create(OpCodes.Call, leaveMethodReference);
-            var leavePathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
-            var leaveLineParamLoadInstruction = ilProcessor.Create(OpCodes.Ldc_I4, instructionId);
+            var registerInstruction = ilProcessor.Create(OpCodes.Callvirt, hitInstructionReference);
 
             ilProcessor.InsertBefore(instruction, registerInstruction);
             ilProcessor.InsertBefore(registerInstruction, lineParamLoadInstruction);
-            ilProcessor.InsertBefore(lineParamLoadInstruction, pathParamLoadInstruction);
-            ilProcessor.InsertAfter(instruction, leavePathParamLoadInstruction);
-            ilProcessor.InsertAfter(leavePathParamLoadInstruction, leaveLineParamLoadInstruction);
-            ilProcessor.InsertAfter(leaveLineParamLoadInstruction, unregisterInstruction);
-            var newFirstInstruction = pathParamLoadInstruction;
+            ilProcessor.InsertBefore(lineParamLoadInstruction, loadMethodContextInstruction);
 
+            UpdateInstructionReferences(method, instruction, loadMethodContextInstruction);
+        }
+
+        private static void UpdateInstructionReferences(MethodDefinition methodDefinition,
+            Instruction oldInstruction,
+            Instruction newInstruction)
+        {
             //change try/finally etc to point to our first instruction if they referenced the one we inserted before
-            foreach (var handler in method.Body.ExceptionHandlers)
+            foreach (var handler in methodDefinition.Body.ExceptionHandlers)
             {
-                if (handler.FilterStart == instruction)
-                    handler.FilterStart = newFirstInstruction;
+                if (handler.FilterStart == oldInstruction)
+                    handler.FilterStart = newInstruction;
 
-                if (handler.TryStart == instruction)
-                    handler.TryStart = newFirstInstruction;
-                if (handler.TryEnd == instruction)
-                    handler.TryEnd = newFirstInstruction;
+                if (handler.TryStart == oldInstruction)
+                    handler.TryStart = newInstruction;
+                if (handler.TryEnd == oldInstruction)
+                    handler.TryEnd = newInstruction;
 
-                if (handler.HandlerStart == instruction)
-                    handler.HandlerStart = newFirstInstruction;
-                if (handler.HandlerEnd == instruction)
-                    handler.HandlerEnd = newFirstInstruction;
+                if (handler.HandlerStart == oldInstruction)
+                    handler.HandlerStart = newInstruction;
+                if (handler.HandlerEnd == oldInstruction)
+                    handler.HandlerEnd = newInstruction;
             }
 
             //change instructions with a target instruction if they referenced the one we inserted before to be our first instruction
-            foreach (var iteratedInstruction in method.Body.Instructions)
+            foreach (var iteratedInstruction in methodDefinition.Body.Instructions)
             {
                 var operand = iteratedInstruction.Operand;
-                if (operand == instruction)
+                if (operand == oldInstruction)
                 {
-                    iteratedInstruction.Operand = newFirstInstruction;
+                    iteratedInstruction.Operand = newInstruction;
                     continue;
                 }
 
@@ -345,8 +375,8 @@ namespace MiniCover.Instrumentation
                 var operands = (Instruction[])operand;
                 for (var i = 0; i < operands.Length; ++i)
                 {
-                    if (operands[i] == instruction)
-                        operands[i] = newFirstInstruction;
+                    if (operands[i] == oldInstruction)
+                        operands[i] = newInstruction;
                 }
             }
         }

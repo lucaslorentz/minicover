@@ -9,7 +9,7 @@ namespace MiniCover
     public class Hits : IEnumerable<Hit>
     {
         private readonly Dictionary<int, Hit> hits;
-
+        
         internal Hits(IEnumerable<Hit> hits)
         {
             this.hits = hits
@@ -17,7 +17,8 @@ namespace MiniCover
                 .ToDictionary(g => g.Key, Hit.Merge);
         }
 
-        public Hits(): this(Enumerable.Empty<Hit>())
+        public Hits()
+            : this(Enumerable.Empty<Hit>())
         {
         }
 
@@ -76,11 +77,6 @@ namespace MiniCover
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        public void Leave(int id)
-        {
-            this.hits[id].Leave();
         }
     }
 }

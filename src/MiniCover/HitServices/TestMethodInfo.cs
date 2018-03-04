@@ -3,6 +3,7 @@ using MiniCover.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -63,14 +64,8 @@ namespace MiniCover
 
         public static TestMethodInfo GetCurrentTestMethodInfo()
         {
-
-            if (Current == null)
-            {
-                var testMethod = OptimizedStackTrace.GetTestMethod(HasPdb);
-                Current = Create(testMethod);
-            }
-
-            return Current;
+            var testMethod = GetTestMethod();
+            return Create(testMethod);
         }
 
         internal TestMethodInfo Clone()
@@ -78,32 +73,28 @@ namespace MiniCover
             return Build(this.AssemblyName, this.ClassName, this.MethodName, this.AssemblyLocation);
         }
 
-        //private static MethodBase GetTestMethod()
-        //{
+        private static MethodBase GetTestMethod()
+        {
 
-        //    var stackTrace = new StackTrace();
+            var stackTrace = new StackTrace();
 
-        //    var frames = stackTrace.GetFrames();
-        //    for (int i = frames.Length - 1; i >= 0; i--)
-        //    {
-        //        var currentMethod = frames[i].GetMethod();
-        //        if (HasPdb(currentMethod))
-        //            return currentMethod;
-        //    }
+            var frames = stackTrace.GetFrames();
+            for (int i = frames.Length - 1; i >= 0; i--)
+            {
+                var currentMethod = frames[i].GetMethod();
+                if (HasPdb(currentMethod))
+                    return currentMethod;
+            }
 
-        //    return null;
-        //}
+            return null;
+        }
 
         private static bool HasPdb(MethodBase methodBase)
         {
             var location = methodBase.DeclaringType.Assembly.Location;
             return assemblyHasPdbCache.GetOrAdd(location, l => File.Exists(Path.ChangeExtension(location, ".pdb")));
         }
-        public static TestMethodInfo Current
-        {
-            get => HitContext.Get();
-            set => HitContext.Set(value);
-        }
+        
         public static TestMethodInfo Create(MethodBase testMethod)
         {
             return Build(testMethod.DeclaringType.Assembly.FullName, testMethod.DeclaringType.Name, testMethod.Name, testMethod.DeclaringType.Assembly.Location);
