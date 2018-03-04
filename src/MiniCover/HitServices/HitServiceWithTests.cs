@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+using MiniCover.HitServices;
+using MiniCover.Utils;
 
 namespace MiniCover
 {
@@ -27,31 +27,20 @@ namespace MiniCover
         {
             lock (lockObject)
             {
-                StackTrace stackTrace = new StackTrace();
-
-                var testMethod = GetTestMethod(stackTrace);
+                if (TestMethodCall.Current == null)
+                {
+                    var testMethod = OptimizedStackTrace.GetTestMethod(HasPdb);
+                    TestMethodCall.Current = TestMethodCall.Create(testMethod);
+                }
                 
                 var hits = files[fileName];
                 if (!hits.ContainsKey(id))
                     hits.Add(id, new HitTrace(id));
-                hits[id].Hited(testMethod);
+                hits[id].Hited(TestMethodCall.Current.MethodBase);
             }
         }
 
-        private static MethodBase GetTestMethod(StackTrace stack)
-        {
-            var frames = stack.GetFrames();
-            for (int i = frames.Length - 1; i >= 0; i--)
-            {
-                var currentMethod = frames[i].GetMethod();
-                if (currentMethod.HasPdb())
-                    return currentMethod;
-            }
-
-            return null;
-        }
-
-        private static bool HasPdb(this MethodBase methodBase)
+        private static bool HasPdb(MethodBase methodBase)
         {
             var location = methodBase.DeclaringType.Assembly.Location;
 
@@ -87,7 +76,7 @@ namespace MiniCover
         {
             private readonly int integrationId;
 
-            private readonly IList<MethodBase> hits = new List<MethodBase>();
+            private readonly IDictionary<MethodBase, int> hits = new Dictionary<MethodBase, int>();
 
             public HitTrace(int integrationId)
             {
@@ -96,7 +85,11 @@ namespace MiniCover
 
             internal void Hited(MethodBase method)
             {
-                hits.Add(method);
+                if (!hits.ContainsKey(method))
+                {
+                    hits.Add(method, 0);
+                }
+                hits[method]++;
             }
 
             internal void WriteInformation(StreamWriter writer)
@@ -104,7 +97,7 @@ namespace MiniCover
                 foreach (var hit in hits)
                 {
                     writer.WriteLine(
-                        $"{integrationId}:{hit.DeclaringType.Assembly.FullName}:{hit.DeclaringType.Name}:{hit.Name}:{hit.DeclaringType.Assembly.Location}");
+                        $"{integrationId}:{hit.Key.DeclaringType.Assembly.FullName}:{hit.Key.DeclaringType.Name}:{hit.Key.Name}:{hit.Key.DeclaringType.Assembly.Location}:{hit.Value}");
                 }
             }
         }

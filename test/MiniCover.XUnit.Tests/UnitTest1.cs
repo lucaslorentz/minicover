@@ -29,7 +29,10 @@ namespace MiniCover.XUnit.Tests
                 Assert.Equal(a, b);
             }
 
-            new AnotherClass().AnotherMethod();
+            for (int i = 0; i < 5000; i++)
+            {
+                new AnotherClass().AnotherMethod();
+            }
         }
     }
 }

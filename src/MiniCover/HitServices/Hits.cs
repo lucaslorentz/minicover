@@ -30,8 +30,7 @@ namespace MiniCover.Reports
         public int VisitedForMethod(int methodPointId)
         {
             var visiteds = hits.Where(hit => hit.InstrumentationId.Equals(methodPointId)).ToArray();
-            if (hits.FirstOrDefault() is Hit.HitOnly visitOnly) return visitOnly.Counter;
-            return visiteds.Length;
+            return visiteds.Sum(hit => hit.Counter);
         }
     }
 }

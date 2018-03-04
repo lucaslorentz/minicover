@@ -30,7 +30,10 @@ namespace MiniCover.NUnit.Tests
                 Assert.AreEqual(a, b);
             }
 
-            new AnotherClass().AnotherMethod();
+            for (int i = 0; i < 5000; i++)
+            {
+                new AnotherClass().AnotherMethod();
+            }
         }
     }
 }
