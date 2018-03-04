@@ -34,8 +34,7 @@ namespace MiniCover
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
                 var excludeSourceOption = command.Option("--exclude-sources", "Pattern to exclude source files", CommandOptionType.MultipleValue);
                 var hitsFileOption = command.Option("--hits-file", "Hits file name [default: coverage-hits.txt]", CommandOptionType.SingleValue);
-                var hitServiceOption = command.Option("--with-hiting-tests",
-                    "The hit file will contains tests hitting the line", CommandOptionType.NoValue);
+                
                 var coverageFileOption = CreateCoverageFileOption(command);
 
                 command.HelpOption("-h | --help");
@@ -55,8 +54,7 @@ namespace MiniCover
                     var hitsFile = GetHitsFile(hitsFileOption);
                     var coverageFile = GetCoverageFile(coverageFileOption);
 
-                    var hitServiceType = GetHitServiceType(hitServiceOption);
-                    var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, workdir, hitServiceType);
+                    var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, workdir);
                     var result = instrumenter.Execute();
                     SaveCoverageFile(coverageFile, result);
                     return 0;
@@ -207,16 +205,6 @@ namespace MiniCover
             });
 
             return commandLineApplication.Execute(args);
-        }
-
-        private static Type GetHitServiceType(CommandOption hitServiceOption)
-        {
-            if (hitServiceOption.HasValue())
-            {
-                return typeof(HitServiceWithTests);
-            }
-
-            return typeof(MinimalHitService);
         }
 
         private static CommandOption CreateWorkdirOption(CommandLineApplication command)

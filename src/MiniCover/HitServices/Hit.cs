@@ -1,54 +1,50 @@
 ﻿
-namespace MiniCover.Reports
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace MiniCover
 {
-    internal abstract class Hit
+    [Serializable]
+    public sealed class Hit
     {
-        public int InstrumentationId { get; }
-        public int Counter { get; }
+        private HashSet<TestMethodInfo> testMethodInfos = new HashSet<TestMethodInfo>();
+        public int InstructionId { get; }
+        public int Counter { get; private set; }
 
-        protected Hit(int instrumentationId, int counter)
+        public IEnumerable<TestMethodInfo> TestMethods => testMethodInfos;
+
+        internal Hit(int instructionId)
         {
-            InstrumentationId = instrumentationId;
-            Counter = counter;
+            InstructionId = instructionId;
         }
 
-        internal static Hit Parse(string line)
+        public static Hit Merge(IEnumerable<Hit> items)
         {
-            var sections = line.Split(':');
-            if(sections.Length == 2)
-                return new HitOnly(int.Parse(sections[0]), int.Parse(sections[1]));
-            return new HitWithTestsInformation(int.Parse(sections[0]), sections[1], sections[2], sections[3], sections[4], int.Parse(sections[5]));
-        }
+            var hitsToMerge = items.ToArray();
 
+            if (hitsToMerge.Length <= 1)
+                return hitsToMerge.FirstOrDefault();
 
-        internal class HitOnly : Hit
-        {
-            public HitOnly(int instrumentationId, int counter) 
-                : base(instrumentationId, counter)
+            return new Hit(hitsToMerge.First().InstructionId)
             {
+                Counter = hitsToMerge.Sum(hi => hi.Counter),
+                testMethodInfos = hitsToMerge.SelectMany(hi => hi.TestMethods).GroupBy(hi => hi).Select(TestMethodInfo.Merge).ToHashSet()
+            };
+        }
+        public void HitedBy(TestMethodInfo testMethod)
+        {
+            Counter++;
+            var existing = testMethodInfos.SingleOrDefault(a => a.Equals(testMethod));
+            if (existing == null)
+            {
+                testMethodInfos.Add(testMethod);
                 
             }
-        }
-
-        internal class HitWithTestsInformation : Hit
-        {
-            public string AssemblyName { get; }
-            public string ClassName { get; }
-            public string MethodName { get; }
-            public string AssemblyLocation { get; }
-            
-            public HitWithTestsInformation(int instrumentationId, string assemblyName, string className, string methodName, string assemblyLocation, int counter) 
-                : base(instrumentationId, counter)
+            else
             {
-                AssemblyName = assemblyName;
-                ClassName = className;
-                MethodName = methodName;
-                AssemblyLocation = assemblyLocation;
+                existing.HasCall();
             }
         }
-
-        
-    }
-
-    
+    } 
 }

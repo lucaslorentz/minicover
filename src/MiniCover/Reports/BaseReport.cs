@@ -1,7 +1,6 @@
 ﻿using MiniCover.Model;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace MiniCover.Reports
@@ -10,11 +9,7 @@ namespace MiniCover.Reports
     {
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
-            var hitLines = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile)
-                : new string[0];
-
-            var hits = Hits.Parse(hitLines);
+            var hits = Hits.TryReadFromFile(result.HitsFile);
 
             var files = result.GetSourceFiles();
 
@@ -33,7 +28,7 @@ namespace MiniCover.Reports
                     .Count();
 
                 var coveredLines = kvFile.Value.Instructions
-                    .Where(h => hits.Contains(h.Id))
+                    .Where(h => hits.IsInstructionHit(h.Id))
                     .SelectMany(i => i.GetLines())
                     .Distinct()
                     .Count();

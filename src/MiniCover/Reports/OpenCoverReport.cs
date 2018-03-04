@@ -1,9 +1,9 @@
+using MiniCover.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using MiniCover.Model;
 
 namespace MiniCover.Reports
 {
@@ -11,10 +11,9 @@ namespace MiniCover.Reports
     {
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
-            var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h.Split(':').First())).ToArray()
-                : new int[0];
-            int fileIndex = 0;   
+            var hits = Hits.TryReadFromFile(result.HitsFile);
+
+            int fileIndex = 0;
             int sequencePointMegaCounter = 0;
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
@@ -30,7 +29,7 @@ namespace MiniCover.Reports
                 var moduleElement = new XElement(
                     XName.Get("Module"),
                     new XAttribute(XName.Get("hash"), Guid.NewGuid().ToString())
-                );  
+                );
 
                 var fullNameElement = new XElement(
                     XName.Get("FullName"),
@@ -40,25 +39,25 @@ namespace MiniCover.Reports
                 var moduleNameElement = new XElement(
                     XName.Get("ModuleName"),
                     new XText(assembly.Name)
-                );    
+                );
 
                 Dictionary<SourceFile, int> dctSourceFileCount = new Dictionary<SourceFile, int>();
 
                 var filesElement = assembly.SourceFiles.Select(file =>
-                {                                 
+                {
                     dctSourceFileCount.Add(file.Value, ++fileIndex);
                     var fileElement = new XElement(
                         XName.Get("File"),
                         new XAttribute(XName.Get("uid"), dctSourceFileCount[file.Value]),
                         new XAttribute(XName.Get("fullPath"), Path.Combine(result.SourcePath, file.Key))
-                    );  
+                    );
 
                     return fileElement;
                 });
 
                 var classesElement = assembly.SourceFiles.Select(file =>
-                { 
-                    var hitInstructions = file.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
+                {
+                    var hitInstructions = file.Value.Instructions.Where(h => hits.IsInstructionHit(h.Id)).ToArray();
 
                     return file.Value.Instructions
                         .GroupBy(instruction => new { instruction.Class })
@@ -75,7 +74,7 @@ namespace MiniCover.Reports
 
                         var methodsList = classes
                             .GroupBy(instruction => new { instruction.Method, instruction.MethodFullName })
-                            .Select(method => 
+                            .Select(method =>
                             {
                                 var nameElement = new XElement(
                                     XName.Get("Name"),
@@ -110,7 +109,7 @@ namespace MiniCover.Reports
                                     new XAttribute(XName.Get("visited"), method.Any(p => hitInstructions.Any(hit => hit == p))),
                                     new XAttribute(XName.Get("isConstructor"), method.Key.Method == ".ctor")
                                 );
-                                
+
                                 methodElement.Add(nameElement);
                                 methodElement.Add(fileRefElement);
                                 methodElement.Add(sequencePoints);
@@ -131,7 +130,7 @@ namespace MiniCover.Reports
                 moduleElement.Add(classesElement);
 
                 return moduleElement;
-            });               
+            });
 
             coverageElement.Add(modulesListElement);
 

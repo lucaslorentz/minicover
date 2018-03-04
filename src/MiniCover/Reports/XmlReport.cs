@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MiniCover.Model;
+using System;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using MiniCover.Model;
 
 namespace MiniCover.Reports
 {
@@ -10,12 +10,7 @@ namespace MiniCover.Reports
     {
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
-
-            var hitLines = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile)
-                : new string[0];
-
-            var hits = Hits.Parse(hitLines);
+            var hits = Hits.TryReadFromFile(result.HitsFile);
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
 
@@ -41,8 +36,6 @@ namespace MiniCover.Reports
 
                 var methods = assembly.SourceFiles.Select(file =>
                 {
-                    var hitInstructions = file.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
-
                     return file.Value.Instructions
                         .GroupBy(instruction => new { instruction.Class, instruction.Method, instruction.MethodFullName })
                         .Select(instruction =>
@@ -58,8 +51,7 @@ namespace MiniCover.Reports
 
                         var methodPoints = instruction.Select(methodPoint =>
                         {
-                            
-                            var counter = hits.VisitedForMethod(methodPoint.Id);
+                            var counter = hits.GetInstructionHitCount(methodPoint.Id);
 
                             var point = new XElement(
                                 XName.Get("seqpnt"),
@@ -71,16 +63,6 @@ namespace MiniCover.Reports
                                 new XAttribute(XName.Get("excluded"), "false"),
                                 new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Key))
                                 );
-                            var methodHits = hits.ForMethod(methodPoint.Id).ToArray();
-
-                            var tests = methodHits.OfType<Hit.HitWithTestsInformation>().Select(h => new XElement(XName.Get("tests"),
-                                new XAttribute(XName.Get("assembly"), h.AssemblyName),
-                                new XAttribute(XName.Get("class"), h.ClassName),
-                                new XAttribute(XName.Get("method"), h.MethodName),
-                                new XAttribute(XName.Get("assemblyLocation"), h.AssemblyLocation)
-                                ));
-
-                            point.Add(tests);
 
                             return point;
                         });

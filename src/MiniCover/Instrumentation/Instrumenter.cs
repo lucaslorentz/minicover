@@ -19,18 +19,18 @@ namespace MiniCover.Instrumentation
         private readonly string hitsFile;
         private readonly IList<string> sourceFiles;
         private readonly string normalizedWorkDir;
-        private readonly Type hitServiceType;
-
+        private readonly Type hitServiceType = typeof(HitService);
+        private readonly ConstructorInfo instrumentedAttributeConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
+        
         private InstrumentationResult result;
 
-        public Instrumenter(IList<string> assemblies, string hitsFile, IList<string> sourceFiles, string workdir, Type hitServiceType)
+        public Instrumenter(IList<string> assemblies, string hitsFile, IList<string> sourceFiles, string workdir)
         {
             this.assemblies = assemblies;
             this.hitsFile = hitsFile;
             this.sourceFiles = sourceFiles;
 
             normalizedWorkDir = workdir;
-            this.hitServiceType = hitServiceType;
             if (!normalizedWorkDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 normalizedWorkDir += Path.DirectorySeparatorChar;
         }
@@ -138,7 +138,6 @@ namespace MiniCover.Instrumentation
 
                 var instrumentedAssembly = new InstrumentedAssembly(assemblyDefinition.Name.Name);
 
-                var instrumentedAttributeConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
                 var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
                 assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedAttributeReference));
 
