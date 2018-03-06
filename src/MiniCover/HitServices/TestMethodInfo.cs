@@ -1,5 +1,4 @@
-﻿using MiniCover.Utils;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,10 +8,9 @@ using System.Reflection;
 
 namespace MiniCover
 {
-    [Serializable]
     public class TestMethodInfo : IEquatable<TestMethodInfo>
     {
-        private static ConcurrentDictionary<string, bool> assemblyHasPdbCache = new ConcurrentDictionary<string, bool>();
+        private static readonly ConcurrentDictionary<string, bool> assemblyHasPdbCache = new ConcurrentDictionary<string, bool>();
 
         public string AssemblyName { get; }
         public string ClassName { get; }
@@ -91,6 +89,7 @@ namespace MiniCover
         private static bool HasPdb(MethodBase methodBase)
         {
             var location = methodBase.DeclaringType.Assembly.Location;
+            
             return assemblyHasPdbCache.GetOrAdd(location, l => File.Exists(Path.ChangeExtension(location, ".pdb")));
         }
         

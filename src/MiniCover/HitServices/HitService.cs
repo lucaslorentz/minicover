@@ -8,10 +8,8 @@ namespace MiniCover
 {
     public static class HitService
     {
-        private static ConcurrentDictionary<string, ConcurrentDictionary<int, Hit>> files = new ConcurrentDictionary<string, ConcurrentDictionary<int, Hit>>();
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<int, Hit>> files = new ConcurrentDictionary<string, ConcurrentDictionary<int, Hit>>();
 
-        //private static readonly ConcurrentDictionary<string, Hits> files = new ConcurrentDictionary<string, Hits>();
-        private static int counter;
         public static void Init(string fileName)
         {
             files.GetOrAdd(fileName, (f) => new ConcurrentDictionary<int, Hit>());
@@ -47,35 +45,35 @@ namespace MiniCover
 
         public class MethodContext
         {
-            private static AsyncLocal<TestMethodInfo> _testMethodCache = new AsyncLocal<TestMethodInfo>();
+            private static readonly AsyncLocal<TestMethodInfo> TestMethodCache = new AsyncLocal<TestMethodInfo>();
 
-            private ConcurrentDictionary<int, Hit> _hitInstructions;
-            private TestMethodInfo _testMethod;
-            private bool _clearTestMethodCache;
+            private readonly ConcurrentDictionary<int, Hit> hitInstructions;
+            private readonly TestMethodInfo testMethod;
+            private readonly bool clearTestMethodCache;
 
             public MethodContext(ConcurrentDictionary<int, Hit> hitInstructions)
             {
-                _hitInstructions = hitInstructions;
+                this.hitInstructions = hitInstructions;
 
-                if (_testMethodCache.Value == null)
+                if (TestMethodCache.Value == null)
                 {
-                    _testMethodCache.Value = TestMethodInfo.GetCurrentTestMethodInfo();
-                    _clearTestMethodCache = true;
+                    TestMethodCache.Value = TestMethodInfo.GetCurrentTestMethodInfo();
+                    clearTestMethodCache = true;
                 }
 
-                _testMethod = _testMethodCache.Value;
+                testMethod = TestMethodCache.Value;
             }
 
             public void HitInstruction(int id)
             {
-                var hitInstruction = _hitInstructions.GetOrAdd(id, i => new Hit(i));
-                hitInstruction.HitedBy(_testMethod);
+                var hitInstruction = hitInstructions.GetOrAdd(id, i => new Hit(i));
+                hitInstruction.HitedBy(testMethod);
             }
 
             public void Exit()
             {
-                if (_clearTestMethodCache)
-                    _testMethodCache.Value = null;
+                if (clearTestMethodCache)
+                    TestMethodCache.Value = null;
             }
         }
     }

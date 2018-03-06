@@ -1,11 +1,8 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace MiniCover
 {
-    [Serializable]
     public sealed class Hit
     {
         private HashSet<TestMethodInfo> testMethodInfos = new HashSet<TestMethodInfo>();
@@ -41,7 +38,7 @@ namespace MiniCover
         {
             Counter++;
 
-            var existing = testMethodInfos.SingleOrDefault(a => a.Equals(testMethod));
+            var existing = testMethodInfos.FirstOrDefault(a => a.Equals(testMethod));
             if (existing == null)
             {
                 testMethodInfos.Add(testMethod.Clone());

@@ -5,6 +5,7 @@ coverage-hits.txt
 opencovercoverage.xml
 bin
 obj
+release
 .vs
 /TestResults
 /MiniCover.v3.ncrunchsolution.user
