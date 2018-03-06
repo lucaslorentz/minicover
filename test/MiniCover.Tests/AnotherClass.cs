@@ -23,7 +23,10 @@
 
         public void AnotherMethod()
         {
-            SomeProperty = SomeProperty * 2;
+            for (var i = 0; i < 50000; i++)
+            {
+                SomeMethod();
+            }
         }
     }
 }

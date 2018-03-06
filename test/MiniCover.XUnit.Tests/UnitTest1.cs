@@ -15,7 +15,9 @@ namespace MiniCover.XUnit.Tests
             Assert.Equal(a, b);
             Assert.Equal(4, c);
 
-            new AnotherClass().SomeMethod();
+            var obj = new AnotherClass();
+            obj.SomeProperty = 6;
+            obj.SomeMethod();
         }
 
         [Fact]
@@ -29,7 +31,7 @@ namespace MiniCover.XUnit.Tests
                 Assert.Equal(a, b);
             }
 
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 50; i++)
             {
                 new AnotherClass().AnotherMethod();
             }

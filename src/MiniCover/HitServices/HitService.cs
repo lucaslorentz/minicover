@@ -1,7 +1,9 @@
-﻿using System;
+﻿using MiniCover.Utils;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace MiniCover
@@ -26,10 +28,10 @@ namespace MiniCover
         {
             foreach (var file in files)
             {
-                using(var fileStream = File.Open(file.Key, FileMode.Append, FileAccess.Write, FileShare.None)) 
+                using (var fileStream = File.Open(file.Key, FileMode.Append, FileAccess.Write, FileShare.None))
                 using (var streamWriter = new StreamWriter(fileStream))
                 {
-                    if(fileStream.Position != 0) streamWriter.Write(",");
+                    if (fileStream.Position != 0) streamWriter.Write(",");
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(file.Value.Select(a => a.Value));
                     json = json.Substring(1, json.Length - 2);
                     streamWriter.Write(json);
@@ -45,10 +47,10 @@ namespace MiniCover
 
         public class MethodContext
         {
-            private static readonly AsyncLocal<TestMethodInfo> TestMethodCache = new AsyncLocal<TestMethodInfo>();
+            private static readonly AsyncLocal<MethodBase> TestMethodCache = new AsyncLocal<MethodBase>();
 
             private readonly ConcurrentDictionary<int, Hit> hitInstructions;
-            private readonly TestMethodInfo testMethod;
+            private readonly MethodBase testMethod;
             private readonly bool clearTestMethodCache;
 
             public MethodContext(ConcurrentDictionary<int, Hit> hitInstructions)
@@ -57,7 +59,7 @@ namespace MiniCover
 
                 if (TestMethodCache.Value == null)
                 {
-                    TestMethodCache.Value = TestMethodInfo.GetCurrentTestMethodInfo();
+                    TestMethodCache.Value = TestMethodUtils.GetTestMethod();
                     clearTestMethodCache = true;
                 }
 

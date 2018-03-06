@@ -16,7 +16,9 @@ namespace MiniCover.NUnit.Tests
             Assert.AreEqual(a, b);
             Assert.AreEqual(4, c);
 
-            new AnotherClass().SomeMethod();
+            var obj = new AnotherClass();
+            obj.SomeProperty = 6;
+            obj.SomeMethod();
         }
 
         [Test]
@@ -30,7 +32,7 @@ namespace MiniCover.NUnit.Tests
                 Assert.AreEqual(a, b);
             }
 
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 50; i++)
             {
                 new AnotherClass().AnotherMethod();
             }

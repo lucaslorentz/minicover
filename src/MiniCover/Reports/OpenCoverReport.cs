@@ -88,7 +88,9 @@ namespace MiniCover.Reports
 
                                 int sequencePointMiniCounter = 0;
 
-                                var sequencePoints = method.Select(methodPoint =>
+                                var sequencePoints = method
+                                    .OrderBy(methodPoint => methodPoint.StartLine)
+                                    .Select(methodPoint =>
                                 {
                                     var hitCount = hitInstructions.Count(hit => hit.Equals(methodPoint));
 
