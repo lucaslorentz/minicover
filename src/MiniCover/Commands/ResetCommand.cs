@@ -10,7 +10,7 @@ namespace MiniCover.Commands
 {
     internal class ResetCommand : BaseCommandLineApplication
     {
-        private const string CoverageFileTemplate = "coverage-hits.txt";
+        private readonly CoverageHitsFileOption _coverageHitsFileOption = new CoverageHitsFileOption();
         private readonly SolutionDirOption _solutionDirOption = new SolutionDirOption();
 
         public ResetCommand(CommandLineApplication parentCommandLineApplication)
@@ -20,13 +20,13 @@ namespace MiniCover.Commands
 
         protected override string CommandDescription => "Reset hits count";
         protected override string CommandName => "reset";
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new[] { _solutionDirOption };
+        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] { _solutionDirOption, _coverageHitsFileOption };
 
         protected override Task<int> Execution()
         {
             var errorsCount = 0;
-            Console.WriteLine($"Reset coverage for solution directory: '{_solutionDirOption.Value.FullName}'");
-            var hitsFiles = _solutionDirOption.Value.GetFiles(CoverageFileTemplate, SearchOption.AllDirectories);
+            Console.WriteLine($"Reset coverage for solution directory: '{_solutionDirOption.Value.FullName}' on pattern '{_coverageHitsFileOption.Value}'");
+            var hitsFiles = _solutionDirOption.Value.GetFiles(_coverageHitsFileOption.Value, SearchOption.AllDirectories);
 
             if (!hitsFiles.Any())
             {
