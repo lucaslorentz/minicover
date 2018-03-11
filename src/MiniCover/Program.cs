@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MiniCover.Commands;
 
 namespace MiniCover
 {
@@ -96,7 +97,7 @@ namespace MiniCover
                     return consoleReport.Execute(result, threshold);
                 });
             });
-
+            
             commandLineApplication.Command("htmlreport", command =>
             {
                 command.Description = "Write html report to folder";
@@ -166,34 +167,9 @@ namespace MiniCover
                 });
             });
 
-            commandLineApplication.Command("reset", command =>
-            {
-                command.Description = "Reset hits count";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-
-                    if (File.Exists(coverageFile))
-                    {
-                        var result = LoadCoverageFile(coverageFile);
-
-                        if (File.Exists(result.HitsFile))
-                            File.Delete(result.HitsFile);
-                    }
-
-                    return 0;
-                });
-            });
-
+            commandLineApplication.Commands.Add(new ResetCommand(commandLineApplication));
+            
             commandLineApplication.HelpOption("-h | --help");
-
             commandLineApplication.OnExecute(() =>
             {
                 commandLineApplication.ShowHelp();
@@ -207,7 +183,7 @@ namespace MiniCover
         {
             return command.Option("--workdir", "Change working directory", CommandOptionType.SingleValue);
         }
-
+        
         private static string UpdateWorkingDirectory(CommandOption workDirOption)
         {
             if (workDirOption.Value() != null)
@@ -253,12 +229,7 @@ namespace MiniCover
         {
             return Path.GetFullPath(hitsFileOption.Value() ?? "coverage-hits.txt");
         }
-
-        private static string GetSourceDirectory(CommandOption sourceOption)
-        {
-            return Path.GetFullPath(sourceOption.Value() ?? Directory.GetCurrentDirectory());
-        }
-
+        
         private static string[] GetFiles(CommandOption includeOption, CommandOption excludeOption, string defaultInclude)
         {
             var matcher = new Microsoft.Extensions.FileSystemGlobbing.Matcher();
