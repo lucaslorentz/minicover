@@ -10,7 +10,7 @@ namespace MiniCover.Commands
 {
     internal class ResetCommand : BaseCommandLineApplication
     {
-        private const string CoverageFileTemplate = "*.coverage.hits";
+        private const string CoverageFileTemplate = "coverage-hits.txt";
         private readonly SolutionDirOption _solutionDirOption = new SolutionDirOption();
 
         public ResetCommand(CommandLineApplication parentCommandLineApplication)
@@ -24,7 +24,7 @@ namespace MiniCover.Commands
 
         protected override Task<int> Execution()
         {
-            var errorDictionary = new Dictionary<string, Exception>();
+            var errorsCount = 0;
             Console.WriteLine($"Reset coverage for solution directory: '{_solutionDirOption.Value.FullName}'");
             var hitsFiles = _solutionDirOption.Value.GetFiles(CoverageFileTemplate, SearchOption.AllDirectories);
 
@@ -41,26 +41,23 @@ namespace MiniCover.Commands
                 try
                 {
                     hitsFile.Delete();
+                    Line($"{hitsFile.FullName} - removed");
                 }
                 catch (Exception e)
                 {
-                    errorDictionary.Add($"File: '{hitsFile.FullName}' cannot be removed", e);
+                    errorsCount++;
+                    BadLine($"{hitsFile.FullName} - skipped (error: {e.Message})");
                 }
             }
 
-            if (errorDictionary.Any())
+            if (errorsCount != 0)
             {
-                BadLine("Files with Error");
+                BadLine($"Reset operation completed with {errorsCount} errors");
             }
             else
             {
-                PositiveLine("Reset operation Completed without errors");
+                PositiveLine("Reset operation completed without errors");
                 return Task.FromResult(0);
-            }
-
-            foreach (var errorEntry in errorDictionary)
-            {
-                BadLine(errorEntry.Key, errorEntry.Value);
             }
 
             return Task.FromResult(0);

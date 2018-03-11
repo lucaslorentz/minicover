@@ -7,7 +7,7 @@ export "MiniCover=dotnet run -p src/MiniCover/MiniCover.csproj --"
 dotnet restore
 dotnet build
 $MiniCover instrument --sources "test/**/*.cs" --assemblies "test/**/bin/**/*.dll"
-$MiniCover reset
+$MiniCover reset --solutiondir ./
 dotnet test --no-build test/MiniCover.XUnit.Tests/MiniCover.XUnit.Tests.csproj
 dotnet test --no-build test/MiniCover.NUnit.Tests/MiniCover.NUnit.Tests.csproj
 $MiniCover uninstrument
