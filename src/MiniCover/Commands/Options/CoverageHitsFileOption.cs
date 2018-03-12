@@ -31,7 +31,7 @@ namespace MiniCover.Commands.Options
         public void Invalidate()
         {
             var proposalValue = _option.Value();
-            if (string.IsNullOrEmpty(proposalValue))
+            if (string.IsNullOrWhiteSpace(proposalValue))
                 proposalValue = DefaultValue;
 
             _invalidated = true;
