@@ -17,6 +17,7 @@ namespace MiniCover
         static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine(String.Join(' ', args));
 
             var commandLineApplication = new CommandLineApplication();
             commandLineApplication.Name = "MiniCover";
@@ -166,6 +167,29 @@ namespace MiniCover
                 });
             });
 
+            commandLineApplication.Command("cloverreport", command =>
+            {
+                command.Description = "Write an Clover-formatted XML report to folder";
+
+                var workDirOption = CreateWorkdirOption(command);
+                var coverageFileOption = CreateCoverageFileOption(command);
+                var thresholdOption = CreateThresholdOption(command);
+                var outputOption = command.Option("--output", "Output file for Clover report [default: clover.xml]", CommandOptionType.SingleValue);
+                command.HelpOption("-h | --help");
+
+                command.OnExecute(() =>
+                {
+                    UpdateWorkingDirectory(workDirOption);
+
+                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var threshold = GetThreshold(thresholdOption);
+                    var result = LoadCoverageFile(coverageFile);
+                    var output = GetCloverXmlReportOutput(outputOption);
+                    CloverReport.Execute(result, output, threshold);
+                    return 0;
+                });
+            });
+
             commandLineApplication.Command("reset", command =>
             {
                 command.Description = "Reset hits count";
@@ -242,6 +266,11 @@ namespace MiniCover
         private static string GetOpenCoverXmlReportOutput(CommandOption outputOption)
         {
             return outputOption.Value() ?? "opencovercoverage.xml";
+        }
+
+        private static string GetCloverXmlReportOutput(CommandOption outputOption)
+        {
+            return outputOption.Value() ?? "clover.xml";
         }
 
         private static string GetCoverageFile(CommandOption coverageFileOption)
