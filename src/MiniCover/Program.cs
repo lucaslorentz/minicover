@@ -27,6 +27,7 @@ namespace MiniCover
                 command.Description = "Instrument assemblies";
 
                 var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var includeAssembliesOption = command.Option("--assemblies", "Pattern to include assemblies [default: **/*.dll]", CommandOptionType.MultipleValue);
                 var excludeAssembliesOption = command.Option("--exclude-assemblies", "Pattern to exclude assemblies", CommandOptionType.MultipleValue);
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
@@ -39,7 +40,6 @@ namespace MiniCover
                 command.OnExecute(() =>
                 {
                     var workdir = UpdateWorkingDirectory(workDirOption);
-
                     var assemblies = GetFiles(includeAssembliesOption, excludeAssembliesOption, "**/*.dll");
                     if (assemblies.Length == 0)
                         throw new Exception("No assemblies found");
@@ -48,8 +48,8 @@ namespace MiniCover
                     if (sourceFiles.Length == 0)
                         throw new Exception("No source files found");
 
-                    var hitsFile = GetHitsFile(hitsFileOption);
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var hitsFile = GetHitsFile(hitsFileOption, configDirOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
                     var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, workdir);
                     var result = instrumenter.Execute();
                     SaveCoverageFile(coverageFile, result);
@@ -62,6 +62,7 @@ namespace MiniCover
                 command.Description = "Uninstrument assemblies";
 
                 var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 command.HelpOption("-h | --help");
 
@@ -69,7 +70,7 @@ namespace MiniCover
                 {
                     UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
                     var result = LoadCoverageFile(coverageFile);
                     Uninstrumenter.Execute(result);
                     return 0;
@@ -80,16 +81,14 @@ namespace MiniCover
             {
                 command.Description = "Outputs coverage report";
 
-                var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 var thresholdOption = CreateThresholdOption(command);
                 command.HelpOption("-h | --help");
 
                 command.OnExecute(() =>
                 {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
                     var consoleReport = new ConsoleReport();
@@ -102,6 +101,7 @@ namespace MiniCover
                 command.Description = "Write html report to folder";
 
                 var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 var thresholdOption = CreateThresholdOption(command);
                 var outputOption = command.Option("--output", "Output folder for html report [default: coverage-html]", CommandOptionType.SingleValue);
@@ -111,7 +111,7 @@ namespace MiniCover
                 {
                     UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
                     var output = GetHtmlReportOutput(outputOption);
@@ -125,6 +125,7 @@ namespace MiniCover
                 command.Description = "Write an NCover-formatted XML report to folder";
 
                 var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 var thresholdOption = CreateThresholdOption(command);
                 var outputOption = command.Option("--output", "Output file for NCover report [default: coverage.xml]", CommandOptionType.SingleValue);
@@ -134,7 +135,7 @@ namespace MiniCover
                 {
                     UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
                     var output = GetXmlReportOutput(outputOption);
@@ -148,6 +149,7 @@ namespace MiniCover
                 command.Description = "Write an OpenCover-formatted XML report to folder";
 
                 var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 var thresholdOption = CreateThresholdOption(command);
                 var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
@@ -157,7 +159,7 @@ namespace MiniCover
                 {
                     UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
                     var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
                     var output = GetOpenCoverXmlReportOutput(outputOption);
@@ -170,15 +172,14 @@ namespace MiniCover
             {
                 command.Description = "Reset hits count";
 
-                var workDirOption = CreateWorkdirOption(command);
+                var configDirOption = CreateConfigDirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
                 command.HelpOption("-h | --help");
 
                 command.OnExecute(() =>
                 {
-                    UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var coverageFile = GetCoverageFile(coverageFileOption, configDirOption);
 
                     if (File.Exists(coverageFile))
                     {
@@ -206,6 +207,11 @@ namespace MiniCover
         private static CommandOption CreateWorkdirOption(CommandLineApplication command)
         {
             return command.Option("--workdir", "Change working directory", CommandOptionType.SingleValue);
+        }
+
+        private static CommandOption CreateConfigDirOption(CommandLineApplication command)
+        {
+            return command.Option("--configdir", "Set configuration files directory", CommandOptionType.SingleValue);
         }
 
         private static string UpdateWorkingDirectory(CommandOption workDirOption)
@@ -244,14 +250,23 @@ namespace MiniCover
             return outputOption.Value() ?? "opencovercoverage.xml";
         }
 
-        private static string GetCoverageFile(CommandOption coverageFileOption)
+        private static string GetCoverageFile(CommandOption coverageFileOption, CommandOption outputDirOption)
         {
-            return coverageFileOption.Value() ?? "coverage.json";
+            var fileName = coverageFileOption.Value() ?? "coverage.json";
+            if (outputDirOption.HasValue())
+            {
+                return Path.Combine(outputDirOption.Value(), fileName);
+            }
+            return fileName;
         }
 
-        private static string GetHitsFile(CommandOption hitsFileOption)
+        private static string GetHitsFile(CommandOption hitsFileOption, CommandOption outputDirOption)
         {
-            return Path.GetFullPath(hitsFileOption.Value() ?? "coverage-hits.txt");
+            var fileName = hitsFileOption.Value() ?? "coverage-hits.txt";
+            if (outputDirOption.HasValue()) {
+                return Path.Combine(outputDirOption.Value(), fileName);
+            }
+            return Path.GetFullPath(fileName);
         }
 
         private static string GetSourceDirectory(CommandOption sourceOption)
