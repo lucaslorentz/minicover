@@ -18,7 +18,6 @@ namespace MiniCover
         static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            Console.WriteLine(String.Join(' ', args));
 
             var commandLineApplication = new CommandLineApplication();
             commandLineApplication.Name = "MiniCover";
