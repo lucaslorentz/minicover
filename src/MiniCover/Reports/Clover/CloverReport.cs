@@ -29,7 +29,12 @@ namespace MiniCover.Reports.Clover
                 Indent = true
             };
 
-            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            var path = Path.GetDirectoryName(output);
+
+            if(!string.IsNullOrEmpty(path))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(output));
+            }
 
             using (StreamWriter sw = File.CreateText(output))
             using (XmlWriter writer = XmlWriter.Create(sw, xmlWriterSettings))
