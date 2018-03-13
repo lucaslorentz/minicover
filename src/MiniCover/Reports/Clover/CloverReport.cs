@@ -6,7 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using MiniCover.Model;
 
-namespace MiniCover.Reports
+namespace MiniCover.Reports.Clover
 {
     public static class CloverReport
     {
@@ -188,59 +188,6 @@ namespace MiniCover.Reports
                     .GroupBy(instruction => instruction.MethodFullName)
                     .Count()
             };
-        }
-    }
-
-    class CloverCounter
-    {
-        public int Statements { get; set; }
-
-        public int CoveredStatements { get; set; }
-
-        public int Conditionals { get; set; }
-
-        public int CoveredConditionals { get; set; }
-
-        public int Methods { get; set; }
-
-        public int CoveredMethods { get; set; }
-
-        public int Lines { get; set; }
-
-        public int Classes { get; set; }
-
-        public int Files { get; set; }
-
-        public int Packages { get; set; }
-
-        public int Elements
-        {
-            get
-            {
-                return Statements + Conditionals + Methods;
-            }
-        }
-
-        public int CoveredElements
-        {
-            get
-            {
-                return CoveredStatements + CoveredConditionals + CoveredMethods;
-            }
-        }
-
-        public void Add(CloverCounter counter)
-        {
-            Statements += counter.Statements;
-            CoveredStatements += counter.CoveredStatements;
-            Conditionals += counter.Conditionals;
-            CoveredConditionals += counter.CoveredConditionals;
-            Methods += counter.Methods;
-            CoveredMethods += counter.CoveredMethods;
-            Lines += counter.Lines;
-            Classes += counter.Classes;
-            Files += counter.Files;
-            Packages += counter.Packages;
         }
     }
 }

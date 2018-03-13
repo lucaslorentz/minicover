@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports;
+using MiniCover.Reports.Clover;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;
