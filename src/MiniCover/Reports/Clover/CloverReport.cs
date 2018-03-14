@@ -95,7 +95,7 @@ namespace MiniCover.Reports.Clover
                 .Select(classes => new XElement(
                     XName.Get("class"),
                     new XAttribute(XName.Get("name"), classes.Key),
-                    CreateMetricsElement(CountMetrics(classes.AsEnumerable(), hits))
+                    CreateMetricsElement(CountMetrics(classes, hits))
                 ));
         }
 
