@@ -27,6 +27,7 @@ namespace MiniCover
                 command.Description = "Instrument assemblies";
 
                 var workDirOption = CreateWorkdirOption(command);
+                var parentDirOption = CreateParentdirOption(command);
                 var includeAssembliesOption = command.Option("--assemblies", "Pattern to include assemblies [default: **/*.dll]", CommandOptionType.MultipleValue);
                 var excludeAssembliesOption = command.Option("--exclude-assemblies", "Pattern to exclude assemblies", CommandOptionType.MultipleValue);
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
@@ -38,7 +39,8 @@ namespace MiniCover
 
                 command.OnExecute(() =>
                 {
-                    var workdir = UpdateWorkingDirectory(workDirOption);
+                    var currWorkingDir = Directory.GetCurrentDirectory();
+                    var workdir = UpdateWorkingDirectory(parentDirOption, workDirOption);
 
                     var assemblies = GetFiles(includeAssembliesOption, excludeAssembliesOption, "**/*.dll");
                     if (assemblies.Length == 0)
@@ -48,6 +50,7 @@ namespace MiniCover
                     if (sourceFiles.Length == 0)
                         throw new Exception("No source files found");
 
+                    UpdateWorkingDirectory(workDirOption, currWorkingDir);
                     var hitsFile = GetHitsFile(hitsFileOption);
                     var coverageFile = GetCoverageFile(coverageFileOption);
                     var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, workdir);
@@ -208,17 +211,35 @@ namespace MiniCover
             return command.Option("--workdir", "Change working directory", CommandOptionType.SingleValue);
         }
 
-        private static string UpdateWorkingDirectory(CommandOption workDirOption)
+        private static CommandOption CreateParentdirOption(CommandLineApplication command)
         {
-            if (workDirOption.Value() != null)
+            return command.Option("--parentdir", "Set parent directory for assemblies and source directories (if not used, falls back to --workdir)", CommandOptionType.SingleValue);
+        }
+
+        private static string UpdateWorkingDirectory(CommandOption workDirOption1, CommandOption workDirOption2=null)
+        {
+            if (workDirOption1.HasValue())
             {
-                var fullWorkDir = Path.GetFullPath(workDirOption.Value());
+                var fullWorkDir = Path.GetFullPath(workDirOption1.Value());
                 Directory.SetCurrentDirectory(fullWorkDir);
             }
-
+            else if (workDirOption2 != null && workDirOption2.HasValue()) {
+                var fullWorkDir = Path.GetFullPath(workDirOption2.Value());
+                Directory.SetCurrentDirectory(fullWorkDir);           
+            }
             return Directory.GetCurrentDirectory();
         }
 
+        private static string UpdateWorkingDirectory(CommandOption workDirOption1, string currentDir) {
+            if (workDirOption1.HasValue())
+            {
+                var fullWorkDir = Path.GetFullPath(workDirOption1.Value());
+                Directory.SetCurrentDirectory(fullWorkDir);
+            } else {
+                Directory.SetCurrentDirectory(currentDir);
+            }
+            return Directory.GetCurrentDirectory();
+        }
         private static CommandOption CreateThresholdOption(CommandLineApplication command)
         {
             return command.Option("--threshold", "Coverage percentage threshold (default: 90)", CommandOptionType.SingleValue);
