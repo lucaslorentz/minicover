@@ -88,7 +88,7 @@ namespace MiniCover.Reports.Clover
             ));
         }
 
-        private static IEnumerable<XElement> CreateClassesElement(ICollection<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
+        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
         {
             return instructions
                 .GroupBy(instruction => instruction.Class)
@@ -99,13 +99,14 @@ namespace MiniCover.Reports.Clover
                 ));
         }
 
-        private static IEnumerable<XElement> CreateLinesElement(ICollection<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
+        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
         {
             return instructions
+                .SelectMany(t => t.GetLines(), (i, l) => new { instructionId = i.Id, line = l })
                 .Select(instruction => new XElement(
                     XName.Get("line"),
-                    new XAttribute(XName.Get("num"), instruction.StartLine),
-                    new XAttribute(XName.Get("count"), hits.TryGetValue(instruction.Id, out int count) ? count : 0),
+                    new XAttribute(XName.Get("num"), instruction.line),
+                    new XAttribute(XName.Get("count"), hits.TryGetValue(instruction.instructionId, out int count) ? count : 0),
                     new XAttribute(XName.Get("type"), "stmt")
                 ));
         }
@@ -179,17 +180,17 @@ namespace MiniCover.Reports.Clover
 
         private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
         {
+            var coveredInstructions = instructions
+                .Where(instruction => hits.ContainsKey(instruction.Id));
+
             return new CloverCounter
             {
                 Statements = instructions.Count(),
-                CoveredStatements = instructions
-                    .Where(instruction => hits.ContainsKey(instruction.Id))
-                    .Count(),
+                CoveredStatements = coveredInstructions.Count(),
                 Methods = instructions
                     .GroupBy(instruction => instruction.MethodFullName)
                     .Count(),
-                CoveredMethods = instructions
-                    .Where(instruction => hits.ContainsKey(instruction.Id))
+                CoveredMethods = coveredInstructions
                     .GroupBy(instruction => instruction.MethodFullName)
                     .Count()
             };
