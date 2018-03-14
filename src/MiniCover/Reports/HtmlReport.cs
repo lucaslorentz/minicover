@@ -4,6 +4,7 @@ using MiniCover.Model;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace MiniCover.Reports
@@ -33,7 +34,7 @@ namespace MiniCover.Reports
         protected override void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
         {
             _htmlReport.AppendLine("<tr>");
-            _htmlReport.AppendLine($"<td><a href=\"{kvFile.Key}.html\">{kvFile.Key}</a></td>");
+            _htmlReport.AppendLine($"<td><a href=\"{GetHtmlFileName(kvFile.Key)}\">{kvFile.Key}</a></td>");
             _htmlReport.AppendLine($"<td>{lines}</td>");
             _htmlReport.AppendLine($"<td>{coveredLines}</td>");
             _htmlReport.AppendLine($"<td style=\"{GetBgColor(color)}\">{coveragePercentage:P}</td>");
@@ -46,7 +47,7 @@ namespace MiniCover.Reports
             {
                 var lines = File.ReadAllLines(Path.Combine(result.SourcePath, kvFile.Key));
 
-                var fileName = Path.Combine(_output, kvFile.Key + ".html");
+                var fileName = GetHtmlFileName(kvFile.Key);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 
@@ -168,6 +169,12 @@ namespace MiniCover.Reports
                 default:
                     throw new ArgumentException($"Invalid color: {color}");
             }
+        }
+
+        private string GetHtmlFileName(string fileName)
+        {
+            string safeName = Regex.Replace(fileName, @"^[./\\]+", "");
+            return Path.Combine(_output, safeName + ".html");
         }
     }
 }
