@@ -12,12 +12,7 @@ namespace MiniCover.Reports.Clover
     {
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
-            var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile)
-                    .Select(h => int.Parse(h))
-                    .GroupBy(h => h)
-                    .ToDictionary(h => h.Key, h => h.Count())
-                : new Dictionary<int, int>();
+            var hits = Hits.TryReadFromFile(result.HitsFile);
 
             var document = new XDocument(
                 new XDeclaration("1.0", "utf-8", null),
@@ -43,7 +38,7 @@ namespace MiniCover.Reports.Clover
             }
         }
 
-        private static XElement CreateCoverageElement(InstrumentationResult result, IDictionary<int, int> hits)
+        private static XElement CreateCoverageElement(InstrumentationResult result, Hits hits)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
@@ -55,7 +50,7 @@ namespace MiniCover.Reports.Clover
             );
         }
 
-        private static XElement CreateProjectElement(InstrumentationResult result, long timestamp, IDictionary<int, int> hits)
+        private static XElement CreateProjectElement(InstrumentationResult result, long timestamp, Hits hits)
         {
             return new XElement(
                 XName.Get("project"),
@@ -66,7 +61,7 @@ namespace MiniCover.Reports.Clover
             );
         }
 
-        private static IEnumerable<XElement> CreatePackagesElement(InstrumentationResult result, IDictionary<int, int> hits)
+        private static IEnumerable<XElement> CreatePackagesElement(InstrumentationResult result, Hits hits)
         {
             return result.Assemblies.Select(assembly => new XElement(
                 XName.Get("package"),
@@ -76,7 +71,7 @@ namespace MiniCover.Reports.Clover
             ));
         }
 
-        private static IEnumerable<XElement> CreateFilesElement(InstrumentedAssembly assembly, IDictionary<int, int> hits)
+        private static IEnumerable<XElement> CreateFilesElement(InstrumentedAssembly assembly, Hits hits)
         {
             return assembly.SourceFiles.Select(file => new XElement(
                 XName.Get("file"),
@@ -88,7 +83,7 @@ namespace MiniCover.Reports.Clover
             ));
         }
 
-        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
+        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedInstruction> instructions, Hits hits)
         {
             return instructions
                 .GroupBy(instruction => instruction.Class)
@@ -99,14 +94,14 @@ namespace MiniCover.Reports.Clover
                 ));
         }
 
-        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
+        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, Hits hits)
         {
             return instructions
                 .SelectMany(t => t.GetLines(), (i, l) => new { instructionId = i.Id, line = l })
                 .Select(instruction => new XElement(
                     XName.Get("line"),
                     new XAttribute(XName.Get("num"), instruction.line),
-                    new XAttribute(XName.Get("count"), hits.TryGetValue(instruction.instructionId, out int count) ? count : 0),
+                    new XAttribute(XName.Get("count"), hits.GetInstructionHitCount(instruction.instructionId)),
                     new XAttribute(XName.Get("type"), "stmt")
                 ));
         }
@@ -146,7 +141,7 @@ namespace MiniCover.Reports.Clover
             return element;
         }
 
-        private static CloverCounter CountProjectMetrics(InstrumentationResult result, IDictionary<int, int> hits)
+        private static CloverCounter CountProjectMetrics(InstrumentationResult result, Hits hits)
         {
             return result.Assemblies
                 .Select(t => CountPackageMetrics(t, hits))
@@ -158,7 +153,7 @@ namespace MiniCover.Reports.Clover
                 });;
         }
 
-        private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, IDictionary<int, int> hits)
+        private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, Hits hits)
         {
             return assembly.SourceFiles
                 .Select(t => CountFileMetrics(t.Value, hits))
@@ -170,7 +165,7 @@ namespace MiniCover.Reports.Clover
                 });
         }
 
-        private static CloverCounter CountFileMetrics(SourceFile file, IDictionary<int, int> hits)
+        private static CloverCounter CountFileMetrics(SourceFile file, Hits hits)
         {
             var counter = CountMetrics(file.Instructions, hits);
             counter.Lines = file.Instructions.Max(instruction => instruction.EndLine);
@@ -178,16 +173,17 @@ namespace MiniCover.Reports.Clover
             return counter;
         }
 
-        private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
+        private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, Hits hits)
         {
-            var coveredInstructions = instructions
-                .Where(instruction => hits.ContainsKey(instruction.Id));
+            var localInstructions = instructions.ToArray();
+            var coveredInstructions = localInstructions
+                .Where(instruction => hits.IsInstructionHit(instruction.Id)).ToArray();
 
             return new CloverCounter
             {
-                Statements = instructions.Count(),
-                CoveredStatements = coveredInstructions.Count(),
-                Methods = instructions
+                Statements = localInstructions.Length,
+                CoveredStatements = coveredInstructions.Length,
+                Methods = localInstructions
                     .GroupBy(instruction => instruction.MethodFullName)
                     .Count(),
                 CoveredMethods = coveredInstructions

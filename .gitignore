@@ -9,3 +9,4 @@ release
 .vs
 /TestResults
 /MiniCover.v3.ncrunchsolution.user
+/clover.xml
