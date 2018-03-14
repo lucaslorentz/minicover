@@ -8,13 +8,13 @@ namespace MiniCover
 {
     public sealed class Hit
     {
-        private ConcurrentDictionary<MethodBase, HitTestMethod> _testMethodsMap = new ConcurrentDictionary<MethodBase, HitTestMethod>();
+        private readonly ConcurrentDictionary<MethodBase, HitTestMethod> testMethodsMap = new ConcurrentDictionary<MethodBase, HitTestMethod>();
 
-        private IEnumerable<HitTestMethod> _testMethods;
+        private readonly IEnumerable<HitTestMethod> testMethods;
 
         public int InstructionId { get; }
         public int Counter { get; private set; }
-        public IEnumerable<HitTestMethod> TestMethods => _testMethods ?? _testMethodsMap.Select(kv => kv.Value);
+        public IEnumerable<HitTestMethod> TestMethods => testMethods ?? testMethodsMap.Select(kv => kv.Value);
 
         internal Hit(int instructionId)
         {
@@ -27,18 +27,27 @@ namespace MiniCover
         {
             InstructionId = instructionId;
             Counter = counter;
-            _testMethods = testMethods.ToHashSet();
+            this.testMethods = testMethods.ToHashSet();
         }
 
         public static IList<Hit> MergeDuplicates(IEnumerable<Hit> items)
         {
             return items
                 .GroupBy(i => i.InstructionId)
-                .Select(g => new Hit(
-                    g.Key,
-                    g.Sum(h => h.Counter),
-                    HitTestMethod.MergeDuplicates(g.SelectMany(hi => hi.TestMethods))
-                )).ToArray();
+                .Select(g => Convert(g.Key, g)).ToArray();
+        }
+
+        private static Hit Convert(int id, IEnumerable<Hit> hits)
+        {
+            var items = hits.ToArray();
+            var methods = items.SelectMany(hi =>
+                hi.TestMethods);
+            var validMethods = methods.Where(a => a.HasBeenHitBy(id));
+            var converted = HitTestMethod.MergeDuplicates(validMethods, id).ToArray();
+            return new Hit(
+                id,
+                items.Sum(h => h.Counter),
+                converted);
         }
 
         public void HitedBy(MethodBase testMethod)
@@ -47,7 +56,7 @@ namespace MiniCover
 
             if (testMethod != null)
             {
-                var hitTestMethod = _testMethodsMap.GetOrAdd(testMethod, (t) => new HitTestMethod(t));
+                var hitTestMethod = testMethodsMap.GetOrAdd(testMethod, (t) => new HitTestMethod(t));
                 hitTestMethod.Hited();
             }
         }

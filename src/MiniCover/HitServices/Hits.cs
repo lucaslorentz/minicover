@@ -37,18 +37,18 @@ namespace MiniCover
 
         public static Hits TryReadFromFile(string file)
         {
-            var hits = ReadHitsFromFile(file).ToArray();
+            if (!File.Exists(file))
+                return new Hits(Enumerable.Empty<Hit>());
+            var json = File.ReadAllText(file);
 
-            return new Hits(hits);
+            return ConvertToHits($"[{json}]");
         }
 
-        private static IEnumerable<Hit> ReadHitsFromFile(string file)
+        public static Hits ConvertToHits(string json)
         {
-            if (!File.Exists(file))
-                return Enumerable.Empty<Hit>();
-
-            var json = File.ReadAllText(file);
-            return JsonConvert.DeserializeObject<Hit[]>($"[{json}]");
+            var notMergedHits = JsonConvert.DeserializeObject<HitTestMethod[]>(json)
+                .SelectMany(method => method.HitedInstructions.Select(id => new Hit(id.Key, id.Value, new[] {method}))).ToArray();
+            return new Hits(notMergedHits);
         }
     }
 }

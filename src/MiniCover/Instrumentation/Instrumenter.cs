@@ -152,8 +152,6 @@ namespace MiniCover.Instrumentation
                 var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
                 assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedAttributeReference));
 
-                CreateAssemblyInit(assemblyDefinition);
-
                 var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
                 var exitMethodInfo = methodContextType.GetMethod("Exit");
                 var hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
@@ -304,25 +302,7 @@ namespace MiniCover.Instrumentation
                 File.Delete(pdbBackupFile);
             }
         }
-
-        private void CreateAssemblyInit(AssemblyDefinition assemblyDefinition)
-        {
-            var initMethodInfo = this.hitServiceType.GetMethod("Init");
-            var initMethodReference = assemblyDefinition.MainModule.ImportReference(initMethodInfo);
-            var moduleType = assemblyDefinition.MainModule.GetType("<Module>");
-            var moduleConstructor = moduleType.FindOrCreateCctor();
-            var ilProcessor = moduleConstructor.Body.GetILProcessor();
-
-            var initInstruction = ilProcessor.Create(OpCodes.Call, initMethodReference);
-            if (moduleConstructor.Body.Instructions.Count > 0)
-                ilProcessor.InsertBefore(moduleConstructor.Body.Instructions[0], initInstruction);
-            else
-                ilProcessor.Append(initInstruction);
-
-            var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
-            ilProcessor.InsertBefore(initInstruction, pathParamLoadInstruction);
-        }
-
+        
         private void InstrumentInstruction(int instructionId, Instruction instruction,
             MethodReference hitInstructionReference, MethodDefinition method, ILProcessor ilProcessor,
             VariableDefinition methodContextVariable)
