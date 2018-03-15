@@ -227,16 +227,6 @@ namespace MiniCover
             return Directory.GetCurrentDirectory();
         }
 
-        private static string UpdateWorkingDirectory(CommandOption workDirOption1, string currentDir) {
-            if (workDirOption1.HasValue())
-            {
-                var fullWorkDir = Path.GetFullPath(workDirOption1.Value());
-                Directory.SetCurrentDirectory(fullWorkDir);
-            } else {
-                Directory.SetCurrentDirectory(currentDir);
-            }
-            return Directory.GetCurrentDirectory();
-        }
         private static CommandOption CreateThresholdOption(CommandLineApplication command)
         {
             return command.Option("--threshold", "Coverage percentage threshold (default: 90)", CommandOptionType.SingleValue);
