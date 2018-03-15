@@ -145,23 +145,23 @@ namespace MiniCover.Reports.Clover
         {
             return result.Assemblies
                 .Select(t => CountPackageMetrics(t, hits))
-                .Aggregate((prev, next) =>
+                .Aggregate(new CloverCounter(), (counter, next) =>
                 {
-                    prev.Add(next);
-                    prev.Packages += 1;
-                    return prev;
-                });
+                    counter.Add(next);
+                    counter.Packages += 1;
+                    return counter;
+                });;
         }
 
         private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, Hits hits)
         {
             return assembly.SourceFiles
                 .Select(t => CountFileMetrics(t.Value, hits))
-                .Aggregate(new CloverCounter(), (prev, next) =>
+                .Aggregate(new CloverCounter(), (counter, next) =>
                 {
-                    prev.Add(next);
-                    prev.Files += 1;
-                    return prev;
+                    counter.Add(next);
+                    counter.Files += 1;
+                    return counter;
                 });
         }
 
