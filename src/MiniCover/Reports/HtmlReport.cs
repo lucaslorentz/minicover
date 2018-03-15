@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MiniCover.Model;
+using System;
 using System.Collections.Generic;
-using MiniCover.Model;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Xml;
 
 namespace MiniCover.Reports
 {
@@ -49,95 +50,102 @@ namespace MiniCover.Reports
 
                 Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 
-                using (var htmlWriter = (TextWriter)File.CreateText(fileName))
+                var fileBuilder = new StringBuilder();
+                fileBuilder.Append("<html>");
+                fileBuilder.Append("<body style=\"font-family: monospace;\">");
+
+                var uncoveredLineNumbers = new HashSet<int>();
+                var coveredLineNumbers = new HashSet<int>();
+                foreach (var i in kvFile.Value.Instructions)
                 {
-                    htmlWriter.WriteLine("<html>");
-                    htmlWriter.WriteLine("<body style=\"font-family: monospace;\">");
-
-                    var uncoveredLineNumbers = new HashSet<int>();
-                    var coveredLineNumbers = new HashSet<int>();
-                    foreach (var i in kvFile.Value.Instructions)
+                    if (hits.Contains(i.Id))
                     {
-                        if (hits.Contains(i.Id))
-                        {
-                            coveredLineNumbers.UnionWith(i.GetLines());
-                        }
-                        else
-                        {
-                            uncoveredLineNumbers.UnionWith(i.GetLines());
-                        }
+                        coveredLineNumbers.UnionWith(i.GetLines());
                     }
-
-                    var l = 0;
-                    foreach (var line in lines)
+                    else
                     {
-                        l++;
-                        var style = "white-space: pre;";
-                        if (coveredLineNumbers.Contains(l))
-                        {
-                            style += BgColorGreen;
-                        }
-                        else if (uncoveredLineNumbers.Contains(l))
-                        {
-                            style += BgColorRed;
-                        }
-                        else
-                        {
-                            style += BgColorBlue;
-                        }
-
-                        if (!string.IsNullOrEmpty(line))
-                        {
-                            htmlWriter.WriteLine($"<div style=\"{style}\">{WebUtility.HtmlEncode(line)}</div>");
-                        }
-                        else
-                        {
-                            htmlWriter.WriteLine($"<div style=\"{style}\">&nbsp;</div>");
-                        }
+                        uncoveredLineNumbers.UnionWith(i.GetLines());
                     }
-
-                    htmlWriter.WriteLine("</body>");
-                    htmlWriter.WriteLine("</html>");
                 }
+
+                var l = 0;
+                foreach (var line in lines)
+                {
+                    l++;
+                    var style = "white-space: pre;";
+                    if (coveredLineNumbers.Contains(l))
+                    {
+                        style += BgColorGreen;
+                    }
+                    else if (uncoveredLineNumbers.Contains(l))
+                    {
+                        style += BgColorRed;
+                    }
+                    else
+                    {
+                        style += BgColorBlue;
+                    }
+
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        fileBuilder.Append($"<div style=\"{style}\">{WebUtility.HtmlEncode(line)}</div>");
+                    }
+                    else
+                    {
+                        fileBuilder.Append($"<div style=\"{style}\"><br/></div>");
+                    }
+                }
+
+                fileBuilder.Append("</body>");
+                fileBuilder.Append("</html>");
+                SaveIndentedHtmlFile(fileBuilder.ToString(), fileName);
             }
         }
 
         protected override void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color)
         {
-            var result = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
-            result.AppendLine("<html>");
-            result.AppendLine("<body style=\"font-family: sans-serif;\">");
+            stringBuilder.Append("<html>");
+            stringBuilder.Append("<body style=\"font-family: sans-serif;\">");
 
             // Write summary
-            result.AppendLine("<h1>Summary</h1>");
-            result.AppendLine("<table border=\"1\" cellpadding=\"5\">");
-            result.AppendLine($"<tr><th>Generated on</th><td>{DateTime.Now}</td></tr>");
-            result.AppendLine($"<tr><th>Lines</th><td>{lines}</td></tr>");
-            result.AppendLine($"<tr><th>Covered Lines</th><td>{coveredLines}</td></tr>");
-            result.AppendLine($"<tr><th>Threshold</th><td>{threshold:P}</td></tr>");
-            result.AppendLine($"<tr><th>Percentage</th><td style=\"{GetBgColor(color)}\">{coveragePercentage:P}</td></tr>");
-            result.AppendLine("</table>");
+            stringBuilder.Append("<h1>Summary</h1>");
+            stringBuilder.Append("<table border=\"1\" cellpadding=\"5\">");
+            stringBuilder.Append($"<tr><th>Generated on</th><td>{DateTime.Now}</td></tr>");
+            stringBuilder.Append($"<tr><th>Lines</th><td>{lines}</td></tr>");
+            stringBuilder.Append($"<tr><th>Covered Lines</th><td>{coveredLines}</td></tr>");
+            stringBuilder.Append($"<tr><th>Threshold</th><td>{threshold:P}</td></tr>");
+            stringBuilder.Append($"<tr><th>Percentage</th><td style=\"{GetBgColor(color)}\">{coveragePercentage:P}</td></tr>");
+            stringBuilder.Append("</table>");
 
             // Write detailed report
-            result.AppendLine("<h1>Coverage</h1>");
-            result.AppendLine("<table border=\"1\" cellpadding=\"5\">");
-            result.AppendLine("<tr>");
-            result.AppendLine("<th>File</th>");
-            result.AppendLine("<th>Lines</th>");
-            result.AppendLine("<th>Covered Lines</th>");
-            result.AppendLine("<th>Percentage</th>");
-            result.AppendLine("</tr>");
-            result.Append(_htmlReport);
-            result.AppendLine("</table>");
-            result.AppendLine("</body>");
-            result.AppendLine("</html>");
+            stringBuilder.Append("<h1>Coverage</h1>");
+            stringBuilder.Append("<table border=\"1\" cellpadding=\"5\">");
+            stringBuilder.Append("<tr>");
+            stringBuilder.Append("<th>File</th>");
+            stringBuilder.Append("<th>Lines</th>");
+            stringBuilder.Append("<th>Covered Lines</th>");
+            stringBuilder.Append("<th>Percentage</th>");
+            stringBuilder.Append("</tr>");
+            stringBuilder.Append(_htmlReport);
+            stringBuilder.Append("</table>");
+            stringBuilder.Append("</body>");
+            stringBuilder.Append("</html>");
 
+            var result = stringBuilder.ToString();
             Directory.CreateDirectory(_output);
             var fileName = Path.Combine(_output, "index.html");
-            using (var htmlWriter = (TextWriter)File.CreateText(fileName))
+            SaveIndentedHtmlFile(result, fileName);
+        }
+
+        private static void SaveIndentedHtmlFile(string result, string fileName)
+        {
+            using (var stream = File.Create(fileName))
             {
-                htmlWriter.WriteLine(result.ToString());
+                var document = new XmlDocument();
+                document.LoadXml(result);
+                document.Save(stream);
             }
         }
 
@@ -147,8 +155,10 @@ namespace MiniCover.Reports
             {
                 case ConsoleColor.Green:
                     return BgColorGreen;
+
                 case ConsoleColor.Red:
                     return BgColorRed;
+
                 default:
                     throw new ArgumentException($"Invalid color: {color}");
             }

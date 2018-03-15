@@ -56,6 +56,7 @@ namespace MiniCover.Commands
             OnExecute(() =>
             {
                 InvalidateOptions();
+                Line($"Starting command: {Description}");
                 return Execution();
             });
         }
