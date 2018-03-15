@@ -62,6 +62,7 @@ namespace MiniCover
             commandLineApplication.Commands.Add(new HtmlReportCommand(commandLineApplication));
             commandLineApplication.Commands.Add(new NCoverReportCommand(commandLineApplication));
             commandLineApplication.Commands.Add(new OpenCoverReportCommand(commandLineApplication));
+            commandLineApplication.Commands.Add(new CloverReportCommand(commandLineApplication));
 
             commandLineApplication.Commands.Add(new ResetCommand(commandLineApplication));
 
@@ -95,7 +96,7 @@ namespace MiniCover
         {
             return command.Option("--coverage-file", "Coverage file name [default: coverage.json]", CommandOptionType.SingleValue);
         }
-
+        
         private static string GetCoverageFile(CommandOption coverageFileOption)
         {
             return coverageFileOption.Value() ?? "coverage.json";
