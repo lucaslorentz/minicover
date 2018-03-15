@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using MiniCover.Tests;
 using NUnit.Framework;
 
@@ -36,6 +39,13 @@ namespace MiniCover.NUnit.Tests
             {
                 new AnotherClass().AnotherMethod();
             }
+        }
+
+        [Test]
+        public void NUnitTestAsync()
+        {
+            Parallel.Invoke(new ParallelOptions{ MaxDegreeOfParallelism = 10 },Enumerable.Range(0, 50).Select<int, Action>(i => (() => new AnotherClass().AMethodNotAsync())).ToArray());
+            Task.WaitAll(Enumerable.Range(0, 50).Select(i => new AnotherClass().AMethodAsync()).ToArray());
         }
     }
 }

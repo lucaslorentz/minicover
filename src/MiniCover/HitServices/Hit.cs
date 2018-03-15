@@ -1,33 +1,21 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace MiniCover
 {
     public sealed class Hit
     {
-        private readonly ConcurrentDictionary<MethodBase, HitTestMethod> testMethodsMap = new ConcurrentDictionary<MethodBase, HitTestMethod>();
-
-        private readonly IEnumerable<HitTestMethod> testMethods;
-
         public int InstructionId { get; }
-        public int Counter { get; private set; }
-        public IEnumerable<HitTestMethod> TestMethods => testMethods ?? testMethodsMap.Select(kv => kv.Value);
-
-        internal Hit(int instructionId)
-        {
-            InstructionId = instructionId;
-            Counter = 0;
-        }
+        public int Counter { get; }
+        public IEnumerable<HitTestMethod> TestMethods { get; }
 
         [JsonConstructor]
         internal Hit(int instructionId, int counter, IEnumerable<HitTestMethod> testMethods)
         {
-            InstructionId = instructionId;
-            Counter = counter;
-            this.testMethods = testMethods.ToHashSet();
+            this.InstructionId = instructionId;
+            this.Counter = counter;
+            this.TestMethods = testMethods.ToHashSet();
         }
 
         public static IList<Hit> MergeDuplicates(IEnumerable<Hit> items)
@@ -48,17 +36,6 @@ namespace MiniCover
                 id,
                 items.Sum(h => h.Counter),
                 converted);
-        }
-
-        public void HitedBy(MethodBase testMethod)
-        {
-            Counter++;
-
-            if (testMethod != null)
-            {
-                var hitTestMethod = testMethodsMap.GetOrAdd(testMethod, (t) => new HitTestMethod(t));
-                hitTestMethod.Hited();
-            }
         }
     }
 }

@@ -22,21 +22,9 @@ namespace MiniCover.Reports.Clover
 
         public int Packages { get; set; }
 
-        public int Elements
-        {
-            get
-            {
-                return Statements + Conditionals + Methods;
-            }
-        }
+        public int Elements => Statements + Conditionals + Methods;
 
-        public int CoveredElements
-        {
-            get
-            {
-                return CoveredStatements + CoveredConditionals + CoveredMethods;
-            }
-        }
+        public int CoveredElements => CoveredStatements + CoveredConditionals + CoveredMethods;
 
         public void Add(CloverCounter counter)
         {

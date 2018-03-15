@@ -1,4 +1,6 @@
-﻿namespace MiniCover.Tests
+﻿using System.Threading.Tasks;
+
+namespace MiniCover.Tests
 {
     public class AnotherClass
     {
@@ -27,6 +29,16 @@
             {
                 SomeMethod();
             }
+        }
+
+        public Task AMethodAsync()
+        {
+            return Task.FromResult(1);
+        }
+
+        public void AMethodNotAsync()
+        {
+            SomeProperty++;
         }
     }
 }

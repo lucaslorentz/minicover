@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,14 +7,15 @@ namespace MiniCover
 {
     public class HitTestMethod
     {
-        private readonly ConcurrentDictionary<int, int> hitedInstructions = new ConcurrentDictionary<int, int>();
-        private readonly IDictionary<int, int> deserializeHitedInstructions;
+        private readonly object _lock = new object();
+
         internal HitTestMethod(MethodBase testMethod)
         {
             AssemblyName = testMethod.DeclaringType.Assembly.FullName;
             ClassName = testMethod.DeclaringType.Name;
             MethodName = testMethod.Name;
             AssemblyLocation = testMethod.DeclaringType.Assembly.Location;
+            HitedInstructions = new Dictionary<int, int>();
         }
 
         [JsonConstructor]
@@ -31,7 +31,7 @@ namespace MiniCover
             MethodName = methodName;
             AssemblyLocation = assemblyLocation;
             Counter = counter;
-            deserializeHitedInstructions = hitedInstructions;
+            HitedInstructions = hitedInstructions;
         }
 
         public string AssemblyName { get; }
@@ -39,29 +39,29 @@ namespace MiniCover
         public string MethodName { get; }
         public string AssemblyLocation { get; }
         public int Counter { get; private set; }
-        public IDictionary<int, int> HitedInstructions => deserializeHitedInstructions ?? hitedInstructions;
-
-        public void Hited()
-        {
-            Counter++;
-        }
+        public IDictionary<int, int> HitedInstructions { get; }
 
         public void HasHit(int id)
         {
-            Counter++;
-            this.hitedInstructions.AddOrUpdate(id, i => 1, (i, i1) => i1 + 1);
-        }
-
-        public static HitTestMethod Convert(HitTestMethod arg, int instructionId)
-        {
-            return new HitTestMethod(arg.AssemblyName, arg.ClassName, arg.MethodName, arg.AssemblyLocation, arg.HitedInstructions[instructionId], new Dictionary<int, int>());
+            lock (_lock)
+            {
+                Counter++;
+                if (this.HitedInstructions.TryGetValue(id, out var count))
+                {
+                    this.HitedInstructions[id] = count + 1;
+                }
+                else
+                {
+                    this.HitedInstructions[id] = 1;
+                }
+            }
         }
 
         public bool HasBeenHitBy(int instructionId)
         {
             return this.HitedInstructions.ContainsKey(instructionId);
         }
-        
+
         public static IEnumerable<HitTestMethod> MergeDuplicates(IEnumerable<HitTestMethod> source, int instructionId)
         {
             return source

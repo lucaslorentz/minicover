@@ -150,14 +150,14 @@ namespace MiniCover.Reports.Clover
                     prev.Add(next);
                     prev.Packages += 1;
                     return prev;
-                });;
+                });
         }
 
         private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, Hits hits)
         {
             return assembly.SourceFiles
                 .Select(t => CountFileMetrics(t.Value, hits))
-                .Aggregate((prev, next) =>
+                .Aggregate(new CloverCounter(), (prev, next) =>
                 {
                     prev.Add(next);
                     prev.Files += 1;
