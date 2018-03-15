@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports;
+using MiniCover.Reports.Clover;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;
@@ -166,9 +167,32 @@ namespace MiniCover
                     return 0;
                 });
             });
-
+            
             commandLineApplication.Commands.Add(new ResetCommand(commandLineApplication));
             
+            commandLineApplication.Command("cloverreport", command =>
+            {
+                command.Description = "Write an Clover-formatted XML report to folder";
+
+                var workDirOption = CreateWorkdirOption(command);
+                var coverageFileOption = CreateCoverageFileOption(command);
+                var thresholdOption = CreateThresholdOption(command);
+                var outputOption = command.Option("--output", "Output file for Clover report [default: clover.xml]", CommandOptionType.SingleValue);
+                command.HelpOption("-h | --help");
+
+                command.OnExecute(() =>
+                {
+                    UpdateWorkingDirectory(workDirOption);
+
+                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var threshold = GetThreshold(thresholdOption);
+                    var result = LoadCoverageFile(coverageFile);
+                    var output = GetCloverXmlReportOutput(outputOption);
+                    CloverReport.Execute(result, output, threshold);
+                    return 0;
+                });
+            });
+
             commandLineApplication.HelpOption("-h | --help");
             commandLineApplication.OnExecute(() =>
             {
@@ -218,6 +242,11 @@ namespace MiniCover
         private static string GetOpenCoverXmlReportOutput(CommandOption outputOption)
         {
             return outputOption.Value() ?? "opencovercoverage.xml";
+        }
+
+        private static string GetCloverXmlReportOutput(CommandOption outputOption)
+        {
+            return outputOption.Value() ?? "clover.xml";
         }
 
         private static string GetCoverageFile(CommandOption coverageFileOption)
