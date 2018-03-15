@@ -1,26 +1,21 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace MiniCover
+namespace MiniCover.HitServices
 {
     public class HitTestMethod
     {
         private readonly object _lock = new object();
 
-        internal HitTestMethod(MethodBase testMethod)
+        internal static HitTestMethod From(MethodBase testMethod)
         {
-            AssemblyName = testMethod.DeclaringType.Assembly.FullName;
-            ClassName = testMethod.DeclaringType.Name;
-            MethodName = testMethod.Name;
-            AssemblyLocation = testMethod.DeclaringType.Assembly.Location;
-            HitedInstructions = new Dictionary<int, int>();
+            return new HitTestMethod(testMethod.DeclaringType.Assembly.FullName,
+                testMethod.DeclaringType.FullName, testMethod.Name, testMethod.DeclaringType.Assembly.Location, 0,
+                new Dictionary<int, int>());
         }
 
-        [JsonConstructor]
-
-        internal HitTestMethod(string assemblyName,
+        public HitTestMethod(string assemblyName,
             string className,
             string methodName,
             string assemblyLocation,
@@ -65,7 +60,7 @@ namespace MiniCover
         public static IEnumerable<HitTestMethod> MergeDuplicates(IEnumerable<HitTestMethod> source, int instructionId)
         {
             return source
-                .GroupBy(h => new { h.AssemblyName, h.ClassName, h.MethodName, h.AssemblyLocation })
+                .GroupBy(h => new {h.AssemblyName, h.ClassName, h.MethodName, h.AssemblyLocation})
                 .Select(g => new HitTestMethod(
                     g.Key.AssemblyName,
                     g.Key.ClassName,
@@ -74,6 +69,14 @@ namespace MiniCover
                     g.Sum(h => h.HitedInstructions[instructionId]),
                     new Dictionary<int, int>()
                 )).ToArray();
+        }
+
+        internal string ToJson()
+        {
+            var hitedInstructionsJson = string.Join(",",
+                this.HitedInstructions.Select(item => $"\"{item.Key}\":{item.Value}"));
+            return
+                $"{{\"{nameof(ClassName)}\":\"{ClassName}\",\"{nameof(MethodName)}\":\"{MethodName}\",\"{nameof(AssemblyName)}\":\"{AssemblyName}\",\"{nameof(AssemblyLocation)}\":\"{AssemblyLocation.Replace("\\","\\\\")}\",\"{nameof(Counter)}\":{Counter},\"{nameof(HitedInstructions)}\":{{{hitedInstructionsJson}}}}}";
         }
     }
 }

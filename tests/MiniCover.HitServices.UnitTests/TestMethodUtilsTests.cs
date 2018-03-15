@@ -1,4 +1,4 @@
-﻿using MiniCover.Utils;
+﻿using MiniCover.HitServices;
 using Shouldly;
 using Xunit;
 

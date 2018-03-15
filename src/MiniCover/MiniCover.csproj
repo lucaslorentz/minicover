@@ -29,4 +29,8 @@
     <Folder Include="Properties\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj" />
+  </ItemGroup>
+
 </Project>

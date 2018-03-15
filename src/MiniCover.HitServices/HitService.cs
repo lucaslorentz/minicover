@@ -1,8 +1,7 @@
-﻿using MiniCover.Utils;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 
-namespace MiniCover
+namespace MiniCover.HitServices
 {
     public static class HitService
     {
@@ -24,7 +23,7 @@ namespace MiniCover
                 this.filePath = filePath;
                 if (TestMethodCache.Value == null)
                 {
-                    TestMethodCache.Value = new HitTestMethod(TestMethodUtils.GetTestMethod());
+                    TestMethodCache.Value = HitTestMethod.From(TestMethodUtils.GetTestMethod());
                     clearTestMethodCache = true;
                 }
 
@@ -52,7 +51,7 @@ namespace MiniCover
                 using (var streamWriter = new StreamWriter(fileStream))
                 {
                     if (fileStream.Position != 0) streamWriter.Write(",");
-                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(testMethod);
+                    var json = testMethod.ToJson();
                     streamWriter.Write(json);
                     streamWriter.Flush();
                 }

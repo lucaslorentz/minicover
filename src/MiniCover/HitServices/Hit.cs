@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using MiniCover.HitServices;
 
 namespace MiniCover
 {
@@ -10,12 +11,11 @@ namespace MiniCover
         public int Counter { get; }
         public IEnumerable<HitTestMethod> TestMethods { get; }
 
-        [JsonConstructor]
-        internal Hit(int instructionId, int counter, IEnumerable<HitTestMethod> testMethods)
+        public Hit(int instructionId, int counter, IEnumerable<HitTestMethod> testMethods)
         {
             this.InstructionId = instructionId;
             this.Counter = counter;
-            this.TestMethods = testMethods.ToHashSet();
+            this.TestMethods = testMethods.ToArray();
         }
 
         public static IList<Hit> MergeDuplicates(IEnumerable<Hit> items)

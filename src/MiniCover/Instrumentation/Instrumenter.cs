@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MiniCover.HitServices;
 using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Instrumentation
@@ -35,8 +36,7 @@ namespace MiniCover.Instrumentation
             this.sourceFiles = sourceFiles;
             this.instrumentationDependencies = new[]
             {
-                hitServiceType.Assembly.Location,
-                typeof(JObject).Assembly.Location
+                hitServiceType.Assembly.Location
             };
             normalizedWorkDir = workdir;
             if (!normalizedWorkDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
@@ -165,11 +165,11 @@ namespace MiniCover.Instrumentation
                 var methods = assemblyDefinition.GetAllMethods();
 
                 var documentsGroups = methods
-                    .SelectMany(m => m.DebugInformation.SequencePoints, (m, s) => new
+                    .SelectMany(m => m.DebugInformation.SequencePoints, (method, s) => new
                     {
-                        Method = m,
+                        Method = method,
                         SequencePoint = s,
-                        Document = s.Document
+                        s.Document
                     })
                     .GroupBy(j => j.Document)
                     .ToArray();
