@@ -1,11 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using MiniCover.HitServices;
-using Newtonsoft.Json.Serialization;
 
 namespace MiniCover
 {
@@ -43,14 +39,17 @@ namespace MiniCover
         {
             if (!File.Exists(file))
                 return new Hits(Enumerable.Empty<Hit>());
-            var json = File.ReadAllText(file);
-
-            return ConvertToHits($"[{json}]");
+            
+            using (var fileStream = File.Open(file, FileMode.Open, FileAccess.Read))
+            {
+                var tests = HitTestMethod.Deserialize(fileStream);
+                return ConvertToHits(tests);
+            }
         }
 
-        public static Hits ConvertToHits(string json)
+        public static Hits ConvertToHits(IEnumerable<HitTestMethod> tests)
         {
-            var notMergedHits = JsonConvert.DeserializeObject<HitTestMethod[]>(json)
+            var notMergedHits = tests
                 .SelectMany(method => method.HitedInstructions.Select(id => new Hit(id.Key, id.Value, new[] {method}))).ToArray();
             return new Hits(notMergedHits);
         }

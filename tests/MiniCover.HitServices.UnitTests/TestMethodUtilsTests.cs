@@ -1,8 +1,7 @@
-﻿using MiniCover.HitServices;
-using Shouldly;
+﻿using Shouldly;
 using Xunit;
 
-namespace MiniCover.UnitTests.Utils
+namespace MiniCover.HitServices.UnitTests
 {
     public class TestMethodUtilsTests
     {

@@ -14,7 +14,7 @@ namespace MiniCover.HitServices
         {
             private readonly string filePath;
             private static readonly AsyncLocal<HitTestMethod> TestMethodCache = new AsyncLocal<HitTestMethod>();
-            
+
             private readonly HitTestMethod testMethod;
             private readonly bool clearTestMethodCache;
 
@@ -47,13 +47,10 @@ namespace MiniCover.HitServices
 
             private void Save()
             {
-                using (var fileStream = File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.None))
-                using (var streamWriter = new StreamWriter(fileStream))
+                lock (filePath)
                 {
-                    if (fileStream.Position != 0) streamWriter.Write(",");
-                    var json = testMethod.ToJson();
-                    streamWriter.Write(json);
-                    streamWriter.Flush();
+                    using (var fileStream = File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.None))
+                        testMethod.Serialize(fileStream);
                 }
             }
         }

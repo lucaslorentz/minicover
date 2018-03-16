@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -60,7 +62,7 @@ namespace MiniCover.HitServices
         public static IEnumerable<HitTestMethod> MergeDuplicates(IEnumerable<HitTestMethod> source, int instructionId)
         {
             return source
-                .GroupBy(h => new {h.AssemblyName, h.ClassName, h.MethodName, h.AssemblyLocation})
+                .GroupBy(h => new { h.AssemblyName, h.ClassName, h.MethodName, h.AssemblyLocation })
                 .Select(g => new HitTestMethod(
                     g.Key.AssemblyName,
                     g.Key.ClassName,
@@ -71,12 +73,54 @@ namespace MiniCover.HitServices
                 )).ToArray();
         }
 
-        internal string ToJson()
+        public void Serialize(Stream stream)
         {
-            var hitedInstructionsJson = string.Join(",",
-                this.HitedInstructions.Select(item => $"\"{item.Key}\":{item.Value}"));
-            return
-                $"{{\"{nameof(ClassName)}\":\"{ClassName}\",\"{nameof(MethodName)}\":\"{MethodName}\",\"{nameof(AssemblyName)}\":\"{AssemblyName}\",\"{nameof(AssemblyLocation)}\":\"{AssemblyLocation.Replace("\\","\\\\")}\",\"{nameof(Counter)}\":{Counter},\"{nameof(HitedInstructions)}\":{{{hitedInstructionsJson}}}}}";
+            using (var binaryWriter = new BinaryWriter(stream))
+            {
+                binaryWriter.Write(ClassName);
+                binaryWriter.Write(MethodName);
+                binaryWriter.Write(AssemblyName);
+                binaryWriter.Write(AssemblyLocation);
+                binaryWriter.Write(Counter);
+                binaryWriter.Write(HitedInstructions.Count);
+                foreach (var hitedInstruction in HitedInstructions)
+                {
+                    binaryWriter.Write(hitedInstruction.Key);
+                    binaryWriter.Write(hitedInstruction.Value);
+                }
+            }
+        }
+
+        public static IEnumerable<HitTestMethod> Deserialize(Stream stream)
+        {
+            var result = new List<HitTestMethod>();
+            using (var binaryReader = new BinaryReader(stream))
+            {
+                while (stream.Position < stream.Length)
+                {
+                   result.Add(Read(binaryReader));
+                }
+            }
+
+            return result;
+        }
+
+        public static HitTestMethod Read(BinaryReader binaryReader)
+        {
+            var className = binaryReader.ReadString();
+            var methodName = binaryReader.ReadString();
+            var assemblyName = binaryReader.ReadString();
+            var assemblyLocation = binaryReader.ReadString();
+            var counter = binaryReader.ReadInt32();
+            var hitedCount = binaryReader.ReadInt32();
+            var hited = new Dictionary<int, int>();
+            for (int i = 0; i < hitedCount; i++)
+            {
+                var instructionId = binaryReader.ReadInt32();
+                var instructionHit = binaryReader.ReadInt32();
+                hited.Add(instructionId, instructionHit);
+            }
+            return new HitTestMethod(assemblyName, className, methodName, assemblyLocation, counter, hited);
         }
     }
 }
