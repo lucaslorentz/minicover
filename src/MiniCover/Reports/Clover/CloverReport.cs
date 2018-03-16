@@ -181,7 +181,8 @@ namespace MiniCover.Reports.Clover
         private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, IDictionary<int, int> hits)
         {
             var coveredInstructions = instructions
-                .Where(instruction => hits.ContainsKey(instruction.Id));
+                .Where(instruction => hits.ContainsKey(instruction.Id))
+                .ToList();
 
             return new CloverCounter
             {

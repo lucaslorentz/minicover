@@ -6,3 +6,4 @@ opencovercoverage.xml
 bin
 obj
 .vs
+clover.xml

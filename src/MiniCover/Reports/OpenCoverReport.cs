@@ -17,9 +17,6 @@ namespace MiniCover.Reports
             int fileIndex = 0;   
             int sequencePointMegaCounter = 0;
 
-            var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
-
-            var document = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), data);
 
             var coverageElement = new XElement(
                 XName.Get("CoverageSession")
@@ -136,6 +133,9 @@ namespace MiniCover.Reports
             });               
 
             coverageElement.Add(modulesListElement);
+
+            var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
+            var document = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), data);
 
             document.Add(coverageElement);
 

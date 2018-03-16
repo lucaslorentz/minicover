@@ -1,21 +1,19 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using MiniCover.Commands;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
-using MiniCover.Reports;
-using MiniCover.Reports.Clover;
 using Newtonsoft.Json;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace MiniCover
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -58,166 +56,17 @@ namespace MiniCover
                 });
             });
 
-            commandLineApplication.Command("uninstrument", command =>
-            {
-                command.Description = "Uninstrument assemblies";
+            commandLineApplication.Commands.Add(new UninstrumentCommand(commandLineApplication));
 
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                command.HelpOption("-h | --help");
+            commandLineApplication.Commands.Add(new ReportCommand(commandLineApplication));
+            commandLineApplication.Commands.Add(new HtmlReportCommand(commandLineApplication));
+            commandLineApplication.Commands.Add(new NCoverReportCommand(commandLineApplication));
+            commandLineApplication.Commands.Add(new OpenCoverReportCommand(commandLineApplication));
+            commandLineApplication.Commands.Add(new CloverReportCommand(commandLineApplication));
 
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    Uninstrumenter.Execute(result);
-                    return 0;
-                });
-            });
-
-            commandLineApplication.Command("report", command =>
-            {
-                command.Description = "Outputs coverage report";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var consoleReport = new ConsoleReport();
-                    return consoleReport.Execute(result, threshold);
-                });
-            });
-
-            commandLineApplication.Command("htmlreport", command =>
-            {
-                command.Description = "Write html report to folder";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output folder for html report [default: coverage-html]", CommandOptionType.SingleValue);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var output = GetHtmlReportOutput(outputOption);
-                    var htmlReport = new HtmlReport(output);
-                    return htmlReport.Execute(result, threshold);
-                });
-            });
-
-            commandLineApplication.Command("xmlreport", command =>
-            {
-                command.Description = "Write an NCover-formatted XML report to folder";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output file for NCover report [default: coverage.xml]", CommandOptionType.SingleValue);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var output = GetXmlReportOutput(outputOption);
-                    XmlReport.Execute(result, output, threshold);
-                    return 0;
-                });
-            });
-
-             commandLineApplication.Command("opencoverreport", command =>
-            {
-                command.Description = "Write an OpenCover-formatted XML report to folder";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var output = GetOpenCoverXmlReportOutput(outputOption);
-                    OpenCoverReport.Execute(result, output, threshold);
-                    return 0;
-                });
-            });
-
-            commandLineApplication.Command("cloverreport", command =>
-            {
-                command.Description = "Write an Clover-formatted XML report to folder";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output file for Clover report [default: clover.xml]", CommandOptionType.SingleValue);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var output = GetCloverXmlReportOutput(outputOption);
-                    CloverReport.Execute(result, output, threshold);
-                    return 0;
-                });
-            });
-
-            commandLineApplication.Command("reset", command =>
-            {
-                command.Description = "Reset hits count";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-
-                    if (File.Exists(coverageFile))
-                    {
-                        var result = LoadCoverageFile(coverageFile);
-
-                        if (File.Exists(result.HitsFile))
-                            File.Delete(result.HitsFile);
-                    }
-
-                    return 0;
-                });
-            });
+            commandLineApplication.Commands.Add(new ResetCommand(commandLineApplication));
 
             commandLineApplication.HelpOption("-h | --help");
-
             commandLineApplication.OnExecute(() =>
             {
                 commandLineApplication.ShowHelp();
@@ -243,36 +92,11 @@ namespace MiniCover
             return Directory.GetCurrentDirectory();
         }
 
-        private static CommandOption CreateThresholdOption(CommandLineApplication command)
-        {
-            return command.Option("--threshold", "Coverage percentage threshold (default: 90)", CommandOptionType.SingleValue);
-        }
-
         private static CommandOption CreateCoverageFileOption(CommandLineApplication command)
         {
             return command.Option("--coverage-file", "Coverage file name [default: coverage.json]", CommandOptionType.SingleValue);
         }
-
-        private static string GetHtmlReportOutput(CommandOption outputOption)
-        {
-            return outputOption.Value() ?? "coverage-html";
-        }
-
-        private static string GetXmlReportOutput(CommandOption outputOption)
-        {
-            return outputOption.Value() ?? "coverage.xml";
-        }
-
-        private static string GetOpenCoverXmlReportOutput(CommandOption outputOption)
-        {
-            return outputOption.Value() ?? "opencovercoverage.xml";
-        }
-
-        private static string GetCloverXmlReportOutput(CommandOption outputOption)
-        {
-            return outputOption.Value() ?? "clover.xml";
-        }
-
+        
         private static string GetCoverageFile(CommandOption coverageFileOption)
         {
             return coverageFileOption.Value() ?? "coverage.json";
@@ -281,11 +105,6 @@ namespace MiniCover
         private static string GetHitsFile(CommandOption hitsFileOption)
         {
             return Path.GetFullPath(hitsFileOption.Value() ?? "coverage-hits.txt");
-        }
-
-        private static string GetSourceDirectory(CommandOption sourceOption)
-        {
-            return Path.GetFullPath(sourceOption.Value() ?? Directory.GetCurrentDirectory());
         }
 
         private static string[] GetFiles(CommandOption includeOption, CommandOption excludeOption, string defaultInclude)
@@ -319,19 +138,6 @@ namespace MiniCover
         private static void SaveCoverageFile(string coverageFile, InstrumentationResult result)
         {
             File.WriteAllText(coverageFile, JsonConvert.SerializeObject(result, Formatting.Indented));
-        }
-
-        private static InstrumentationResult LoadCoverageFile(string coverageFile)
-        {
-            if (!File.Exists(coverageFile))
-                throw new FileNotFoundException($"Coverage file {coverageFile} doesn't exist");
-
-            return JsonConvert.DeserializeObject<InstrumentationResult>(File.ReadAllText(coverageFile));
-        }
-
-        private static float GetThreshold(CommandOption thresholdOption)
-        {
-            return float.Parse(thresholdOption.Value() ?? "90", CultureInfo.InvariantCulture) / 100;
         }
     }
 }
