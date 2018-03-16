@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using MiniCover.Commands.Options;
 using MiniCover.Model;
-using MiniCover.Reports;
+using MiniCover.Reports.Clover;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MiniCover.Reports.Clover;
 
 namespace MiniCover.Commands
 {

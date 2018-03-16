@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MiniCover.Commands.Options
 {
-    public class CoverageLoadedFileOption : CoverageFileOption, IMiniCoverOption<InstrumentationResult>
+    internal class CoverageLoadedFileOption : CoverageFileOption, IMiniCoverOption<InstrumentationResult>
     {
         private bool _invalidated;
         private InstrumentationResult _value;
