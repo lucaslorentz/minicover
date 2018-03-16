@@ -34,7 +34,7 @@ namespace MiniCover.Reports
         protected override void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
         {
             _htmlReport.AppendLine("<tr>");
-            _htmlReport.AppendLine($"<td><a href=\"{GetHtmlFileName(kvFile.Key)}\">{kvFile.Key}</a></td>");
+            _htmlReport.AppendLine($"<td><a href=\"{GetIndexRelativeHtmlFileName(kvFile.Key)}\">{kvFile.Key}</a></td>");
             _htmlReport.AppendLine($"<td>{lines}</td>");
             _htmlReport.AppendLine($"<td>{coveredLines}</td>");
             _htmlReport.AppendLine($"<td style=\"{GetBgColor(color)}\">{coveragePercentage:P}</td>");
@@ -171,10 +171,16 @@ namespace MiniCover.Reports
             }
         }
 
-        private string GetHtmlFileName(string fileName)
+        private string GetIndexRelativeHtmlFileName(string fileName)
         {
             string safeName = Regex.Replace(fileName, @"^[./\\]+", "");
-            return Path.Combine(_output, safeName + ".html");
+            return safeName + ".html";
+        }
+
+        private string GetHtmlFileName(string fileName)
+        {
+            string indexRelativeFileName = GetIndexRelativeHtmlFileName(fileName);
+            return Path.Combine(_output, indexRelativeFileName);
         }
     }
 }
