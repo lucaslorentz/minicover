@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Shouldly;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NFluent;
 using Xunit;
 
 namespace MiniCover.HitServices.UnitTests
@@ -23,11 +23,16 @@ namespace MiniCover.HitServices.UnitTests
 
             using (var stream = new MemoryStream(data))
             {
-                var results = HitTestMethod.Deserialize(stream);
-                Check.That(results).HasSize(1);
+                var results = HitTestMethod.Deserialize(stream).ToArray();
+                results.Length.ShouldBe(1);
+
                 var result = results.First();
-                Check.That(result).Considering().All.Properties.Excluding(nameof(HitTestMethod.HitedInstructions)).Equals(sut);
-                Check.That(result.HitedInstructions).ContainsExactly(sut.HitedInstructions);
+                result.ClassName.ShouldBe(sut.ClassName);
+                result.MethodName.ShouldBe(sut.MethodName);
+                result.AssemblyName.ShouldBe(sut.AssemblyName);
+                result.AssemblyLocation.ShouldBe(sut.AssemblyLocation);
+                result.Counter.ShouldBe(sut.Counter);
+                result.HitedInstructions.ShouldBe(sut.HitedInstructions);
             }
         }
     }
