@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiniCover.Instrumentation
+namespace MiniCover.HitServices
 {
     public class InstrumentedAttribute : Attribute
     {

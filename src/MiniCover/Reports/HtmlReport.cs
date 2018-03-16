@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace MiniCover.Reports
 {
@@ -40,7 +41,7 @@ namespace MiniCover.Reports
             _htmlReport.AppendLine("</tr>");
         }
 
-        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HashSet<int> hits)
+        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, Hits hits)
         {
             foreach (var kvFile in files)
             {
@@ -59,7 +60,7 @@ namespace MiniCover.Reports
                     var coveredLineNumbers = new HashSet<int>();
                     foreach (var i in kvFile.Value.Instructions)
                     {
-                        if (hits.Contains(i.Id))
+                        if (hits.IsInstructionHit(i.Id))
                         {
                             coveredLineNumbers.UnionWith(i.GetLines());
                         }
@@ -87,13 +88,28 @@ namespace MiniCover.Reports
                             style += BgColorBlue;
                         }
 
+                        var instructions = kvFile.Value.Instructions.Where(i => i.GetLines().Contains(l)).ToArray();
+
+                        var counter = instructions.Sum(a => hits.GetInstructionHitCount(a.Id));
+
+                        var testMethods = instructions
+                            .SelectMany(i => hits.GetInstructionTestMethods(i.Id))
+                            .Distinct()
+                            .ToArray();
+
+                        var testNames = string.Join(", ", testMethods.Select(m => $"{m.ClassName}.{m.MethodName} ({m.Counter})"));
+
+                        var testNamesIcon = testMethods.Length > 0
+                            ? $"<span style=\"cursor: pointer; margin-right: 5px;\" title=\"Covered by tests: {testNames} for {counter}\">&#9432;</span>"
+                            : $"<span style=\"margin-right: 5px;\">&nbsp;</span>";
+
                         if (!string.IsNullOrEmpty(line))
                         {
-                            htmlWriter.WriteLine($"<div style=\"{style}\">{WebUtility.HtmlEncode(line)}</div>");
+                            htmlWriter.WriteLine($"<div style=\"{style}\" title=\"{testNames}\">{testNamesIcon}{WebUtility.HtmlEncode(line)}</div>");
                         }
                         else
                         {
-                            htmlWriter.WriteLine($"<div style=\"{style}\">&nbsp;</div>");
+                            htmlWriter.WriteLine($"<div style=\"{style}\" title=\"{testNames}\">{testNamesIcon}&nbsp;</div>");
                         }
                     }
 

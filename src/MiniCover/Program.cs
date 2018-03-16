@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+
 namespace MiniCover
 {
     class Program
@@ -33,6 +34,7 @@ namespace MiniCover
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
                 var excludeSourceOption = command.Option("--exclude-sources", "Pattern to exclude source files", CommandOptionType.MultipleValue);
                 var hitsFileOption = command.Option("--hits-file", "Hits file name [default: coverage-hits.txt]", CommandOptionType.SingleValue);
+                
                 var coverageFileOption = CreateCoverageFileOption(command);
 
                 command.HelpOption("-h | --help");
@@ -51,6 +53,7 @@ namespace MiniCover
 
                     var hitsFile = GetHitsFile(hitsFileOption);
                     var coverageFile = GetCoverageFile(coverageFileOption);
+
                     var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, workdir);
                     var result = instrumenter.Execute();
                     SaveCoverageFile(coverageFile, result);
@@ -144,28 +147,28 @@ namespace MiniCover
                 });
             });
 
-             commandLineApplication.Command("opencoverreport", command =>
-            {
-                command.Description = "Write an OpenCover-formatted XML report to folder";
+            commandLineApplication.Command("opencoverreport", command =>
+           {
+               command.Description = "Write an OpenCover-formatted XML report to folder";
 
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
-                var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
-                command.HelpOption("-h | --help");
+               var workDirOption = CreateWorkdirOption(command);
+               var coverageFileOption = CreateCoverageFileOption(command);
+               var thresholdOption = CreateThresholdOption(command);
+               var outputOption = command.Option("--output", "Output file for OpenCover report [default: opencovercoverage.xml]", CommandOptionType.SingleValue);
+               command.HelpOption("-h | --help");
 
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
+               command.OnExecute(() =>
+               {
+                   UpdateWorkingDirectory(workDirOption);
 
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
-                    var result = LoadCoverageFile(coverageFile);
-                    var output = GetOpenCoverXmlReportOutput(outputOption);
-                    OpenCoverReport.Execute(result, output, threshold);
-                    return 0;
-                });
-            });
+                   var coverageFile = GetCoverageFile(coverageFileOption);
+                   var threshold = GetThreshold(thresholdOption);
+                   var result = LoadCoverageFile(coverageFile);
+                   var output = GetOpenCoverXmlReportOutput(outputOption);
+                   OpenCoverReport.Execute(result, output, threshold);
+                   return 0;
+               });
+           });
 
             commandLineApplication.Command("cloverreport", command =>
             {
