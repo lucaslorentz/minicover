@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Sample.TryFinally;
 using Xunit;
 
 namespace Sample.Tests.XUnit
@@ -40,10 +41,31 @@ namespace Sample.Tests.XUnit
         }
 
         [Fact]
+        public void NUnitTestOnCodeWithTryFinally()
+        {
+            var test = new AClassWithSomeTryFinally();
+            var result = test.MultiplyByTwo(2);
+            Assert.Equal(4, result);
+        }
+
+        [Fact]
+        public void NUnitTestOnCodeWithoutTryFinally()
+        {
+            var test = new AnotherClassWithoutTryFinally();
+            var result = test.MultiplyByTwo(2);
+            Assert.Equal(4, result);
+        }
+
+        [Fact]
         public void XUnitTestAsync()
         {
-            Parallel.Invoke(new ParallelOptions{ MaxDegreeOfParallelism = 10 },Enumerable.Range(0, 50).Select<int, Action>(i => (() => new AnotherClass().AMethodNotAsync())).ToArray());
             Task.WaitAll(Enumerable.Range(0, 50).Select(i => new AnotherClass().AMethodAsync()).ToArray());
+        }
+
+        [Fact]
+        public void XUnitTestParallelAsync()
+        {
+            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, Enumerable.Range(0, 50).Select<int, Action>(i => (() => new AnotherClass().AMethodNotAsync())).ToArray());
         }
     }
 }
