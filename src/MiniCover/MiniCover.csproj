@@ -26,12 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj"
-      PrivateAssets="All" />
+    <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

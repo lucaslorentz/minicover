@@ -19,7 +19,7 @@ namespace Mono.Cecil.Tests {
 
 				AssertCode (@"
 	.locals init (System.Int32 V_0)
-	IL_0000: ldarg.0
+	IL_0000: ldarg.0 // this
 	IL_0001: ldarg.1
 	IL_0002: mul
 	IL_0003: stloc.0
