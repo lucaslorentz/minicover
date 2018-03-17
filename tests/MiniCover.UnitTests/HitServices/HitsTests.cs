@@ -13,9 +13,9 @@ namespace MiniCover.UnitTests.HitServices
         {
             var tests = new[]
             {
-                new HitTestMethod("MiniCover.XUnit.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-                    "MiniCover.XUnit.Tests.UnitTest1", "XUnitTest2",
-                    @"C:\\Repos\\minicover\\test\\MiniCover.XUnit.Tests\\bin\\Debug\\netcoreapp2.0\\MiniCover.XUnit.Tests.dll",
+                new HitTestMethod("Sample.Tests.XUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                    "Sample.Tests.XUnit.UnitTest1", "XUnitTest2",
+                    @"C:\\Repos\\minicover\\sample\\test\\Sample.Tests.XUnit\\bin\\Debug\\netcoreapp2.0\\Sample.Tests.XUnit.dll",
                     12500305,
                     new Dictionary<int, int>
                     {
@@ -34,9 +34,9 @@ namespace MiniCover.UnitTests.HitServices
                         {39, 50},
                         {40, 51}
                     }),
-                new HitTestMethod("MiniCover.NUnit.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-                    "MiniCover.NUnit.Tests.UnitTest1", "NUnitTest2",
-                    @"C:\\Repos\\minicover\\test\\MiniCover.NUnit.Tests\\bin\\Debug\\netcoreapp2.0\\MiniCover.NUnit.Tests.dll",
+                new HitTestMethod("Sample.Tests.NUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                    "Sample.Tests.NUnit.UnitTest1", "NUnitTest2",
+                    @"C:\\Repos\\minicover\\test\\Sample.Tests.NUnit\\bin\\Debug\\netcoreapp2.0\\Sample.Tests.NUnit.dll",
                     12500305,
                     new Dictionary<int, int>
                     {
@@ -69,17 +69,17 @@ namespace MiniCover.UnitTests.HitServices
         {
             var tests = new[]
             {
-                new HitTestMethod("MiniCover.XUnit.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-                    "MiniCover.XUnit.Tests.UnitTest1", "XUnitTest2",
-                    @"C:\\Repos\\minicover\\test\\MiniCover.XUnit.Tests\\bin\\Debug\\netcoreapp2.0\\MiniCover.XUnit.Tests.dll",
+                new HitTestMethod("Sample.Tests.XUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                    "Sample.Tests.XUnit.UnitTest1", "XUnitTest2",
+                    @"C:\\Repos\\minicover\\sample\\test\\Sample.Tests.XUnit\\bin\\Debug\\netcoreapp2.0\\Sample.Tests.XUnit.dll",
                     1,
                     new Dictionary<int, int>
                     {
                         {8, 1},
                     }),
-                new HitTestMethod("MiniCover.XUnit.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-                    "MiniCover.XUnit.Tests.UnitTest1", "XUnitTest2",
-                    @"C:\\Repos\\minicover\\test\\MiniCover.XUnit.Tests\\bin\\Debug\\netcoreapp2.0\\MiniCover.XUnit.Tests.dll",
+                new HitTestMethod("Sample.Tests.XUnit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                    "Sample.Tests.XUnit.UnitTest1", "XUnitTest2",
+                    @"C:\\Repos\\minicover\\sample\\test\\Sample.Tests.XUnit\\bin\\Debug\\netcoreapp2.0\\Sample.Tests.XUnit.dll",
                     1,
                     new Dictionary<int, int>
                     {

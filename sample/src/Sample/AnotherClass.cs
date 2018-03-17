@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace MiniCover.Tests
+namespace Sample
 {
     public class AnotherClass
     {

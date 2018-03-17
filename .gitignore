@@ -3,6 +3,7 @@ coverage.json
 coverage.xml
 coverage-hits.txt
 opencovercoverage.xml
+clover.xml
 bin
 obj
 release
