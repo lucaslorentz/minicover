@@ -16,7 +16,13 @@
     <ProjectReference Include="..\..\src\MiniCover\MiniCover.csproj" />
     <ProjectReference Include="..\..\src\MiniCover.HitServices\MiniCover.HitServices.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Instrumentation\" />
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);Resources\**\*</DefaultItemExcludes>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="Resources\**\*" />
+  </ItemGroup>
 </Project>

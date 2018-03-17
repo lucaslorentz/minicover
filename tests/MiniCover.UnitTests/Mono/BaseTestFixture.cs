@@ -77,7 +77,7 @@ namespace Mono.Cecil.Tests {
 
 		public static string Normalize (string str)
 		{
-			return str.Trim ().Replace ("\r\n", "\n");
+			return str.Trim ().Replace ("\r\n", "\n").Replace("\t","");
 		}
 
 		public static void TestModule (string file, Action<ModuleDefinition> test, bool verify = true, bool readOnly = false, Type symbolReaderProvider = null, Type symbolWriterProvider = null, IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
