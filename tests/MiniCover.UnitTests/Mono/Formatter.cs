@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -26,24 +27,66 @@ namespace Mono.Cecil.Tests {
 			var body = method.Body;
 
 			WriteVariables (writer, body);
+		    var indentation = 1;
+			foreach (Instruction instruction in body.Instructions)
+			{
+			    
 
-			foreach (Instruction instruction in body.Instructions) {
-				var sequence_point = body.Method.DebugInformation.GetSequencePoint (instruction);
-				if (sequence_point != null) {
-					writer.Write ('\t');
-					WriteSequencePoint (writer, sequence_point);
-					writer.WriteLine ();
-				}
-
-				writer.Write ('\t');
-				WriteInstruction (writer, instruction);
-				writer.WriteLine ();
+			    var handler = body.ExceptionHandlers.FirstOrDefault(a => a.HandlerStart.Equals(instruction));
+			    if (handler != null)
+			    {
+			        writer.Indent(indentation);
+			        writer.WriteLine("}");
+			        writer.Indent(indentation);
+			        writer.WriteLine(FormatHandlerType(handler));
+			        writer.WriteLine("{");
+			    }
+			    if (body.ExceptionHandlers.Any(a => a.HandlerEnd.Equals(instruction)))
+			    {
+			        indentation--;
+			        writer.Indent(indentation);
+			        writer.WriteLine("}");
+			        
+			    }
+			    WriteInstructionLine(writer, body, instruction, indentation);
+			    if (body.ExceptionHandlers.Any(a => a.TryStart.Equals(instruction)))
+			    {
+			        writer.Indent(indentation);
+			        writer.WriteLine(".try");
+			        writer.WriteLine("{");
+			        indentation++;
+			    }
+			    
 			}
 
-			WriteExceptionHandlers (writer, body);
+			//WriteExceptionHandlers (writer, body);
 		}
 
-		static void WriteVariables (TextWriter writer, MethodBody body)
+	    private static void WriteInstructionLine(TextWriter writer, MethodBody body, Instruction instruction,
+	        int indentation)
+	    {
+	        var sequence_point = body.Method.DebugInformation.GetSequencePoint(instruction);
+	        if (sequence_point != null)
+	        {
+	            writer.Indent(indentation);
+	            WriteSequencePoint(writer, sequence_point);
+	            writer.WriteLine();
+	        }
+
+	        writer.Indent(indentation);
+	        WriteInstruction(writer, instruction);
+	        writer.WriteLine();
+	    }
+
+	    private static void Indent(this TextWriter writer ,int numberOfTabulation)
+	    {
+	        for (int i = 0; i < numberOfTabulation; i++)
+	        {
+	            writer.Write('\t');
+	        }
+	    }
+
+	    static void WriteVariables (TextWriter writer, MethodBody body)
 		{
 			var variables = body.Variables;
 
@@ -157,12 +200,28 @@ namespace Mono.Cecil.Tests {
 
 			foreach (var handler in body.ExceptionHandlers) {
 				writer.Write ("\t");
-				writer.WriteLine (".try {0} to {1} {2} handler {3} to {4}",
-					FormatLabel (handler.TryStart),
-					FormatLabel (handler.TryEnd),
-					FormatHandlerType (handler),
-					FormatLabel (handler.HandlerStart),
-					FormatLabel (handler.HandlerEnd));
+				writer.WriteLine(".try");
+				writer.WriteLine("{");
+				writer.Write ("\t");
+				var currentInstruction = handler.TryStart.Next;
+				writer.Write ('\t');
+				WriteInstruction (writer, currentInstruction);
+				writer.WriteLine ();
+				while (currentInstruction.Next != null)
+				{
+					if (currentInstruction.Equals(handler.TryEnd))
+					{
+						writer.WriteLine("}");
+						writer.WriteLine(FormatHandlerType(handler));
+						writer.WriteLine("{");
+					}
+
+					currentInstruction = currentInstruction.Next;
+					writer.Write ('\t');
+					WriteInstruction (writer, currentInstruction);
+					writer.WriteLine ();
+				}
+				writer.WriteLine("}");
 			}
 		}
 
