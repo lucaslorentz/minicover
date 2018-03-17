@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
@@ -9,27 +10,37 @@ using Xunit;
 
 namespace MiniCover.UnitTests
 {
-    public class InstrumenterTests:BaseTestFixture
+    public class InstrumenterTests: BaseTestFixture
     {
 		[Fact]
 	    public void EncapsulateWithTryFinallyShould_Not_EncapsulateCtor_with_a_field_initialized_out_side_the_constructor()
 		{
 			var expectedIl = @".locals ()
-								IL_0000: ldarg.0 // this
-								IL_0001: ldc.i4.5
-								IL_0002: stfld System.Int32 AClassWithFieldInitializedOutsideConstructor::value
-								IL_0007: ldarg.0 // this
-								IL_0008: call System.Void System.Object::.ctor()
-								IL_000d: ret";
+.try
+{
+IL_0000: nop
+IL_0001: ldarg.0 // this
+IL_0002: ldc.i4.5
+IL_0003: stfld System.Int32 AClassWithFieldInitializedOutsideConstructor::value
+IL_0008: nop
+IL_0009: leave.s IL_0013
+}
+catch System.Exception
+{
+IL_000b: rethrow
+}
+IL_000d: ldarg.0 // this
+IL_000e: call System.Void System.Object::.ctor()
+IL_0013: ret";
 
 			TestCSharp("Constructors.cs", module =>
 			{
 				var type = module.GetType("AClassWithFieldInitializedOutsideConstructor");
 				var constructor = type.GetMethod(".ctor");
 				Assert.NotNull(constructor);
-
+			    ApplyTryFinally(constructor, module);
 				Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
-			});
+			}, readOnly:true);
 		}
 
         [Fact]
@@ -95,38 +106,7 @@ IL_0022: ret";
                 ApplyTryFinally(constructor, module);
                 Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
             }, readOnly:true ,symbolReaderProvider: typeof (PdbReaderProvider), symbolWriterProvider: typeof (PdbWriterProvider));
-        }
-
-        [Fact]
-        public void ValidFormatShould_Not_EncapsulateCtor_with_existing_try_finally()
-        {
-            var expectedIl = @".locals init ()
-IL_0000: ldarg.0 // this
-IL_0001: call System.Void System.Object::.ctor()
-.try
-{
-IL_0006: ldarg.0 // this
-IL_0007: ldc.i4.5
-IL_0008: stfld System.Int32 AClassWithATryFinallyInConstructor::value
-IL_000d: leave.s IL_0016
-}
-finally
-{
-IL_000f: ldarg.0 // this
-IL_0010: call System.Void AClassWithATryFinallyInConstructor::Exit()
-IL_0015: endfinally
-}
-IL_0016: ret";
-
-            TestCSharp("Constructors.cs", module =>
-            {
-                var type = module.GetType("AClassWithATryFinallyInConstructor");
-                var constructor = type.GetMethod(".ctor");
-                Assert.NotNull(constructor);
-
-                Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
-            });
-        }
+        }     
 
 	    [Fact]
 	    public void EncapsulateWithTryFinallyShould_Not_EncapsulateCtor_with_existing_try_finally()
@@ -168,26 +148,59 @@ IL_001b: ret";
 		    }, readOnly:true);
 	    }
 
-
         private void ApplyTryFinally(MethodDefinition method, ModuleDefinition moduleDefinition)
         {
             var processor = method.Body.GetILProcessor();
-            var firstInstruction = GetFirstNonConstructorInstruction(method);
+            var firstInstruction = GetFirstConstructorInstruction(method);
             EncapsulateMethodBodyWithTryFinallyBlock(processor, moduleDefinition, method, firstInstruction);
             processor.Body.OptimizeMacros();
         }
 
-        private Instruction GetFirstNonConstructorInstruction(MethodDefinition method)
+        private Instruction GetFirstConstructorInstruction(MethodDefinition method)
         {
             var constructorInstruction = method.Body.Instructions.First(a => a.OpCode == OpCodes.Call);
             return constructorInstruction;
+        }
 
+        private void EncapsulateWithTryCatch(ILProcessor ilProcessor, MethodDefinition methodDefinition,
+            Instruction @from, Instruction to, Instruction returnInstruction)
+        {
+            var tryEnd = Instruction.Create(OpCodes.Leave_S, returnInstruction);
+            ilProcessor.InsertBefore(to, tryEnd);
+
+            /////////////// Start of try block  
+            Instruction nopInstruction1 = Instruction.Create(OpCodes.Nop);
+            ilProcessor.InsertBefore(from, nopInstruction1);
+            //////// Start catch block
+            Instruction nopInstruction2 = Instruction.Create(OpCodes.Nop);
+            ilProcessor.InsertBefore(tryEnd, nopInstruction2);
+
+            Instruction rethrowInstruction = Instruction.Create(OpCodes.Rethrow);
+            ilProcessor.InsertAfter(tryEnd, rethrowInstruction);
+            var handler = new ExceptionHandler(ExceptionHandlerType.Catch)
+            {
+                TryStart = nopInstruction1,
+                TryEnd = rethrowInstruction,
+                HandlerStart = rethrowInstruction,
+                HandlerEnd = to,
+                CatchType = methodDefinition.Module.ImportReference(typeof (Exception))
+            };
+            methodDefinition.Body.ExceptionHandlers.Add(handler);
         }
         private void EncapsulateMethodBodyWithTryFinallyBlock(ILProcessor ilProcessor,
             ModuleDefinition assemblyDefinition, MethodDefinition methodDefinition, Instruction firstInstruction)
         {
-            var returnEnd =  FixReturns(methodDefinition, assemblyDefinition);
+            
+            if (methodDefinition.IsConstructor && methodDefinition.Body.Instructions.IndexOf(firstInstruction) > 2)
+            {
+                var lastInstruction = methodDefinition.Body.Instructions.Last();
+                EncapsulateWithTryCatch(ilProcessor, methodDefinition, methodDefinition.Body.Instructions.First(), firstInstruction.Previous,
+                    lastInstruction);
+                if(firstInstruction.Next.Equals(lastInstruction)) return;
+            }
 
+            var returnEnd =  FixReturns(methodDefinition, assemblyDefinition);
+            
             //var (returnStart, returnEnd) = FixReturns(assemblyDefinition, methodDefinition, ilProcessor);
 
 
