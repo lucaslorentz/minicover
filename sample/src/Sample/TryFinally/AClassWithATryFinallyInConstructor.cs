@@ -1,4 +1,6 @@
-﻿namespace Sample.TryFinally
+﻿using System;
+
+namespace Sample.TryFinally
 {
     public class AClassWithATryFinallyInConstructor
     {
@@ -17,6 +19,15 @@
 
         public void Exit()
         {
+            try
+            {
+                Console.WriteLine("test");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("erro");
+                throw;
+            }
         }
     }
 }
