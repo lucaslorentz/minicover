@@ -7,6 +7,7 @@ bin
 obj
 release
 .vs
+/artifacts
 /TestResults
 /MiniCover.v3.ncrunchsolution.user
 /clover.xml

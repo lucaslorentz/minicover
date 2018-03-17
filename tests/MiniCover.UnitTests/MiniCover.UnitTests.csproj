@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\MiniCover\MiniCover.csproj" />
+    <ProjectReference Include="..\..\src\MiniCover.HitServices\MiniCover.HitServices.csproj" />
   </ItemGroup>
 </Project>
