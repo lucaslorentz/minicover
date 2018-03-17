@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniCover.Tests\MiniCover.Tests.csproj" />
+    <ProjectReference Include="..\..\src\Sample\Sample.csproj" />
   </ItemGroup>
 
 </Project>
