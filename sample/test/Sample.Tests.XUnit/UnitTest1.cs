@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MiniCover.Tests;
 using Xunit;
 
-namespace MiniCover.XUnit.Tests
+namespace Sample.Tests.XUnit
 {
     public class UnitTest1
     {

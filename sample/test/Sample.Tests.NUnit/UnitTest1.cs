@@ -1,10 +1,9 @@
+using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MiniCover.Tests;
-using NUnit.Framework;
 
-namespace MiniCover.NUnit.Tests
+namespace Sample.Tests.NUnit
 {
     [TestFixture]
     public class UnitTest1
