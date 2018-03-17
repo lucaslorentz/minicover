@@ -30,7 +30,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj" />
+    <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj"
+      PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\MiniCover.HitServices.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netcoreapp2.0\</PackagePath>
+    </_PackageFiles>
   </ItemGroup>
 
 </Project>
