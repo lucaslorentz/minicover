@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MiniCover.Model;
+using System;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using MiniCover.Model;
 
 namespace MiniCover.Reports
 {
@@ -10,9 +10,7 @@ namespace MiniCover.Reports
     {
         public static void Execute(InstrumentationResult result, string output, float threshold)
         {
-            var hits = File.Exists(result.HitsFile)
-                ? File.ReadAllLines(result.HitsFile).Select(h => int.Parse(h)).ToArray()
-                : new int[0];
+            var hits = Hits.TryReadFromFile(result.HitsFile);
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
 
@@ -38,8 +36,6 @@ namespace MiniCover.Reports
 
                 var methods = assembly.SourceFiles.Select(file =>
                 {
-                    var hitInstructions = file.Value.Instructions.Where(h => hits.Contains(h.Id)).ToArray();
-
                     return file.Value.Instructions
                         .GroupBy(instruction => new { instruction.Class, instruction.Method, instruction.MethodFullName })
                         .Select(instruction =>
@@ -55,18 +51,20 @@ namespace MiniCover.Reports
 
                         var methodPoints = instruction.Select(methodPoint =>
                         {
-                            var hitCount = hitInstructions.Count(hit => hit.Equals(methodPoint));
+                            var counter = hits.GetInstructionHitCount(methodPoint.Id);
 
-                            return new XElement(
+                            var point = new XElement(
                                 XName.Get("seqpnt"),
-                                new XAttribute(XName.Get("visitcount"), hitCount),
+                                new XAttribute(XName.Get("visitcount"), counter),
                                 new XAttribute(XName.Get("line"), methodPoint.StartLine),
                                 new XAttribute(XName.Get("column"), methodPoint.StartColumn),
                                 new XAttribute(XName.Get("endline"), methodPoint.EndLine),
                                 new XAttribute(XName.Get("endcolumn"), methodPoint.EndColumn),
                                 new XAttribute(XName.Get("excluded"), "false"),
                                 new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Key))
-                            );
+                                );
+
+                            return point;
                         });
 
                         method.Add(methodPoints);
