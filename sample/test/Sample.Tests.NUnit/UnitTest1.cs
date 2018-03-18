@@ -1,37 +1,37 @@
+using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MiniCover.Tests;
-using Xunit;
 
-namespace MiniCover.XUnit.Tests
+namespace Sample.Tests.NUnit
 {
+    [TestFixture]
     public class UnitTest1
     {
-        [Fact]
-        public void XUnitTest1()
+        [Test]
+        public void NUnitTest1()
         {
             var a = 2;
             var b = 2;
             var c = a + b;
 
-            Assert.Equal(a, b);
-            Assert.Equal(4, c);
+            Assert.AreEqual(a, b);
+            Assert.AreEqual(4, c);
 
             var obj = new AnotherClass();
             obj.SomeProperty = 6;
             obj.SomeMethod();
         }
 
-        [Fact]
-        public void XUnitTest2()
+        [Test]
+        public void NUnitTest2()
         {
             var a = 2;
             var b = 2;
 
             if (a != b)
             {
-                Assert.Equal(a, b);
+                Assert.AreEqual(a, b);
             }
 
             for (int i = 0; i < 50; i++)
@@ -40,8 +40,8 @@ namespace MiniCover.XUnit.Tests
             }
         }
 
-        [Fact]
-        public void XUnitTestAsync()
+        [Test]
+        public void NUnitTestAsync()
         {
             Parallel.Invoke(new ParallelOptions{ MaxDegreeOfParallelism = 10 },Enumerable.Range(0, 50).Select<int, Action>(i => (() => new AnotherClass().AMethodNotAsync())).ToArray());
             Task.WaitAll(Enumerable.Range(0, 50).Select(i => new AnotherClass().AMethodAsync()).ToArray());

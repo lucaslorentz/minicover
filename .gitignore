@@ -3,10 +3,12 @@ coverage.json
 coverage.xml
 coverage-hits.txt
 opencovercoverage.xml
+clover.xml
 bin
 obj
 release
 .vs
+/artifacts
 /TestResults
 /MiniCover.v3.ncrunchsolution.user
 /clover.xml

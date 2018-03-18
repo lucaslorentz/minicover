@@ -6,20 +6,17 @@ export "MiniCover=dotnet run -p src/MiniCover/MiniCover.csproj --"
 
 dotnet restore
 dotnet build
-$MiniCover instrument --sources "test/**/*.cs" --assemblies "test/**/bin/**/*.dll"
-$MiniCover reset
-dotnet test --no-build test/MiniCover.XUnit.Tests/MiniCover.XUnit.Tests.csproj
-dotnet test --no-build test/MiniCover.NUnit.Tests/MiniCover.NUnit.Tests.csproj
-$MiniCover uninstrument
 
-$MiniCover report --threshold 90
-$MiniCover htmlreport --threshold 90 
-$MiniCover xmlreport --threshold 90
-$MiniCover opencoverreport --threshold 90
-$MiniCover cloverreport --threshold 90
+for project in tests/**/*.csproj; do dotnet test --no-build $project; done
 
+dotnet pack -c Release --output $PWD/artifacts --version-suffix ci-`date +%Y%m%d%H%M%S`
 
-if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
-	dotnet pack src/MiniCover -c Release --output $PWD/artifacts --version-suffix ci-`date +%Y%m%d%H%M%S`
+echo "### Running sample build"
+cd sample
+./build.sh
+cd ..
+
+if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then	
+	echo "### Publishing packages"
 	dotnet nuget push artifacts/*.nupkg -k $NUGET_KEY -s https://api.nuget.org/v3/index.json
 fi
