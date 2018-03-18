@@ -23,12 +23,12 @@ cd tools
 dotnet minicover uninstrument --workdir ../
 
 # This command returns failure if the coverage is lower than the threshold
-dotnet minicover report --workdir ../ --threshold 90
+dotnet minicover report --workdir ../ --threshold 80
 
 # Generate other reports
-dotnet minicover htmlreport --workdir ../ --threshold 90
-dotnet minicover xmlreport --workdir ../ --threshold 90
-dotnet minicover opencoverreport --workdir ../ --threshold 90
-dotnet minicover cloverreport --workdir ../ --threshold 90
+dotnet minicover htmlreport --workdir ../ --threshold 80
+dotnet minicover xmlreport --workdir ../ --threshold 80
+dotnet minicover opencoverreport --workdir ../ --threshold 80
+dotnet minicover cloverreport --workdir ../ --threshold 80
 
 cd ..

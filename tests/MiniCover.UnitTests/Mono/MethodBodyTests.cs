@@ -10,14 +10,14 @@ namespace Mono.Cecil.Tests {
 		public void MultiplyMethod ()
 		{
 			TestIL ("hello.il", module => {
-				var foo = module.GetType ("Foo");
-				Assert.NotNull (foo);
+			    var foo = module.GetType ("Foo");
+			    Assert.NotNull (foo);
 
-				var bar = foo.GetMethod ("Bar");
-				Assert.NotNull (bar);
-				Assert.True (bar.IsIL);
+			    var bar = foo.GetMethod ("Bar");
+			    Assert.NotNull (bar);
+			    Assert.True (bar.IsIL);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals init (System.Int32 V_0)
 	IL_0000: ldarg.0 // this
 	IL_0001: ldarg.1
@@ -35,13 +35,13 @@ namespace Mono.Cecil.Tests {
 		public void PrintStringEmpty ()
 		{
 			TestIL ("hello.il", module => {
-				var foo = module.GetType ("Foo");
-				Assert.NotNull (foo);
+			    var foo = module.GetType ("Foo");
+			    Assert.NotNull (foo);
 
-				var print_empty = foo.GetMethod ("PrintEmpty");
-				Assert.NotNull (print_empty);
+			    var print_empty = foo.GetMethod ("PrintEmpty");
+			    Assert.NotNull (print_empty);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals ()
 	IL_0000: ldsfld System.String System.String::Empty
 	IL_0005: call System.Void System.Console::WriteLine(System.String)
@@ -54,13 +54,13 @@ namespace Mono.Cecil.Tests {
 		public void Branch ()
 		{
 			TestModule ("libhello.dll", module => {
-				var lib = module.GetType ("Library");
-				Assert.NotNull (lib);
+			    var lib = module.GetType ("Library");
+			    Assert.NotNull (lib);
 
-				var method = lib.GetMethod ("GetHelloString");
-				Assert.NotNull (method);
+			    var method = lib.GetMethod ("GetHelloString");
+			    Assert.NotNull (method);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals init (System.String V_0)
 	IL_0000: nop
 	IL_0001: ldstr ""hello world of tomorrow""
@@ -76,13 +76,13 @@ namespace Mono.Cecil.Tests {
 		public void Switch ()
 		{
 			TestModule ("switch.exe", module => {
-				var program = module.GetType ("Program");
-				Assert.NotNull (program);
+			    var program = module.GetType ("Program");
+			    Assert.NotNull (program);
 
-				var method = program.GetMethod ("Main");
-				Assert.NotNull (method);
+			    var method = program.GetMethod ("Main");
+			    Assert.NotNull (method);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals init (System.Int32 V_0)
 	IL_0000: ldarg.0
 	IL_0001: ldlen
@@ -122,12 +122,12 @@ namespace Mono.Cecil.Tests {
 		public void MethodSpec ()
 		{
 			TestIL ("methodspecs.il", module => {
-				var tamtam = module.GetType ("Tamtam");
+			    var tamtam = module.GetType ("Tamtam");
 
-				var bar = tamtam.GetMethod ("Bar");
-				Assert.NotNull (bar);
+			    var bar = tamtam.GetMethod ("Bar");
+			    Assert.NotNull (bar);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals ()
 	IL_0000: ldc.i4.2
 	IL_0001: call System.Void Tamtam::Foo<System.Int32>(TFoo)
@@ -140,11 +140,11 @@ namespace Mono.Cecil.Tests {
 		public void NestedTryCatchFinally ()
 		{
 			TestModule ("catch.exe", module => {
-				var program = module.GetType ("Program");
-				var main = program.GetMethod ("Main");
-				Assert.NotNull (main);
+			    var program = module.GetType ("Program");
+			    var main = program.GetMethod ("Main");
+			    Assert.NotNull (main);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals ()
 	IL_0000: call System.Void Program::Foo()
 	IL_0005: leave.s IL_000d
@@ -173,11 +173,11 @@ namespace Mono.Cecil.Tests {
 		public void FunctionPointersAndCallSites ()
 		{
 			TestModule ("fptr.exe", module => {
-				var type = module.Types [0];
-				var start = type.GetMethod ("Start");
-				Assert.NotNull (start);
+			    var type = module.Types [0];
+			    var start = type.GetMethod ("Start");
+			    Assert.NotNull (start);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals init ()
 	IL_0000: ldc.i4.1
 	IL_0001: call method System.Int32 *(System.Int32) MakeDecision::Decide()
@@ -193,27 +193,27 @@ namespace Mono.Cecil.Tests {
 	IL_002b: call System.Void System.Console::WriteLine(System.Int32)
 	IL_0030: ret
 ", start);
-			}, verify: false);
+			});
 		}
 
 		[Fact]
 		public void ThisParameter ()
 		{
 			TestIL ("hello.il", module => {
-				var type = module.GetType ("Foo");
-				var method = type.GetMethod ("Gazonk");
+			    var type = module.GetType ("Foo");
+			    var method = type.GetMethod ("Gazonk");
 
-				Assert.NotNull (method);
+			    Assert.NotNull (method);
 
-				AssertCode (@"
+			    AssertCode (@"
 	.locals ()
 	IL_0000: ldarg 0
 	IL_0004: pop
 	IL_0005: ret
 ", method);
 
-				Assert.Equal (method.Body.ThisParameter.ParameterType, type);
-				Assert.Equal (method.Body.ThisParameter, method.Body.Instructions [0].Operand);
+			    Assert.Equal (method.Body.ThisParameter.ParameterType, type);
+			    Assert.Equal (method.Body.ThisParameter, method.Body.Instructions [0].Operand);
 			});
 		}
 
@@ -269,11 +269,11 @@ namespace Mono.Cecil.Tests {
 		public void FilterMaxStack ()
 		{
 			TestIL ("hello.il", module => {
-				var type = module.GetType ("Foo");
-				var method = type.GetMethod ("TestFilter");
+			    var type = module.GetType ("Foo");
+			    var method = type.GetMethod ("TestFilter");
 
-				Assert.NotNull (method);
-				Assert.Equal (2, method.Body.MaxStackSize);
+			    Assert.NotNull (method);
+			    Assert.Equal (2, method.Body.MaxStackSize);
 			});
 		}
 
@@ -281,25 +281,25 @@ namespace Mono.Cecil.Tests {
 		public void BranchOutsideMethod ()
 		{
 			TestIL ("branch-out.il", module => {
-				var type = module.GetType ("Foo");
-				var method = type.GetMethod ("BranchOutside");
+			    var type = module.GetType ("Foo");
+			    var method = type.GetMethod ("BranchOutside");
 
-				Assert.NotNull (method);
-				Assert.NotNull (method.Body);
+			    Assert.NotNull (method);
+			    Assert.NotNull (method.Body);
 
-				var leave = method.Body.Instructions [0];
-				Assert.Equal (OpCodes.Leave, leave.OpCode);
-				Assert.Null (leave.Operand);
-				Assert.Equal ("IL_0000: leave", leave.ToString ());
-			}, verify: false);
+			    var leave = method.Body.Instructions [0];
+			    Assert.Equal (OpCodes.Leave, leave.OpCode);
+			    Assert.Null (leave.Operand);
+			    Assert.Equal ("IL_0000: leave", leave.ToString ());
+			});
 		}
 
 		//[Fact]
 		public void Iterator ()
 		{
 			TestModule ("iterator.exe", module => {
-				var method = module.GetType ("Program").GetMethod ("GetLittleArgs");
-				Assert.NotNull (method.Body);
+			    var method = module.GetType ("Program").GetMethod ("GetLittleArgs");
+			    Assert.NotNull (method.Body);
 			});
 		}
 
@@ -307,12 +307,12 @@ namespace Mono.Cecil.Tests {
 		public void LoadString ()
 		{
 			TestCSharp ("CustomAttributes.cs", module => {
-				var type = module.GetType ("FooAttribute");
-				var get_fiou = type.GetMethod ("get_Fiou");
-				Assert.NotNull (get_fiou);
+			    var type = module.GetType ("FooAttribute");
+			    var get_fiou = type.GetMethod ("get_Fiou");
+			    Assert.NotNull (get_fiou);
 
-				var ldstr = get_fiou.Body.Instructions.Where (i => i.OpCode == OpCodes.Ldstr).First ();
-				Assert.Equal ("fiou", ldstr.Operand);
+			    var ldstr = get_fiou.Body.Instructions.Where (i => i.OpCode == OpCodes.Ldstr).First ();
+			    Assert.Equal ("fiou", ldstr.Operand);
 			});
 		}
 

@@ -58,6 +58,22 @@ namespace Sample.Tests.NUnit
         }
 
         [Test]
+        public void NUnitTestOnSimpleLambda()
+        {
+            var test = new ClassWithSimpleLambda();
+            var result = test.Add2ToEachValueAndSumThem(2, 4);
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
+        public void NUnitTestOnComplicatedLambda()
+        {
+            var test = new ClassWithComplicatedLambda();
+            var result = test.Add2ToEachValueAndSumThemWithConsoleWrite(2, 4);
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
         public void NUnitTestAsync()
         {
             Task.WaitAll(Enumerable.Range(0, 50).Select(i => new AnotherClass().AMethodAsync()).ToArray());
@@ -66,7 +82,7 @@ namespace Sample.Tests.NUnit
         [Test]
         public void NUnitTestParallelAsync()
         {
-            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, Enumerable.Range(0, 50).Select<int, Action>(i => (() => new AnotherClass().AMethodNotAsync())).ToArray());
+            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, Enumerable.Range(0, 50).Select<int, Action>(i =>new AnotherClass().AMethodNotAsync).ToArray());
         }
     }
 }

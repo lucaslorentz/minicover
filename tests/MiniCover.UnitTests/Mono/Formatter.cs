@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace Mono.Cecil.Tests
@@ -198,39 +197,6 @@ namespace Mono.Cecil.Tests
 			}
 
 			writer.Write(")");
-		}
-
-		static void WriteExceptionHandlers(TextWriter writer, MethodBody body)
-		{
-			if (!body.HasExceptionHandlers)
-				return;
-
-			foreach (var handler in body.ExceptionHandlers)
-			{
-				writer.Write("\t");
-				writer.WriteLine(".try");
-				writer.WriteLine("{");
-				writer.Write("\t");
-				var currentInstruction = handler.TryStart.Next;
-				writer.Write('\t');
-				WriteInstruction(writer, currentInstruction);
-				writer.WriteLine();
-				while (currentInstruction.Next != null)
-				{
-					if (currentInstruction.Equals(handler.TryEnd))
-					{
-						writer.WriteLine("}");
-						writer.WriteLine(FormatHandlerType(handler));
-						writer.WriteLine("{");
-					}
-
-					currentInstruction = currentInstruction.Next;
-					writer.Write('\t');
-					WriteInstruction(writer, currentInstruction);
-					writer.WriteLine();
-				}
-				writer.WriteLine("}");
-			}
 		}
 
 		static string FormatHandlerType(ExceptionHandler handler)
