@@ -3,8 +3,8 @@
     internal class CoverageHitsFileOption : MiniCoverOption<string>
     {
         private const string DefaultValue = "coverage-hits.txt";
-        public override string Description => $"Hits file name pattern [default: {DefaultValue}]";
-        public override string OptionTemplate => "--hits-file";
+        protected override string Description => $"Hits file name pattern [default: {DefaultValue}]";
+        protected override string OptionTemplate => "--hits-file";
 
         public override void Validate()
         {

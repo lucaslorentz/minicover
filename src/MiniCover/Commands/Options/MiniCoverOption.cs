@@ -7,9 +7,9 @@ namespace MiniCover.Commands.Options
     {
         protected bool Validated;
         protected TValue ValueField;
-        public abstract string Description { get; }
-        public abstract string OptionTemplate { get; }
-        public virtual CommandOptionType Type => CommandOptionType.SingleValue;
+        protected abstract string Description { get; }
+        protected abstract string OptionTemplate { get; }
+        protected virtual CommandOptionType Type => CommandOptionType.SingleValue;
 
         public TValue Value
         {

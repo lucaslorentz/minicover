@@ -6,8 +6,8 @@ namespace MiniCover.Commands.Options
     internal class WorkingDirOption : MiniCoverOption<DirectoryInfo>
     {
         private const string DefaultValue = "./";
-        public override string Description => $"Solution directory [default: {DefaultValue}]";
-        public override string OptionTemplate => "--workdir";
+        protected override string Description => $"Solution directory [default: {DefaultValue}]";
+        protected override string OptionTemplate => "--workdir";
 
         public override void Validate()
         {

@@ -4,10 +4,6 @@ namespace MiniCover.Commands.Options
 {
     internal interface IMiniCoverOption
     {
-        string OptionTemplate { get; }
-        string Description { get; }
-        CommandOptionType Type { get; }
-
         void Validate();
 
         void Initialize(CommandLineApplication commandContext);
