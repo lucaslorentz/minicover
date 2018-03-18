@@ -8,6 +8,7 @@ bin
 obj
 release
 .vs
+.DS_Store
 /artifacts
 /TestResults
 /MiniCover.v3.ncrunchsolution.user

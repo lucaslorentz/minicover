@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 
 namespace MiniCover.HitServices
@@ -14,6 +15,7 @@ namespace MiniCover.HitServices
         {
             private readonly string filePath;
             private static readonly AsyncLocal<HitTestMethod> TestMethodCache = new AsyncLocal<HitTestMethod>();
+            private static Dictionary<string, Stream> filesStream = new Dictionary<string, Stream>();
 
             private readonly HitTestMethod testMethod;
             private readonly bool clearTestMethodCache;
@@ -40,18 +42,30 @@ namespace MiniCover.HitServices
             {
                 if (clearTestMethodCache)
                 {
-                    this.Save();
+                    Save();
                     TestMethodCache.Value = null;
                 }
             }
 
             private void Save()
             {
-                lock (filePath)
+                var fileStream = GetFileStream();
+                lock (fileStream)
                 {
-                    using (var fileStream = File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.None))
-                        testMethod.Serialize(fileStream);
+                    testMethod.Serialize(fileStream);
+                    fileStream.Flush();
                 }
+            }
+
+            private Stream GetFileStream()
+            {
+                lock (filesStream)
+                {
+                    if (!filesStream.ContainsKey(filePath))
+                        filesStream[filePath] = File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.None);
+                }
+
+                return filesStream[filePath];
             }
         }
     }
