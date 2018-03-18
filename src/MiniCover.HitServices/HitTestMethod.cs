@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace MiniCover.HitServices
 {
@@ -75,7 +76,7 @@ namespace MiniCover.HitServices
 
         public void Serialize(Stream stream)
         {
-            using (var binaryWriter = new BinaryWriter(stream))
+            using (var binaryWriter = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 binaryWriter.Write(ClassName);
                 binaryWriter.Write(MethodName);

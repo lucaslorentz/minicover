@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using MiniCover.HitServices;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace MiniCover.Instrumentation
 {
@@ -122,6 +123,11 @@ namespace MiniCover.Instrumentation
                     Path.GetFullPath(pdbFile),
                     Path.GetFullPath(pdbBackupFile)
                 );
+
+                foreach (var depsJsonFile in Directory.GetFiles(assemblyDirectory, "*.deps.json"))
+                {
+                    DepsJsonUtils.PatchDepsJson(depsJsonFile);
+                }
             }
 
             result.AddInstrumentedAssembly(instrumentedAssembly);
@@ -201,7 +207,7 @@ namespace MiniCover.Instrumentation
 
                         ilProcessor.Body.SimplifyMacros();
 
-                        var instructions = methodDefinition.Body.Instructions.ToDictionary(i => i.Offset);
+                        var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
 
                         var methodContextVariable = new VariableDefinition(methodContextClassReference);
                         methodDefinition.Body.Variables.Add(methodContextVariable);
@@ -213,7 +219,18 @@ namespace MiniCover.Instrumentation
                         ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
                         UpdateInstructionReferences(methodDefinition, instructions[0], pathParamLoadInstruction);
 
-                        foreach (var instruction in instructions.Values)
+                        //Remove tail call optimization
+                        foreach (var instruction in ilProcessor.Body.Instructions.ToArray())
+                        {
+                            if (instruction.OpCode == OpCodes.Tail)
+                            {
+                                var noOpInstruction = ilProcessor.Create(OpCodes.Nop);
+                                ilProcessor.Replace(instruction, noOpInstruction);
+                                UpdateInstructionReferences(methodDefinition, instruction, noOpInstruction);
+                            }
+                        }
+
+                        foreach (var instruction in ilProcessor.Body.Instructions.ToArray())
                         {
                             if (instruction.OpCode == OpCodes.Ret)
                             {
