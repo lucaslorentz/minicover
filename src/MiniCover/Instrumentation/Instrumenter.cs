@@ -123,6 +123,11 @@ namespace MiniCover.Instrumentation
                     Path.GetFullPath(pdbFile),
                     Path.GetFullPath(pdbBackupFile)
                 );
+
+                foreach (var depsJsonFile in Directory.GetFiles(assemblyDirectory, "*.deps.json"))
+                {
+                    DepsJsonUtils.PatchDepsJson(depsJsonFile);
+                }
             }
 
             result.AddInstrumentedAssembly(instrumentedAssembly);
