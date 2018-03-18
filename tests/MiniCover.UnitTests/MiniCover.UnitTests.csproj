@@ -23,6 +23,9 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);Resources\**\*</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="Resources\**\*" />
+    <None Include="Resources\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+ 
 </Project>
