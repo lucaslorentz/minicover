@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 
 namespace MiniCover.HitServices
@@ -40,9 +41,14 @@ namespace MiniCover.HitServices
             {
                 if (clearTestMethodCache)
                 {
-                    this.Save();
+                    AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
                     TestMethodCache.Value = null;
                 }
+            }
+
+            private void CurrentDomain_ProcessExit(object sender, EventArgs e)
+            {
+                Save();
             }
 
             private void Save()
