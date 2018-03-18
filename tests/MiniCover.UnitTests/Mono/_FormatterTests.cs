@@ -33,7 +33,7 @@ IL_0016: ret";
                 Assert.NotNull(constructor);
 
                 Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
-            }, readOnly:true);
+            });
         }
     }
 }

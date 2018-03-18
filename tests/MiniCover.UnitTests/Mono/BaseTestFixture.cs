@@ -3,322 +3,246 @@ using System.IO;
 using System.Reflection;
 using Mono.Cecil.Cil;
 
-using Mono.Cecil.PE;
 using Xunit;
 
-namespace Mono.Cecil.Tests {
+namespace Mono.Cecil.Tests
+{
 
-	public abstract class BaseTestFixture {
+    public abstract class BaseTestFixture
+    {
+        public static string GetResourcePath(string name, Assembly assembly)
+        {
+            return Path.Combine(FindResourcesDirectory(assembly), name);
+        }
 
-		public static string GetResourcePath (string name, Assembly assembly)
-		{
-			return Path.Combine (FindResourcesDirectory (assembly), name);
-		}
+        public static string GetAssemblyResourcePath(string name, Assembly assembly)
+        {
+            return GetResourcePath(Path.Combine("assemblies", name), assembly);
+        }
 
-		public static string GetAssemblyResourcePath (string name, Assembly assembly)
-		{
-			return GetResourcePath (Path.Combine ("assemblies", name), assembly);
-		}
+        public static string GetCSharpResourcePath(string name, Assembly assembly)
+        {
+            return GetResourcePath(Path.Combine("cs", name), assembly);
+        }
 
-		public static string GetCSharpResourcePath (string name, Assembly assembly)
-		{
-			return GetResourcePath (Path.Combine ("cs", name), assembly);
-		}
+        public static string GetILResourcePath(string name, Assembly assembly)
+        {
+            return GetResourcePath(Path.Combine("il", name), assembly);
+        }
 
-		public static string GetILResourcePath (string name, Assembly assembly)
-		{
-			return GetResourcePath (Path.Combine ("il", name), assembly);
-		}
+        public ModuleDefinition GetResourceModule(string name)
+        {
+            return ModuleDefinition.ReadModule(GetAssemblyResourcePath(name, GetType().Assembly));
+        }
 
-		public ModuleDefinition GetResourceModule (string name)
-		{
-			return ModuleDefinition.ReadModule (GetAssemblyResourcePath (name, GetType ().Assembly));
-		}
+        public ModuleDefinition GetResourceModule(string name, ReaderParameters parameters)
+        {
+            return ModuleDefinition.ReadModule(GetAssemblyResourcePath(name, GetType().Assembly), parameters);
+        }
 
-		public ModuleDefinition GetResourceModule (string name, ReaderParameters parameters)
-		{
-			return ModuleDefinition.ReadModule (GetAssemblyResourcePath (name, GetType ().Assembly), parameters);
-		}
+        public ModuleDefinition GetResourceModule(string name, ReadingMode mode)
+        {
+            return ModuleDefinition.ReadModule(GetAssemblyResourcePath(name, GetType().Assembly), new ReaderParameters(mode));
+        }
 
-		public ModuleDefinition GetResourceModule (string name, ReadingMode mode)
-		{
-			return ModuleDefinition.ReadModule (GetAssemblyResourcePath (name, GetType ().Assembly), new ReaderParameters (mode));
-		}
+        public ModuleDefinition GetCurrentModule()
+        {
+            return ModuleDefinition.ReadModule(GetType().Module.FullyQualifiedName);
+        }
 
-		public ModuleDefinition GetCurrentModule ()
-		{
-			return ModuleDefinition.ReadModule (GetType ().Module.FullyQualifiedName);
-		}
+        public ModuleDefinition GetCurrentModule(ReaderParameters parameters)
+        {
+            return ModuleDefinition.ReadModule(GetType().Module.FullyQualifiedName, parameters);
+        }
 
-		public ModuleDefinition GetCurrentModule (ReaderParameters parameters)
-		{
-			return ModuleDefinition.ReadModule (GetType ().Module.FullyQualifiedName, parameters);
-		}
+        public static string FindResourcesDirectory(Assembly assembly)
+        {
+            var path = Path.GetDirectoryName(new Uri(assembly.CodeBase).LocalPath);
+            while (!Directory.Exists(Path.Combine(path, "Resources")))
+            {
+                var old = path;
+                path = Path.GetDirectoryName(path);
+                Assert.NotEqual(old, path);
+            }
 
-		public static string FindResourcesDirectory (Assembly assembly)
-		{
-			var path = Path.GetDirectoryName (new Uri (assembly.CodeBase).LocalPath);
-			while (!Directory.Exists (Path.Combine (path, "Resources"))) {
-				var old = path;
-				path = Path.GetDirectoryName (path);
-				Assert.NotEqual(old, path);
-			}
+            return Path.Combine(path, "Resources");
+        }
 
-			return Path.Combine (path, "Resources");
-		}
+        public static void AssertCode(string expected, MethodDefinition method)
+        {
+            Assert.True(method.HasBody);
+            Assert.NotNull(method.Body);
 
-		public static void AssertCode (string expected, MethodDefinition method)
-		{
-			Assert.True (method.HasBody);
-			Assert.NotNull (method.Body);
+            Assert.Equal(Normalize(expected), Normalize(Formatter.FormatMethodBody(method)));
+        }
 
-			Assert.Equal (Normalize (expected), Normalize (Formatter.FormatMethodBody (method)));
-		}
+        public static string Normalize(string str)
+        {
+            return str.Trim().Replace("\r\n", "\n").Replace("\t", "");
+        }
 
-		public static string Normalize (string str)
-		{
-			return str.Trim ().Replace ("\r\n", "\n").Replace("\t","");
-		}
+        public static void TestModule(string file, Action<ModuleDefinition> test, Type symbolReaderProvider = null,
+            IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
+        {
+            Run(new ModuleTestCase(file, test, symbolReaderProvider, assemblyResolver, applyWindowsRuntimeProjections));
+        }
 
-		public static void TestModule (string file, Action<ModuleDefinition> test, bool verify = true, bool readOnly = false, Type symbolReaderProvider = null, Type symbolWriterProvider = null, IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
-		{
-			Run (new ModuleTestCase (file, test, verify, readOnly, symbolReaderProvider, symbolWriterProvider, assemblyResolver, applyWindowsRuntimeProjections));
-		}
+        public static void TestCSharp(string file, Action<ModuleDefinition> test, Type symbolReaderProvider = null,
+            IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
+        {
+            Run(new CSharpTestCase(file, test, symbolReaderProvider, assemblyResolver, applyWindowsRuntimeProjections));
+        }
 
-		public static void TestCSharp (string file, Action<ModuleDefinition> test, bool verify = true, bool readOnly = false, Type symbolReaderProvider = null, Type symbolWriterProvider = null, IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
-		{
-			Run (new CSharpTestCase (file, test, verify, readOnly, symbolReaderProvider, symbolWriterProvider, assemblyResolver, applyWindowsRuntimeProjections));
-		}
+        public static void TestIL(string file, Action<ModuleDefinition> test, Type symbolReaderProvider = null,
+            IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
+        {
+            Run(new ILTestCase(file, test, symbolReaderProvider, assemblyResolver, applyWindowsRuntimeProjections));
+        }
 
-		public static void TestIL (string file, Action<ModuleDefinition> test, bool verify = true, bool readOnly = false, Type symbolReaderProvider = null, Type symbolWriterProvider = null, IAssemblyResolver assemblyResolver = null, bool applyWindowsRuntimeProjections = false)
-		{
-			Run (new ILTestCase (file, test, verify, readOnly, symbolReaderProvider, symbolWriterProvider, assemblyResolver, applyWindowsRuntimeProjections));
-		}
+        static void Run(TestCase testCase)
+        {
+            using (var runner = new TestRunner(testCase, TestCaseType.ReadImmediate))
+                runner.RunTest();
+        }
+    }
 
-		static void Run (TestCase testCase)
-		{
-			using (var runner = new TestRunner (testCase, TestCaseType.ReadDeferred))
-				runner.RunTest ();
+    abstract class TestCase
+    {
 
-			using (var runner = new TestRunner (testCase, TestCaseType.ReadImmediate))
-				runner.RunTest ();
+        public readonly Type SymbolReaderProvider;
+        public readonly IAssemblyResolver AssemblyResolver;
+        public readonly Action<ModuleDefinition> Test;
+        public readonly bool ApplyWindowsRuntimeProjections;
 
-			if (testCase.ReadOnly)
-				return;
+        public abstract string ModuleLocation { get; }
 
-#if !READ_ONLY
-			using (var runner = new TestRunner (testCase, TestCaseType.WriteFromDeferred))
-				runner.RunTest ();
+        protected Assembly Assembly => Test.Method.Module.Assembly;
 
-			using (var runner = new TestRunner (testCase, TestCaseType.WriteFromImmediate))
-				runner.RunTest ();
-#endif
-		}
-	}
+        protected TestCase(Action<ModuleDefinition> test, Type symbolReaderProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
+        {
+            Test = test;
+            SymbolReaderProvider = symbolReaderProvider;
+            AssemblyResolver = assemblyResolver;
+            ApplyWindowsRuntimeProjections = applyWindowsRuntimeProjections;
+        }
+    }
 
-	abstract class TestCase {
+    class ModuleTestCase : TestCase
+    {
+        public readonly string Module;
 
-		public readonly bool Verify;
-		public readonly bool ReadOnly;
-		public readonly Type SymbolReaderProvider;
-		public readonly Type SymbolWriterProvider;
-		public readonly IAssemblyResolver AssemblyResolver;
-		public readonly Action<ModuleDefinition> Test;
-		public readonly bool ApplyWindowsRuntimeProjections;
+        public ModuleTestCase(string module, Action<ModuleDefinition> test, Type symbolReaderProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
+            : base(test, symbolReaderProvider, assemblyResolver, applyWindowsRuntimeProjections)
+        {
+            Module = module;
+        }
 
-		public abstract string ModuleLocation { get; }
+        public override string ModuleLocation => BaseTestFixture.GetAssemblyResourcePath(Module, Assembly);
+    }
 
-		protected Assembly Assembly { get { return Test.Method.Module.Assembly; } }
+    class CSharpTestCase : TestCase
+    {
 
-		protected TestCase (Action<ModuleDefinition> test, bool verify, bool readOnly, Type symbolReaderProvider, Type symbolWriterProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
-		{
-			Test = test;
-			Verify = verify;
-			ReadOnly = readOnly;
-			SymbolReaderProvider = symbolReaderProvider;
-			SymbolWriterProvider = symbolWriterProvider;
-			AssemblyResolver = assemblyResolver;
-			ApplyWindowsRuntimeProjections = applyWindowsRuntimeProjections;
-		}
-	}
+        public readonly string File;
 
-	class ModuleTestCase : TestCase {
+        public CSharpTestCase(string file, Action<ModuleDefinition> test, Type symbolReaderProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
+            : base(test, symbolReaderProvider, assemblyResolver, applyWindowsRuntimeProjections)
+        {
+            File = file;
+        }
 
-		public readonly string Module;
+        public override string ModuleLocation => CompilationService.CompileResource(BaseTestFixture.GetCSharpResourcePath(File, Assembly));
+    }
 
-		public ModuleTestCase (string module, Action<ModuleDefinition> test, bool verify, bool readOnly, Type symbolReaderProvider, Type symbolWriterProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
-			: base (test, verify, readOnly, symbolReaderProvider, symbolWriterProvider, assemblyResolver, applyWindowsRuntimeProjections)
-		{
-			Module = module;
-		}
+    class ILTestCase : TestCase
+    {
+        public readonly string File;
 
-		public override string ModuleLocation
-		{
-			get { return BaseTestFixture.GetAssemblyResourcePath (Module, Assembly); }
-		}
-	}
+        public ILTestCase(string file, Action<ModuleDefinition> test, Type symbolReaderProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
+            : base(test, symbolReaderProvider, assemblyResolver, applyWindowsRuntimeProjections)
+        {
+            File = file;
+        }
 
-	class CSharpTestCase : TestCase {
+        public override string ModuleLocation => CompilationService.CompileResource(BaseTestFixture.GetILResourcePath(File, Assembly));
+    }
 
-		public readonly string File;
+    class TestRunner : IDisposable
+    {
 
-		public CSharpTestCase (string file, Action<ModuleDefinition> test, bool verify, bool readOnly, Type symbolReaderProvider, Type symbolWriterProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
-			: base (test, verify, readOnly, symbolReaderProvider, symbolWriterProvider, assemblyResolver, applyWindowsRuntimeProjections)
-		{
-			File = file;
-		}
+        readonly TestCase testCase;
+        readonly TestCaseType type;
 
-		public override string ModuleLocation
-		{
-			get
-			{
-				return CompilationService.CompileResource (BaseTestFixture.GetCSharpResourcePath (File, Assembly));
-			}
-		}
-	}
+        ModuleDefinition testModule;
+        DefaultAssemblyResolver testResolver;
 
-	class ILTestCase : TestCase {
+        public TestRunner(TestCase testCase, TestCaseType type)
+        {
+            this.testCase = testCase;
+            this.type = type;
+        }
 
-		public readonly string File;
+        ModuleDefinition GetModule()
+        {
+            var location = testCase.ModuleLocation;
 
-		public ILTestCase (string file, Action<ModuleDefinition> test, bool verify, bool readOnly, Type symbolReaderProvider, Type symbolWriterProvider, IAssemblyResolver assemblyResolver, bool applyWindowsRuntimeProjections)
-			: base (test, verify, readOnly, symbolReaderProvider, symbolWriterProvider, assemblyResolver, applyWindowsRuntimeProjections)
-		{
-			File = file;
-		}
+            var parameters = new ReaderParameters
+            {
+                SymbolReaderProvider = GetSymbolReaderProvider(),
+                AssemblyResolver = GetAssemblyResolver(),
+                ApplyWindowsRuntimeProjections = testCase.ApplyWindowsRuntimeProjections
+            };
 
-		public override string ModuleLocation
-		{
-			get
-			{
-				return CompilationService.CompileResource (BaseTestFixture.GetILResourcePath (File, Assembly)); ;
-			}
-		}
-	}
+            switch (type)
+            {
+                case TestCaseType.ReadImmediate:
+                    parameters.ReadingMode = ReadingMode.Immediate;
+                    return ModuleDefinition.ReadModule(location, parameters);
+                default:
+                    return null;
+            }
+        }
 
-	class TestRunner : IDisposable {
+        ISymbolReaderProvider GetSymbolReaderProvider()
+        {
+            if (testCase.SymbolReaderProvider == null)
+                return null;
 
-		readonly TestCase test_case;
-		readonly TestCaseType type;
+            return (ISymbolReaderProvider)Activator.CreateInstance(testCase.SymbolReaderProvider);
+        }
 
-		ModuleDefinition test_module;
-		DefaultAssemblyResolver test_resolver;
+        IAssemblyResolver GetAssemblyResolver()
+        {
+            if (testCase.AssemblyResolver != null)
+                return testCase.AssemblyResolver;
 
-		public TestRunner (TestCase testCase, TestCaseType type)
-		{
-			this.test_case = testCase;
-			this.type = type;
-		}
+            testResolver = new DefaultAssemblyResolver();
+            var directory = Path.GetDirectoryName(testCase.ModuleLocation);
+            testResolver.AddSearchDirectory(directory);
+            return testResolver;
+        }
 
-		ModuleDefinition GetModule ()
-		{
-			var location = test_case.ModuleLocation;
+        public void RunTest()
+        {
+            var module = GetModule();
+            if (module == null)
+                return;
 
-			var parameters = new ReaderParameters {
-				SymbolReaderProvider = GetSymbolReaderProvider (),
-				AssemblyResolver = GetAssemblyResolver (),
-				ApplyWindowsRuntimeProjections = test_case.ApplyWindowsRuntimeProjections
-			};
+            testModule = module;
+            testCase.Test(module);
+        }
 
-			switch (type) {
-			case TestCaseType.ReadImmediate:
-				parameters.ReadingMode = ReadingMode.Immediate;
-				return ModuleDefinition.ReadModule (location, parameters);
-			case TestCaseType.ReadDeferred:
-				parameters.ReadingMode = ReadingMode.Deferred;
-				return ModuleDefinition.ReadModule (location, parameters);
-#if !READ_ONLY
-			case TestCaseType.WriteFromImmediate:
-				parameters.ReadingMode = ReadingMode.Immediate;
-				return RoundTrip (location, parameters, "cecil-irt");
-			case TestCaseType.WriteFromDeferred:
-				parameters.ReadingMode = ReadingMode.Deferred;
-				return RoundTrip (location, parameters, "cecil-drt");
-#endif
-			default:
-				return null;
-			}
-		}
+        public void Dispose()
+        {
+            testModule?.Dispose();
 
-		ISymbolReaderProvider GetSymbolReaderProvider ()
-		{
-			if (test_case.SymbolReaderProvider == null)
-				return null;
+            testResolver?.Dispose();
+        }
+    }
 
-			return (ISymbolReaderProvider) Activator.CreateInstance (test_case.SymbolReaderProvider);
-		}
-
-#if !READ_ONLY
-		ISymbolWriterProvider GetSymbolWriterProvider ()
-		{
-			if (test_case.SymbolReaderProvider == null)
-				return null;
-
-			return (ISymbolWriterProvider) Activator.CreateInstance (test_case.SymbolWriterProvider);
-		}
-#endif
-
-		IAssemblyResolver GetAssemblyResolver ()
-		{
-			if (test_case.AssemblyResolver != null)
-				return test_case.AssemblyResolver;
-
-			test_resolver = new DefaultAssemblyResolver ();
-			var directory = Path.GetDirectoryName (test_case.ModuleLocation);
-			test_resolver.AddSearchDirectory (directory);
-			return test_resolver;
-		}
-
-#if !READ_ONLY
-		ModuleDefinition RoundTrip (string location, ReaderParameters reader_parameters, string folder)
-		{
-			var rt_folder = Path.Combine (Path.GetTempPath (), folder);
-			if (!Directory.Exists (rt_folder))
-				Directory.CreateDirectory (rt_folder);
-			var rt_module = Path.Combine (rt_folder, Path.GetFileName (location));
-
-			using (var module = ModuleDefinition.ReadModule (location, reader_parameters)) {
-				var writer_parameters = new WriterParameters {
-					SymbolWriterProvider = GetSymbolWriterProvider (),
-				};
-
-				test_case.Test (module);
-
-				module.Write (rt_module, writer_parameters);
-			}
-
-			if (test_case.Verify)
-				CompilationService.Verify (rt_module);
-
-			return ModuleDefinition.ReadModule (rt_module, reader_parameters);
-		}
-#endif
-		public void RunTest ()
-		{
-			var module = GetModule ();
-			if (module == null)
-				return;
-
-			test_module = module;
-			test_case.Test (module);
-		}
-
-		public void Dispose ()
-		{
-			if (test_module != null)
-				test_module.Dispose ();
-
-			if (test_resolver != null)
-				test_resolver.Dispose ();
-		}
-	}
-
-	enum TestCaseType {
-		ReadImmediate,
-		ReadDeferred,
-#if !READ_ONLY
-		WriteFromImmediate,
-		WriteFromDeferred,
-#endif
-	}
+    enum TestCaseType
+    {
+        ReadImmediate,
+        ReadDeferred,
+    }
 }
