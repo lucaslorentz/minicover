@@ -8,7 +8,7 @@ namespace MiniCover.Commands.Options
         string Description { get; }
         CommandOptionType Type { get; }
 
-        void Invalidate();
+        void Validate();
 
         void Initialize(CommandLineApplication commandContext);
     }
