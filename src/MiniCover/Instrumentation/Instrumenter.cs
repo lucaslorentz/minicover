@@ -24,7 +24,7 @@ namespace MiniCover.Instrumentation
         private readonly Type hitServiceType = typeof(HitService);
         private readonly Type methodContextType = typeof(HitService.MethodContext);
         private readonly IEnumerable<string> instrumentationDependencies;
-        
+
         private readonly ConstructorInfo instrumentedAttributeConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
 
         private InstrumentationResult result;
@@ -302,7 +302,7 @@ namespace MiniCover.Instrumentation
                 File.Delete(pdbBackupFile);
             }
         }
-        
+
         private void InstrumentInstruction(int instructionId, Instruction instruction,
             MethodReference hitInstructionReference, MethodDefinition method, ILProcessor ilProcessor,
             VariableDefinition methodContextVariable)

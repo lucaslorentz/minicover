@@ -35,7 +35,7 @@ namespace MiniCover
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
                 var excludeSourceOption = command.Option("--exclude-sources", "Pattern to exclude source files", CommandOptionType.MultipleValue);
                 var hitsFileOption = command.Option("--hits-file", "Hits file name [default: coverage-hits.txt]", CommandOptionType.SingleValue);
-                
+
                 var coverageFileOption = CreateCoverageFileOption(command);
 
                 command.HelpOption("-h | --help");
@@ -54,10 +54,7 @@ namespace MiniCover
 
                     var hitsFile = GetHitsFile(hitsFileOption);
                     var coverageFile = GetCoverageFile(coverageFileOption);
-                    var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, 
-                                                        parentDirOption.HasValue()? 
-                                                            parentDirOption.Value() :
-                                                            workdir);
+                    var instrumenter = new Instrumenter(assemblies, hitsFile, sourceFiles, workdir);
                     var result = instrumenter.Execute();
                     SaveCoverageFile(coverageFile, result);
                     return 0;
@@ -248,6 +245,10 @@ namespace MiniCover
             if (workDirOption.HasValue())
             {
                 var fullWorkDir = Path.GetFullPath(workDirOption.Value());
+                if (!File.Exists(fullWorkDir))
+                {
+                    Directory.CreateDirectory(fullWorkDir);
+                }
                 Directory.SetCurrentDirectory(fullWorkDir);
             }
             return Directory.GetCurrentDirectory();
@@ -319,19 +320,19 @@ namespace MiniCover
                 matcher.AddExclude(exclude);
             }
 
-            DirectoryInfo currentDirectoryInfo = null;
+            DirectoryInfo directoryInfo = null;
             if (parentDirOption.HasValue())
             {
-                currentDirectoryInfo = new DirectoryInfo(parentDirOption.Value());
+                directoryInfo = new DirectoryInfo(parentDirOption.Value());
             }
             else
             {
-                currentDirectoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+                directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
             }
-            var directoryInfoWrapper = new DirectoryInfoWrapper(currentDirectoryInfo);
-
-            var fileMatchResult = matcher.Execute(directoryInfoWrapper);
-            return fileMatchResult.Files.Select(f => Path.Combine(currentDirectoryInfo.ToString(), f.Path)).ToArray();
+            var fileMatchResult = matcher.Execute(new DirectoryInfoWrapper(directoryInfo));
+            return fileMatchResult.Files
+                .Select(f => Path.GetFullPath(Path.Combine(directoryInfo.ToString(), f.Path)))
+                .ToArray();
         }
 
         private static void SaveCoverageFile(string coverageFile, InstrumentationResult result)

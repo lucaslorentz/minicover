@@ -33,8 +33,9 @@ namespace MiniCover.Reports
 
         protected override void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
         {
+            var indexRelativeFileName = GetIndexRelativeHtmlFileName(kvFile.Key);
             _htmlReport.AppendLine("<tr>");
-            _htmlReport.AppendLine($"<td><a href=\"{GetIndexRelativeHtmlFileName(kvFile.Key)}\">{kvFile.Key}</a></td>");
+            _htmlReport.AppendLine($"<td><a href=\"{indexRelativeFileName}\">{indexRelativeFileName}</a></td>");
             _htmlReport.AppendLine($"<td>{lines}</td>");
             _htmlReport.AppendLine($"<td>{coveredLines}</td>");
             _htmlReport.AppendLine($"<td style=\"{GetBgColor(color)}\">{coveragePercentage:P}</td>");
