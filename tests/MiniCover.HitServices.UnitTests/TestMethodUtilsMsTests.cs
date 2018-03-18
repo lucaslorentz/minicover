@@ -1,11 +1,12 @@
-﻿using Shouldly;
-using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
 
 namespace MiniCover.HitServices.UnitTests
 {
-    public class TestMethodUtilsTests
+    [TestClass]
+    public class TestMethodUtilsMsTests
     {
-        [Fact]
+        [TestMethod]
         public void TestMethodUtil_ReturnTestMethod()
         {
             var method = TestMethodUtils.GetTestMethod();
