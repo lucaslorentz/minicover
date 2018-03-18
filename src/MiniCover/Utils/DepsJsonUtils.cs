@@ -10,6 +10,19 @@ namespace MiniCover.Utils
         public static void PatchDepsJson(string depsJsonFile)
         {
             var content = File.ReadAllText(depsJsonFile);
+            var newContent = PatchDepsJsonContent(content);
+            File.WriteAllText(depsJsonFile, newContent);
+        }
+
+        public static void UnpatchDepsJson(string depsJsonFile)
+        {
+            var content = File.ReadAllText(depsJsonFile);
+            var newContent = UnpatchDepsJsonContent(content);
+            File.WriteAllText(depsJsonFile, newContent);
+        }
+
+        public static string PatchDepsJsonContent(string content)
+        {
             var json = JsonConvert.DeserializeObject<JObject>(content);
 
             var targets = json["targets"] as JObject;
@@ -39,14 +52,11 @@ namespace MiniCover.Utils
                 };
             }
 
-            var newContent = JsonConvert.SerializeObject(json, Formatting.Indented);
-
-            File.WriteAllText(depsJsonFile, newContent);
+            return JsonConvert.SerializeObject(json, Formatting.Indented);
         }
 
-        public static void UnpatchDepsJson(string depsJsonFile)
+        public static string UnpatchDepsJsonContent(string content)
         {
-            var content = File.ReadAllText(depsJsonFile);
             var json = JsonConvert.DeserializeObject<JObject>(content);
 
             var targets = json["targets"] as JObject;
@@ -64,9 +74,7 @@ namespace MiniCover.Utils
                 libraries.Remove("MiniCover.HitServices/1.0.0");
             }
 
-            var newContent = JsonConvert.SerializeObject(json, Formatting.Indented);
-
-            File.WriteAllText(depsJsonFile, newContent);
+            return JsonConvert.SerializeObject(json, Formatting.Indented);
         }
     }
 }
