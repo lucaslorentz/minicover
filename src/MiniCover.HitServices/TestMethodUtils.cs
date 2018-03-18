@@ -9,7 +9,7 @@ namespace MiniCover.HitServices
 {
     public static class TestMethodUtils
     {
-        private static readonly IEnumerable<string> TestFrameworkAssemblies = new[]
+        private static readonly HashSet<string> TestFrameworkAssemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "NUnit3.TestAdapter",
             "nunit.framework",
@@ -20,7 +20,7 @@ namespace MiniCover.HitServices
             "Microsoft.VisualStudio.TestPlatform.MSTest.TestAdpater",
             "Microsoft.VisualStudio.TestPlatform.TestFramework"
         };
-        private static readonly Dictionary<string, bool> AssemblyHasPdbCache = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> IsProjectAssemblyCache = new Dictionary<string, bool>();
         private static readonly object Lock = new object();
         public static MethodBase GetTestMethod()
         {
@@ -43,16 +43,16 @@ namespace MiniCover.HitServices
             
             lock (Lock)
             {
-                if (AssemblyHasPdbCache.TryGetValue(location, out var hasPdb)) return hasPdb;
-                hasPdb = IsNotATestFrameworkAssembly(methodBase.DeclaringType.Assembly) && File.Exists(Path.ChangeExtension(location, ".pdb"));
-                AssemblyHasPdbCache.Add(location, hasPdb);
-                return hasPdb;
+                if (IsProjectAssemblyCache.TryGetValue(location, out var isProjectAssembly)) return isProjectAssembly;
+                isProjectAssembly = IsNotATestFrameworkAssembly(methodBase.DeclaringType.Assembly) && File.Exists(Path.ChangeExtension(location, ".pdb"));
+                IsProjectAssemblyCache.Add(location, isProjectAssembly);
+                return isProjectAssembly;
             }
         }
 
         private static bool IsNotATestFrameworkAssembly(Assembly assembly)
         {
-            return !TestFrameworkAssemblies.Any(framework => assembly.GetName().Name.Equals(framework, StringComparison.InvariantCultureIgnoreCase));
+            return !TestFrameworkAssemblies.Contains(assembly.GetName().Name);
         }
     }
 }
