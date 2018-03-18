@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Sample.TryFinally;
 
 namespace Sample.Tests.NUnit
 {
@@ -41,10 +42,47 @@ namespace Sample.Tests.NUnit
         }
 
         [Test]
+        public void NUnitTestOnCodeWithTryFinally()
+        {
+            var test = new AClassWithSomeTryFinally();
+            var result = test.MultiplyByTwo(2);
+            Assert.AreEqual(4, result);
+        }
+
+        [Test]
+        public void NUnitTestOnCodeWithoutTryFinally()
+        {
+            var test = new AnotherClassWithoutTryFinally();
+            var result = test.MultiplyByTwo(2);
+            Assert.AreEqual(4, result);
+        }
+
+        [Test]
+        public void NUnitTestOnSimpleLambda()
+        {
+            var test = new ClassWithSimpleLambda();
+            var result = test.Add2ToEachValueAndSumThem(2, 4);
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
+        public void NUnitTestOnComplicatedLambda()
+        {
+            var test = new ClassWithComplicatedLambda();
+            var result = test.Add2ToEachValueAndSumThemWithConsoleWrite(2, 4);
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
         public void NUnitTestAsync()
         {
-            Parallel.Invoke(new ParallelOptions{ MaxDegreeOfParallelism = 10 },Enumerable.Range(0, 50).Select<int, Action>(i => (() => new AnotherClass().AMethodNotAsync())).ToArray());
             Task.WaitAll(Enumerable.Range(0, 50).Select(i => new AnotherClass().AMethodAsync()).ToArray());
+        }
+
+        [Test]
+        public void NUnitTestParallelAsync()
+        {
+            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, Enumerable.Range(0, 50).Select<int, Action>(i =>new AnotherClass().AMethodNotAsync).ToArray());
         }
     }
 }
