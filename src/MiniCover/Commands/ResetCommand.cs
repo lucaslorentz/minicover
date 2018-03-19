@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-using MiniCover.Commands.Options;
+﻿using MiniCover.Commands.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,58 +7,53 @@ using System.Threading.Tasks;
 
 namespace MiniCover.Commands
 {
-    internal class ResetCommand : BaseCommandLineApplication
+    internal class ResetCommand : BaseCommand
     {
         private readonly CoverageHitsFileOption _coverageHitsFileOption = new CoverageHitsFileOption();
         private readonly WorkingDirOption _workingDirOption = new WorkingDirOption();
 
-        public ResetCommand(CommandLineApplication parentCommandLineApplication)
-            : base(parentCommandLineApplication)
-        {
-        }
-
-        protected override string CommandDescription => "Reset hits count";
         protected override string CommandName => "reset";
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] { _workingDirOption, _coverageHitsFileOption };
+        protected override string CommandDescription => "Reset hits count";
+        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] {
+            _workingDirOption,
+            _coverageHitsFileOption
+        };
 
-        protected override Task<int> Execution()
+        protected override Task<int> Execute()
         {
-            var errorsCount = 0;
-            Console.WriteLine($"Reset coverage for solution directory: '{_workingDirOption.Value.FullName}' on pattern '{_coverageHitsFileOption.Value}'");
-            var hitsFiles = _workingDirOption.Value.GetFiles(_coverageHitsFileOption.Value, SearchOption.AllDirectories);
+            WriteLine($"Reset coverage for directory: '{_workingDirOption.Value.FullName}' on pattern '{_coverageHitsFileOption.Value}'");
 
+            var hitsFiles = _workingDirOption.Value.GetFiles(_coverageHitsFileOption.Value, SearchOption.AllDirectories);
             if (!hitsFiles.Any())
             {
-                PositiveLine("Solution is already cleared");
+                WritePositiveLine("Directory is already cleared");
                 return Task.FromResult(0);
             }
 
-            Line($"Found {hitsFiles.Length} files to clear");
+            WriteLine($"Found {hitsFiles.Length} files to clear");
+
+            var errorsCount = 0;
             foreach (var hitsFile in hitsFiles)
             {
-                if (!File.Exists(hitsFile.FullName)) continue;
                 try
                 {
                     hitsFile.Delete();
-                    Line($"{hitsFile.FullName} - removed");
+                    WriteLine($"{hitsFile.FullName} - removed");
                 }
                 catch (Exception e)
                 {
                     errorsCount++;
-                    BadLine($"{hitsFile.FullName} - skipped (error: {e.Message})");
+                    WriteNegativeLine($"{hitsFile.FullName} - error: {e.Message}");
                 }
             }
 
             if (errorsCount != 0)
             {
-                BadLine($"Reset operation completed with {errorsCount} errors");
-            }
-            else
-            {
-                PositiveLine("Reset operation completed without errors");
-                return Task.FromResult(0);
+                WriteNegativeLine($"Reset operation completed with {errorsCount} errors");
+                return Task.FromResult(1);
             }
 
+            WritePositiveLine("Reset operation completed without errors");
             return Task.FromResult(0);
         }
     }

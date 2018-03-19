@@ -4,9 +4,9 @@ namespace MiniCover.Commands.Options
 {
     internal interface IMiniCoverOption
     {
-        void Validate();
+        void AddTo(CommandLineApplication command);
 
-        void Initialize(CommandLineApplication commandContext);
+        void Validate();
     }
 
     internal interface IMiniCoverOption<out T> : IMiniCoverOption

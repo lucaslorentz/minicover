@@ -6,32 +6,33 @@ using System.Threading.Tasks;
 
 namespace MiniCover.Commands
 {
-    internal abstract class BaseCommandLineApplication : CommandLineApplication
+    internal abstract class BaseCommand
     {
         private const string CommandHelpOption = "-h | --help";
 
-        protected BaseCommandLineApplication(CommandLineApplication parentCommandLineApplication)
+        public void AddTo(CommandLineApplication parentCommandLineApplication)
         {
-            Initialize();
-            Parent = parentCommandLineApplication;
-            HelpOption(CommandHelpOption);
-            InitializeOptions();
-            InitializeExecution();
+            parentCommandLineApplication
+                .Command(CommandName, command =>
+                {
+                    command.Description = CommandDescription;
+                    command.HelpOption(CommandHelpOption);
+                    AddOptions(command);
+                    command.OnExecute(() =>
+                    {
+                        ValidateOptions();
+                        return Execute();
+                    });
+                });
         }
 
-        protected abstract string CommandDescription { get; }
         protected abstract string CommandName { get; }
+        protected abstract string CommandDescription { get; }
         protected abstract IEnumerable<IMiniCoverOption> MiniCoverOptions { get; }
 
-        protected abstract Task<int> Execution();
+        protected abstract Task<int> Execute();
 
-        private void Initialize()
-        {
-            Name = CommandName;
-            Description = CommandDescription;
-        }
-
-        private void InitializeOptions()
+        private void AddOptions(CommandLineApplication command)
         {
             foreach (var miniCoverOption in MiniCoverOptions)
             {
@@ -39,7 +40,7 @@ namespace MiniCover.Commands
                 {
                     throw new ArgumentNullException(nameof(miniCoverOption), "MiniCover option is null");
                 }
-                miniCoverOption.Initialize(this);
+                miniCoverOption.AddTo(command);
             }
         }
 
@@ -51,24 +52,14 @@ namespace MiniCover.Commands
             }
         }
 
-        private void InitializeExecution()
-        {
-            OnExecute(() =>
-            {
-                ValidateOptions();
-                Line($"Starting command: {Description}");
-                return Execution();
-            });
-        }
-
-        protected void PositiveLine(string message)
+        protected void WritePositiveLine(string message)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(message);
             Console.ResetColor();
         }
 
-        protected void BadLine(string message, Exception exception = null)
+        protected void WriteNegativeLine(string message, Exception exception = null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
@@ -76,7 +67,7 @@ namespace MiniCover.Commands
             Console.ResetColor();
         }
 
-        protected void Line(string message)
+        protected void WriteLine(string message)
         {
             Console.WriteLine(message);
         }

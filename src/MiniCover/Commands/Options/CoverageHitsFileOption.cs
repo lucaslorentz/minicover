@@ -1,19 +1,21 @@
-﻿namespace MiniCover.Commands.Options
+﻿using Microsoft.Extensions.CommandLineUtils;
+
+namespace MiniCover.Commands.Options
 {
     internal class CoverageHitsFileOption : MiniCoverOption<string>
     {
-        private const string DefaultValue = "coverage-hits.txt";
-        protected override string Description => $"Hits file name pattern [default: {DefaultValue}]";
+        private const string defaultValue = "coverage-hits.txt";
+        protected override string Description => $"Hits file name pattern [default: {defaultValue}]";
         protected override string OptionTemplate => "--hits-file";
 
-        public override void Validate()
+        protected override string GetOptionValue(CommandOption option)
         {
-            var proposalValue = Option.Value();
-            if (string.IsNullOrWhiteSpace(proposalValue))
-                proposalValue = DefaultValue;
+            var optionValue = option.Value();
 
-            Validated = true;
-            ValueField = proposalValue;
+            if (string.IsNullOrWhiteSpace(optionValue))
+                return defaultValue;
+
+            return optionValue;
         }
     }
 }
