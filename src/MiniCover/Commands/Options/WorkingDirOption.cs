@@ -11,7 +11,10 @@ namespace MiniCover.Commands.Options
 
         protected override DirectoryInfo GetOptionValue(CommandOption option)
         {
-            return new DirectoryInfo(option.Value() ?? defaultValue);
+            var directory = new DirectoryInfo(option.Value() ?? defaultValue);
+            if (!directory.Exists)
+                directory.Create();
+            return directory;
         }
     }
 }
