@@ -43,7 +43,7 @@ namespace MiniCover.Commands
             }
         }
 
-        private void InvalidateOptions()
+        private void ValidateOptions()
         {
             foreach (var miniCoverOption in MiniCoverOptions)
             {
@@ -55,7 +55,7 @@ namespace MiniCover.Commands
         {
             OnExecute(() =>
             {
-                InvalidateOptions();
+                ValidateOptions();
                 Line($"Starting command: {Description}");
                 return Execution();
             });
