@@ -11,7 +11,7 @@ cd tools
 dotnet minicover instrument --workdir ../coverage --parentdir ../ --assemblies **/bin/**/*.dll --sources **/*.cs 
 
 # Reset hits count in case minicover was run for this project
-dotnet minicover reset
+dotnet minicover reset --workdir ../coverage
 
 cd -
 
