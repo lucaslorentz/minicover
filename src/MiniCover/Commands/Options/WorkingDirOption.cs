@@ -1,24 +1,17 @@
-﻿using System;
+﻿using Microsoft.Extensions.CommandLineUtils;
 using System.IO;
 
 namespace MiniCover.Commands.Options
 {
     internal class WorkingDirOption : MiniCoverOption<DirectoryInfo>
     {
-        private const string DefaultValue = "./";
-        protected override string Description => $"Solution directory [default: {DefaultValue}]";
+        private const string defaultValue = "./";
+        protected override string Description => $"Solution directory [default: {defaultValue}]";
         protected override string OptionTemplate => "--workdir";
 
-        public override void Validate()
+        protected override DirectoryInfo GetOptionValue(CommandOption option)
         {
-            var solutionPath = Option.Value() ?? DefaultValue;
-            if (!Directory.Exists(solutionPath))
-            {
-                throw new ArgumentException($"Solution directory does not exist '{solutionPath}'");
-            }
-
-            Validated = true;
-            ValueField = new DirectoryInfo(solutionPath);
+            return new DirectoryInfo(option.Value() ?? defaultValue);
         }
     }
 }

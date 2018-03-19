@@ -147,7 +147,7 @@ namespace MiniCover
                 });
             });
 
-            commandLineApplication.Commands.Add(new ResetCommand(commandLineApplication));
+            new ResetCommand().AddTo(commandLineApplication);
 
             commandLineApplication.Command("opencoverreport", command =>
            {
