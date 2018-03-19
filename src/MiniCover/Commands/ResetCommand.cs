@@ -10,20 +10,20 @@ namespace MiniCover.Commands
     internal class ResetCommand : BaseCommand
     {
         private readonly CoverageHitsFileOption _coverageHitsFileOption = new CoverageHitsFileOption();
-        private readonly WorkingDirOption _workingDirOption = new WorkingDirOption();
+        private readonly WorkingDirectoryOption _workingDirectoryOption = new WorkingDirectoryOption();
 
         protected override string CommandName => "reset";
         protected override string CommandDescription => "Reset hits count";
         protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] {
-            _workingDirOption,
+            _workingDirectoryOption,
             _coverageHitsFileOption
         };
 
         protected override Task<int> Execute()
         {
-            WriteLine($"Reset coverage for directory: '{_workingDirOption.Value.FullName}' on pattern '{_coverageHitsFileOption.Value}'");
+            WriteLine($"Reset coverage for directory: '{_workingDirectoryOption.Value.FullName}' on pattern '{_coverageHitsFileOption.Value}'");
 
-            var hitsFiles = _workingDirOption.Value.GetFiles(_coverageHitsFileOption.Value, SearchOption.AllDirectories);
+            var hitsFiles = _workingDirectoryOption.Value.GetFiles(_coverageHitsFileOption.Value, SearchOption.AllDirectories);
             if (!hitsFiles.Any())
             {
                 WritePositiveLine("Directory is already cleared");

@@ -5,36 +5,36 @@ namespace MiniCover.Commands.Options
 {
     public abstract class MiniCoverOption<TValue> : IMiniCoverOption<TValue>
     {
-        private CommandOption option;
-        private bool validated;
-        private TValue value;
-
-        protected abstract string Description { get; }
-        protected abstract string OptionTemplate { get; }
-        protected virtual CommandOptionType Type => CommandOptionType.SingleValue;
+        protected CommandOption Option;
+        protected bool Validated;
+        protected TValue ValueField { get; private set; }
 
         public TValue Value
         {
             get
             {
-                if (!validated)
+                if (!Validated)
                     throw new MemberAccessException("Option should be validated before Value access");
 
-                return value;
+                return ValueField;
             }
         }
 
+        protected abstract string Description { get; }
+        protected abstract string OptionTemplate { get; }
+        protected virtual CommandOptionType Type => CommandOptionType.SingleValue;
+
         public virtual void AddTo(CommandLineApplication command)
         {
-            option = command.Option(OptionTemplate, Description, Type);
+            Option = command.Option(OptionTemplate, Description, Type);
         }
 
-        public void Validate()
+        public virtual void Validate()
         {
-            value = GetOptionValue(option);
-            validated = true;
+            ValueField = GetOptionValue();
+            Validated = true;
         }
 
-        protected abstract TValue GetOptionValue(CommandOption option);
+        protected abstract TValue GetOptionValue();
     }
 }
