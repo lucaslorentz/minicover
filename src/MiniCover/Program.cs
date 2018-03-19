@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using MiniCover.Commands;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports;
@@ -11,12 +12,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-
 namespace MiniCover
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -147,6 +147,8 @@ namespace MiniCover
                 });
             });
 
+            new ResetCommand().AddTo(commandLineApplication);
+
             commandLineApplication.Command("opencoverreport", command =>
            {
                command.Description = "Write an OpenCover-formatted XML report to folder";
@@ -193,34 +195,7 @@ namespace MiniCover
                 });
             });
 
-            commandLineApplication.Command("reset", command =>
-            {
-                command.Description = "Reset hits count";
-
-                var workDirOption = CreateWorkdirOption(command);
-                var coverageFileOption = CreateCoverageFileOption(command);
-                command.HelpOption("-h | --help");
-
-                command.OnExecute(() =>
-                {
-                    UpdateWorkingDirectory(workDirOption);
-
-                    var coverageFile = GetCoverageFile(coverageFileOption);
-
-                    if (File.Exists(coverageFile))
-                    {
-                        var result = LoadCoverageFile(coverageFile);
-
-                        if (File.Exists(result.HitsFile))
-                            File.Delete(result.HitsFile);
-                    }
-
-                    return 0;
-                });
-            });
-
             commandLineApplication.HelpOption("-h | --help");
-
             commandLineApplication.OnExecute(() =>
             {
                 commandLineApplication.ShowHelp();
