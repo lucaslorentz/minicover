@@ -6,7 +6,7 @@ namespace MiniCover.Commands.Options
     public abstract class MiniCoverOption<TValue> : IMiniCoverOption<TValue>
     {
         protected CommandOption Option;
-        protected bool Validated;
+        protected bool Validated { get; private set; }
         protected TValue ValueField { get; private set; }
 
         public TValue Value

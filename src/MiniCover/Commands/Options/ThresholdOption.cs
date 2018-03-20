@@ -3,7 +3,6 @@
     internal class ThresholdOption : MiniCoverOption<float>
     {
         protected const float DefaultValue = 90;
-        protected string CoverageFilePath;
         protected override string Description => $"Coverage percentage threshold [default: {DefaultValue}]";
         protected override string OptionTemplate => "--threshold";
 
@@ -14,7 +13,6 @@
                 proposalThreshold = DefaultValue;
             }
 
-            Validated = true;
             return proposalThreshold / 100;
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using MiniCover.Commands.Options;
 
-namespace MiniCover.Commands.Reports
+namespace MiniCover.Commands.Options
 {
     internal class HtmlOutputFolderOption : MiniCoverOption<DirectoryInfo>
     {
@@ -15,7 +14,6 @@ namespace MiniCover.Commands.Reports
             Directory.CreateDirectory(workingDirectoryPath);
 
             var workingDirectory = new DirectoryInfo(workingDirectoryPath);
-            Validated = true;
             return workingDirectory;
         }
     }

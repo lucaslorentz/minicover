@@ -10,7 +10,6 @@ namespace MiniCover.Commands.Options
         protected override string GetOptionValue()
         {
             var coverageFilePath = Option.Value() ?? DefaultValue;
-            Validated = true;
             return TouchFile(coverageFilePath);
         }
 

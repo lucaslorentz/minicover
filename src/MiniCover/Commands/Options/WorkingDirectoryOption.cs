@@ -16,7 +16,6 @@ namespace MiniCover.Commands.Options
             var directory = new DirectoryInfo(workingDirectoryPath);
             Console.WriteLine($"Changing working directory to '{directory.FullName}'");
             Directory.SetCurrentDirectory(directory.FullName);
-            Validated = true;
             return new DirectoryInfo(workingDirectoryPath);
         }
     }
