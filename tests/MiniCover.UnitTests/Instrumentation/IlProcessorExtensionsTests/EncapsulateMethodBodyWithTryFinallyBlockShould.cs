@@ -283,7 +283,7 @@ IL_0011: ret";
         {
             var processor = methodDefinition.Body.GetILProcessor();
             var firstInstruction = methodDefinition.Body.Instructions.First();
-            processor.EncapsulateMethodBodyWithTryFinallyBlock(moduleDefinition, methodDefinition, firstInstruction, (ilProcessor, instruction) => { });
+            processor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (ilProcessor, instruction) => { });
             
             processor.Body.OptimizeMacros();
         }

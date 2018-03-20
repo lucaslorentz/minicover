@@ -72,7 +72,7 @@ IL_0033: ret";
                 var exitMethodReference = module.ImportReference(exitMethodInfo);
 
                 var hitInstructionReference = module.ImportReference(hitInstructionMethodInfo);
-                InstrumentMethod(module, constructor, Enumerable.Empty<SequencePoint>(), methodContextClassReference, enterMethodReference, exitMethodReference, new string[0], new InstrumentedAssembly("a"), "", hitInstructionReference, "test-file");
+                InstrumentMethod(module, constructor, Enumerable.Empty<SequencePoint>(), methodContextClassReference, enterMethodReference, exitMethodReference, new string[0], new InstrumentedAssembly(module.Assembly.Name.Name), "", hitInstructionReference, "test-file");
                 Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
             });
         }
@@ -102,12 +102,11 @@ IL_0033: ret";
 
             var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
             var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
-            ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(moduleDefinition, methodDefinition, firstInstruction,
-                (processor, instruction) =>
-                {
-                    ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-                    ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-                });
+            ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
+{
+    ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+    ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+});
             ilProcessor.InsertBefore(firstInstruction, storeMethodResultInstruction);
             ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
             ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);

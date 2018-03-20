@@ -6,16 +6,16 @@ namespace Mono.Cecil.Cil
     public static class IlProcessorExtensions
     {
         internal static void EncapsulateMethodBodyWithTryFinallyBlock(this ILProcessor ilProcessor,
-            ModuleDefinition moduleDefinition, MethodDefinition methodDefinition, Instruction firstInstruction, Action<ILProcessor, Instruction> insertBeforReturn)
+            Instruction firstInstruction, Action<ILProcessor, Instruction> insertBeforReturn)
         {
-
-            if (methodDefinition.IsConstructor)
+            var body = ilProcessor.Body;
+            if (body.Method.IsConstructor)
             {
-                var ctor = GetFirstConstructorInstruction(methodDefinition);
-                if (methodDefinition.Body.Instructions.IndexOf(ctor) > 2)
+                var ctor = GetFirstConstructorInstruction(body);
+                if (body.Instructions.IndexOf(ctor) > 2)
                 {
-                    var lastInstruction = methodDefinition.Body.Instructions.Last();
-                    EncapsulateWithTryCatch(ilProcessor, methodDefinition, firstInstruction, ctor.Previous);
+                    var lastInstruction = body.Instructions.Last();
+                    EncapsulateWithTryCatch(ilProcessor, firstInstruction, ctor.Previous);
                     if (ctor.Next.Equals(lastInstruction)) return;
                 }
 
@@ -26,7 +26,7 @@ namespace Mono.Cecil.Cil
                 }
             }
             
-            var returnStart = ilProcessor.FixReturns(moduleDefinition, methodDefinition);
+            var returnStart = ilProcessor.FixReturns();
 
             var beforeReturn = Instruction.Create(OpCodes.Endfinally);
             ilProcessor.InsertBefore(returnStart, beforeReturn);
@@ -43,12 +43,13 @@ namespace Mono.Cecil.Cil
                 HandlerEnd = returnStart,
             };
 
-            methodDefinition.Body.ExceptionHandlers.Add(handler);
+            body.ExceptionHandlers.Add(handler);
         }
 
-        internal static void EncapsulateWithTryCatch(ILProcessor ilProcessor, MethodDefinition methodDefinition,
-            Instruction from, Instruction to)
+        internal static void EncapsulateWithTryCatch(ILProcessor ilProcessor, Instruction from,
+            Instruction to)
         {
+            var methodDefinition = ilProcessor.Body.Method;
             var tryEnd = Instruction.Create(OpCodes.Leave_S, to);
             ilProcessor.InsertBefore(to, tryEnd);
 
@@ -68,17 +69,16 @@ namespace Mono.Cecil.Cil
             methodDefinition.Body.ExceptionHandlers.Add(handler);
         }
 
-        private static Instruction GetFirstConstructorInstruction(MethodDefinition method)
+        private static Instruction GetFirstConstructorInstruction(MethodBody body)
         {
-            var constructorInstruction = method.Body.Instructions.First(a => a.OpCode == OpCodes.Call);
+            var constructorInstruction = body.Instructions.First(a => a.OpCode == OpCodes.Call);
             return constructorInstruction;
         }
 
-        internal static Instruction FixReturns(this ILProcessor ilProcessor, ModuleDefinition moduleDefinition,
-            MethodDefinition methodDefinition
-            )
+        internal static Instruction FixReturns(this ILProcessor ilProcessor)
         {
-            if (methodDefinition.ReturnType == moduleDefinition.TypeSystem.Void)
+            var methodDefinition = ilProcessor.Body.Method;
+            if (methodDefinition.ReturnType == methodDefinition.Module.TypeSystem.Void)
             {
                 var instructions = ilProcessor.Body.Instructions.ToArray();
 

@@ -200,7 +200,7 @@ namespace MiniCover.Instrumentation
                     {
                         var methodDefinition = methodGroup.Key;
 
-                        InstrumentMethod(assemblyDefinition, methodDefinition, methodGroup, methodContextClassReference, enterMethodReference, exitMethodReference, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference);
+                        InstrumentMethod(methodDefinition, methodGroup, methodContextClassReference, enterMethodReference, exitMethodReference, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference);
                     }
                 }
 
@@ -219,8 +219,7 @@ namespace MiniCover.Instrumentation
         }
 
 	    
-
-        private void InstrumentMethod(AssemblyDefinition assemblyDefinition, MethodDefinition methodDefinition,
+        private void InstrumentMethod(MethodDefinition methodDefinition,
             IEnumerable<SequencePoint> sequencePoints,
             TypeReference methodContextClassReference,
             MethodReference enterMethodReference, MethodReference exitMethodReference,
@@ -231,10 +230,10 @@ namespace MiniCover.Instrumentation
 	        ilProcessor.Body.InitLocals = true;
 	        ilProcessor.Body.SimplifyMacros();
 
-	        var instructions = methodDefinition.Body.Instructions.ToDictionary(i => i.Offset);
+	        var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
 
 	        var methodContextVariable = new VariableDefinition(methodContextClassReference);
-	        methodDefinition.Body.Variables.Add(methodContextVariable);
+            ilProcessor.Body.Variables.Add(methodContextVariable);
 	        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
 	        var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
 	        var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
@@ -246,14 +245,13 @@ namespace MiniCover.Instrumentation
 			
 	        var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
 	        var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
-            ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(assemblyDefinition.MainModule, methodDefinition, firstInstruction,
-		        (processor, instruction) =>
-		        {
-			        ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-			        ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-		        });
+            ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
+               {
+                   ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                   ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+               });
 
-            var currentFirstInstruction = methodDefinition.Body.Instructions.First();
+            var currentFirstInstruction = ilProcessor.Body.Instructions.First();
 	        ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
 	        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
 	        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);

@@ -73,6 +73,13 @@ namespace Sample.Tests.XUnit
         }
 
         [Fact]
+        public void NunitTestAPartialClass()
+        {
+            var partialClass = new PartialClass(15);
+            Assert.Throws<Exception>(() => partialClass.CallPartialMethod());
+        }
+
+        [Fact]
         public void XUnitTestAsync()
         {
             Task.WaitAll(Enumerable.Range(0, 50).Select(i => new AnotherClass().AMethodAsync()).ToArray());
