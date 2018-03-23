@@ -15,7 +15,7 @@ namespace MiniCover.ApprovalTests
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    fileBytes = fileBytes.ReplaceTextInByteArray("`" + toRemove + Path.DirectorySeparatorChar, "d")
+                    fileBytes = fileBytes.ReplaceTextInByteArray("`" + toRemove + Path.DirectorySeparatorChar, "o")
                       .ReplaceTextInByteArray($"{Path.DirectorySeparatorChar}", "/");
                 }
                 else
