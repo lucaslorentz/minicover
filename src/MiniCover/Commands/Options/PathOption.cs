@@ -13,18 +13,4 @@
             return proposalFilePath;
         }
     }
-
-    internal class CoverageHitsFileOption : PathOption
-    {
-        protected override string DefaultValue => "./coverage-hits.txt";
-        protected override string Description => $"Hits file name pattern [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--hits-file";
-    }
-
-    internal class CoverageFileOption : PathOption
-    {
-        protected override string DefaultValue => "./coverage.json";
-        protected override string Description => $"Coverage file name [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--coverage-file";
-    }
 }
