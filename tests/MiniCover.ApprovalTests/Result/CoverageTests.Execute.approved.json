@@ -1,0 +1,712 @@
+﻿{
+  "SourcePath": "coverage/test/",
+  "HitsFile": "coverage/test/coverage-hits.txt",
+  "ExtraAssemblies": [
+    "src/Sample/bin/Debug/netstandard2.0/MiniCover.HitServices.dll",
+    "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/MiniCover.HitServices.dll",
+    "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/MiniCover.HitServices.dll"
+  ],
+  "Assemblies": [
+    {
+      "Name": "Sample",
+      "SourceFiles": {
+        "../../src/Sample/AnotherClass.cs": {
+          "Instructions": [
+            {
+              "Id": 1,
+              "StartLine": 13,
+              "EndLine": 13,
+              "StartColumn": 17,
+              "EndColumn": 38,
+              "Class": "Sample.AnotherClass",
+              "Method": "get_SomeProperty",
+              "MethodFullName": "System.Int32 Sample.AnotherClass::get_SomeProperty()",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 2,
+              "StartLine": 17,
+              "EndLine": 17,
+              "StartColumn": 17,
+              "EndColumn": 39,
+              "Class": "Sample.AnotherClass",
+              "Method": "set_SomeProperty",
+              "MethodFullName": "System.Void Sample.AnotherClass::set_SomeProperty(System.Int32)",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 3,
+              "StartLine": 23,
+              "EndLine": 23,
+              "StartColumn": 13,
+              "EndColumn": 37,
+              "Class": "Sample.AnotherClass",
+              "Method": "SomeMethod",
+              "MethodFullName": "System.Int32 Sample.AnotherClass::SomeMethod()",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 4,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 18,
+              "EndColumn": 27,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_0001: ldc.i4 0"
+            },
+            {
+              "Id": 5,
+              "StartLine": 30,
+              "EndLine": 30,
+              "StartColumn": 17,
+              "EndColumn": 30,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_0006: ldarg "
+            },
+            {
+              "Id": 6,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 40,
+              "EndColumn": 43,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_000e: ldloc V_0"
+            },
+            {
+              "Id": 7,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 29,
+              "EndColumn": 38,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_0012: ldloc V_0"
+            },
+            {
+              "Id": 8,
+              "StartLine": 36,
+              "EndLine": 36,
+              "StartColumn": 13,
+              "EndColumn": 39,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodAsync",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.AnotherClass::AMethodAsync()",
+              "Instruction": "IL_0001: ldc.i4 1"
+            },
+            {
+              "Id": 9,
+              "StartLine": 41,
+              "EndLine": 41,
+              "StartColumn": 13,
+              "EndColumn": 28,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodNotAsync",
+              "MethodFullName": "System.Void Sample.AnotherClass::AMethodNotAsync()",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 10,
+              "StartLine": 7,
+              "EndLine": 7,
+              "StartColumn": 9,
+              "EndColumn": 39,
+              "Class": "Sample.AnotherClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.AnotherClass::.ctor()",
+              "Instruction": "IL_0000: ldarg "
+            }
+          ]
+        }
+      },
+      "Locations": [
+        {
+          "File": "src/Sample/bin/Debug/netstandard2.0/Sample.dll",
+          "BackupFile": "src/Sample/bin/Debug/netstandard2.0/Sample.uninstrumented.dll",
+          "PdbFile": "src/Sample/bin/Debug/netstandard2.0/Sample.pdb",
+          "BackupPdbFile": "src/Sample/bin/Debug/netstandard2.0/Sample.uninstrumented.pdb"
+        },
+        {
+          "File": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.dll",
+          "BackupFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.pdb",
+          "BackupPdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.pdb"
+        },
+        {
+          "File": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.dll",
+          "BackupFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.pdb",
+          "BackupPdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.pdb"
+        }
+      ]
+    },
+    {
+      "Name": "Sample.Tests.NUnit",
+      "SourceFiles": {
+        "../../test/Sample.Tests.NUnit/UnitTest1.cs": {
+          "Instructions": [
+            {
+              "Id": 11,
+              "StartLine": 14,
+              "EndLine": 14,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 12,
+              "StartLine": 15,
+              "EndLine": 15,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 13,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 13,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 14,
+              "StartLine": 18,
+              "EndLine": 18,
+              "StartColumn": 13,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0009: ldloc V_0"
+            },
+            {
+              "Id": 15,
+              "StartLine": 19,
+              "EndLine": 19,
+              "StartColumn": 13,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_001b: ldc.i4 4"
+            },
+            {
+              "Id": 16,
+              "StartLine": 21,
+              "EndLine": 21,
+              "StartColumn": 13,
+              "EndColumn": 42,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_002d: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 17,
+              "StartLine": 22,
+              "EndLine": 22,
+              "StartColumn": 13,
+              "EndColumn": 34,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0033: ldloc V_3"
+            },
+            {
+              "Id": 18,
+              "StartLine": 23,
+              "EndLine": 23,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_003b: ldloc V_3"
+            },
+            {
+              "Id": 19,
+              "StartLine": 29,
+              "EndLine": 29,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 20,
+              "StartLine": 30,
+              "EndLine": 30,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 21,
+              "StartLine": 32,
+              "EndLine": 32,
+              "StartColumn": 13,
+              "EndColumn": 24,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 22,
+              "StartLine": 34,
+              "EndLine": 34,
+              "StartColumn": 17,
+              "EndColumn": 39,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0011: ldloc V_0"
+            },
+            {
+              "Id": 23,
+              "StartLine": 37,
+              "EndLine": 37,
+              "StartColumn": 18,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0024: ldc.i4 0"
+            },
+            {
+              "Id": 24,
+              "StartLine": 39,
+              "EndLine": 39,
+              "StartColumn": 17,
+              "EndColumn": 52,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0029: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 25,
+              "StartLine": 37,
+              "EndLine": 37,
+              "StartColumn": 37,
+              "EndColumn": 40,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0035: ldloc V_3"
+            },
+            {
+              "Id": 26,
+              "StartLine": 37,
+              "EndLine": 37,
+              "StartColumn": 29,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0039: ldloc V_3"
+            },
+            {
+              "Id": 27,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 13,
+              "EndColumn": 186,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestAsync",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestAsync()",
+              "Instruction": "IL_0001: newobj System.Void System.Threading.Tasks.ParallelOptions::.ctor()"
+            },
+            {
+              "Id": 28,
+              "StartLine": 47,
+              "EndLine": 47,
+              "StartColumn": 13,
+              "EndColumn": 108,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestAsync",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestAsync()",
+              "Instruction": "IL_0046: ldc.i4 0"
+            },
+            {
+              "Id": 29,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 129,
+              "EndColumn": 173,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__2_0",
+              "MethodFullName": "System.Action Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__2_0(System.Int32)",
+              "Instruction": "IL_0000: ldsfld System.Action Sample.Tests.NUnit.UnitTest1/<>c::<>9__2_2"
+            },
+            {
+              "Id": 30,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 129,
+              "EndColumn": 173,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__2_0",
+              "MethodFullName": "System.Action Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__2_0(System.Int32)",
+              "Instruction": "IL_0000: ldsfld System.Action Sample.Tests.NUnit.UnitTest1/<>c::<>9__2_2"
+            },
+            {
+              "Id": 31,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 136,
+              "EndColumn": 172,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__2_2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__2_2()",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 32,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 136,
+              "EndColumn": 172,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__2_2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__2_2()",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 33,
+              "StartLine": 47,
+              "EndLine": 47,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__2_1",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__2_1(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 34,
+              "StartLine": 47,
+              "EndLine": 47,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__2_1",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__2_1(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            }
+          ]
+        }
+      },
+      "Locations": [
+        {
+          "File": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.dll",
+          "BackupFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.pdb",
+          "BackupPdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.uninstrumented.pdb"
+        }
+      ]
+    },
+    {
+      "Name": "Sample.Tests.XUnit",
+      "SourceFiles": {
+        "../../test/Sample.Tests.XUnit/UnitTest1.cs": {
+          "Instructions": [
+            {
+              "Id": 35,
+              "StartLine": 13,
+              "EndLine": 13,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 36,
+              "StartLine": 14,
+              "EndLine": 14,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 37,
+              "StartLine": 15,
+              "EndLine": 15,
+              "StartColumn": 13,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 38,
+              "StartLine": 17,
+              "EndLine": 17,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0009: ldloc V_0"
+            },
+            {
+              "Id": 39,
+              "StartLine": 18,
+              "EndLine": 18,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0011: ldc.i4 4"
+            },
+            {
+              "Id": 40,
+              "StartLine": 20,
+              "EndLine": 20,
+              "StartColumn": 13,
+              "EndColumn": 42,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0019: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 41,
+              "StartLine": 21,
+              "EndLine": 21,
+              "StartColumn": 13,
+              "EndColumn": 34,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_001f: ldloc V_3"
+            },
+            {
+              "Id": 42,
+              "StartLine": 22,
+              "EndLine": 22,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0027: ldloc V_3"
+            },
+            {
+              "Id": 43,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 44,
+              "StartLine": 29,
+              "EndLine": 29,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 45,
+              "StartLine": 31,
+              "EndLine": 31,
+              "StartColumn": 13,
+              "EndColumn": 24,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 46,
+              "StartLine": 33,
+              "EndLine": 33,
+              "StartColumn": 17,
+              "EndColumn": 36,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0011: ldloc V_0"
+            },
+            {
+              "Id": 47,
+              "StartLine": 36,
+              "EndLine": 36,
+              "StartColumn": 18,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_001a: ldc.i4 0"
+            },
+            {
+              "Id": 48,
+              "StartLine": 38,
+              "EndLine": 38,
+              "StartColumn": 17,
+              "EndColumn": 52,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_001f: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 49,
+              "StartLine": 36,
+              "EndLine": 36,
+              "StartColumn": 37,
+              "EndColumn": 40,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_002b: ldloc V_3"
+            },
+            {
+              "Id": 50,
+              "StartLine": 36,
+              "EndLine": 36,
+              "StartColumn": 29,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_002f: ldloc V_3"
+            },
+            {
+              "Id": 51,
+              "StartLine": 45,
+              "EndLine": 45,
+              "StartColumn": 13,
+              "EndColumn": 186,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTestAsync",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTestAsync()",
+              "Instruction": "IL_0001: newobj System.Void System.Threading.Tasks.ParallelOptions::.ctor()"
+            },
+            {
+              "Id": 52,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 13,
+              "EndColumn": 108,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTestAsync",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTestAsync()",
+              "Instruction": "IL_0046: ldc.i4 0"
+            },
+            {
+              "Id": 53,
+              "StartLine": 45,
+              "EndLine": 45,
+              "StartColumn": 129,
+              "EndColumn": 173,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__2_0",
+              "MethodFullName": "System.Action Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__2_0(System.Int32)",
+              "Instruction": "IL_0000: ldsfld System.Action Sample.Tests.XUnit.UnitTest1/<>c::<>9__2_2"
+            },
+            {
+              "Id": 54,
+              "StartLine": 45,
+              "EndLine": 45,
+              "StartColumn": 129,
+              "EndColumn": 173,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__2_0",
+              "MethodFullName": "System.Action Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__2_0(System.Int32)",
+              "Instruction": "IL_0000: ldsfld System.Action Sample.Tests.XUnit.UnitTest1/<>c::<>9__2_2"
+            },
+            {
+              "Id": 55,
+              "StartLine": 45,
+              "EndLine": 45,
+              "StartColumn": 136,
+              "EndColumn": 172,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__2_2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__2_2()",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 56,
+              "StartLine": 45,
+              "EndLine": 45,
+              "StartColumn": 136,
+              "EndColumn": 172,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__2_2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__2_2()",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 57,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__2_1",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__2_1(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 58,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__2_1",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__2_1(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            }
+          ]
+        }
+      },
+      "Locations": [
+        {
+          "File": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.dll",
+          "BackupFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.pdb",
+          "BackupPdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.uninstrumented.pdb"
+        }
+      ]
+    }
+  ]
+}

@@ -7,9 +7,9 @@ export "MiniCover=dotnet run -p src/MiniCover/MiniCover.csproj --"
 dotnet restore
 dotnet build
 
-for project in tests/**/*.csproj; do dotnet test --no-build $project; done
-
 dotnet pack -c Release --output $PWD/artifacts --version-suffix ci-`date +%Y%m%d%H%M%S`
+
+for project in tests/**/*.csproj; do dotnet test --no-build $project; done
 
 echo "### Running sample build"
 cd sample
