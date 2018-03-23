@@ -30,25 +30,4 @@ namespace MiniCover.Commands.Options
             return new FileInfo(path).FullName;
         }
     }
-
-    internal class NCoverOutputOption : MiniCoverTouchOption
-    {
-        protected override string DefaultValue => "./coverage.xml";
-        protected override string Description => $"Output file for NCover report [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--output";
-    }
-
-    internal class CloverOutputOption : MiniCoverTouchOption
-    {
-        protected override string DefaultValue => "./clover.xml";
-        protected override string Description => $"Output file for Clover report [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--output";
-    }
-
-    internal class OpenCoverOutputOption : MiniCoverTouchOption
-    {
-        protected override string DefaultValue => "./opencovercoverage.xml";
-        protected override string Description => $"Output file for OpenCover report [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--output";
-    }
 }
