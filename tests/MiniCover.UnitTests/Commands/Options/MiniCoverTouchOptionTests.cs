@@ -18,7 +18,7 @@ namespace MiniCover.UnitTests.Commands.Options
 
             //act
             option.Validate();
-            var actual = option.Value;
+            var actual = option.GetValue();
             var fileInfo = new FileInfo(actual);
 
             //assert
@@ -49,7 +49,7 @@ namespace MiniCover.UnitTests.Commands.Options
             
             //act
             option.Validate();
-            var actual = option.Value;
+            var actual = option.GetValue();
             var fileInfo = new FileInfo(actual);
 
             //assert

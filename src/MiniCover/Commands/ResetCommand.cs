@@ -21,9 +21,9 @@ namespace MiniCover.Commands
 
         protected override Task<int> Execute()
         {
-            WriteLine($"Reset coverage for directory: '{_workingDirectoryOption.Value.FullName}' on pattern '{_coverageHitsFileOption.Value}'");
+            WriteLine($"Reset coverage for directory: '{_workingDirectoryOption.GetValue().FullName}' on pattern '{_coverageHitsFileOption.GetValue()}'");
 
-            var hitsFiles = _workingDirectoryOption.Value.GetFiles(_coverageHitsFileOption.Value, SearchOption.AllDirectories);
+            var hitsFiles = _workingDirectoryOption.GetValue().GetFiles(_coverageHitsFileOption.GetValue(), SearchOption.AllDirectories);
             if (!hitsFiles.Any())
             {
                 WritePositiveLine("Directory is already cleared");

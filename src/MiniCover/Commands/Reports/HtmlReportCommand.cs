@@ -22,8 +22,8 @@ namespace MiniCover.Commands.Reports
 
         protected override Task<int> Execute()
         {
-            var consoleReport = new HtmlReport(_htmlOutputFolderOption.Value.FullName);
-            var result = consoleReport.Execute(_coverageLoadedFileOption.Value, _thresholdOption.Value);
+            var consoleReport = new HtmlReport(_htmlOutputFolderOption.GetValue().FullName);
+            var result = consoleReport.Execute(_coverageLoadedFileOption.GetValue(), _thresholdOption.GetValue());
 
             return Task.FromResult(result);
         }

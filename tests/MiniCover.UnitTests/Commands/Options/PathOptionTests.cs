@@ -17,7 +17,7 @@ namespace MiniCover.UnitTests.Commands.Options
 
             //act
             option.Validate();
-            var actual = option.Value;
+            var actual = option.GetValue();
 
             //assert
             Assert.Equal(expected, actual);
@@ -45,7 +45,7 @@ namespace MiniCover.UnitTests.Commands.Options
 
             //act
             option.Validate();
-            var actual = option.Value;
+            var actual = option.GetValue();
 
             //assert
             Assert.Equal(expected, actual);

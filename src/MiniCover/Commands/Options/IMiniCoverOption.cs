@@ -11,6 +11,6 @@ namespace MiniCover.Commands.Options
 
     internal interface IMiniCoverOption<out T> : IMiniCoverOption
     {
-        T Value { get; }
+        T GetValue();
     }
 }

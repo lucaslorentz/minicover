@@ -19,7 +19,7 @@ namespace MiniCover.Commands.Reports
 
         protected override Task<int> Execute()
         {
-            CloverReport.Execute(_coverageLoadedFileOption.Value, _cloverOutputOption.Value, _thresholdOption.Value);
+            CloverReport.Execute(_coverageLoadedFileOption.GetValue(), _cloverOutputOption.GetValue(), _thresholdOption.GetValue());
 
             return Task.FromResult(0);
         }

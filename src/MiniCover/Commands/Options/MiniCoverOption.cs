@@ -9,15 +9,12 @@ namespace MiniCover.Commands.Options
         protected bool Validated { get; private set; }
         protected TValue ValueField { get; private set; }
 
-        public TValue Value
+        public TValue GetValue()
         {
-            get
-            {
-                if (!Validated)
-                    throw new MemberAccessException("Option should be validated before Value access");
+            if (!Validated)
+                throw new MemberAccessException("Option should be validated before GetValue access");
 
-                return ValueField;
-            }
+            return ValueField;
         }
 
         protected abstract string Description { get; }

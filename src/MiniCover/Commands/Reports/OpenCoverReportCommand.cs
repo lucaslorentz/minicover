@@ -18,7 +18,7 @@ namespace MiniCover.Commands.Reports
 
         protected override Task<int> Execute()
         {
-            OpenCoverReport.Execute(_coverageLoadedFileOption.Value, _openCoverOutputOption.Value, _thresholdOption.Value);
+            OpenCoverReport.Execute(_coverageLoadedFileOption.GetValue(), _openCoverOutputOption.GetValue(), _thresholdOption.GetValue());
 
             return Task.FromResult(0);
         }

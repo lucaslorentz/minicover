@@ -10,25 +10,23 @@ namespace MiniCover.Commands.Options
         private bool _invalidated;
         private InstrumentationResult _value;
 
-        InstrumentationResult IMiniCoverOption<InstrumentationResult>.Value
+        InstrumentationResult IMiniCoverOption<InstrumentationResult>.GetValue()
         {
-            get
-            {
-                if (_invalidated) return _value;
-                throw new MemberAccessException("Option should be invalidate before Value access");
-            }
+            if (_invalidated) return _value;
+            throw new MemberAccessException("Option should be invalidate before GetValue access");
         }
 
         public override void Validate()
         {
             base.Validate();
+            var value = GetValue();
 
-            if (!File.Exists(Value))
+            if (!File.Exists(value))
             {
-                throw new ArgumentException($"Coverage file does not exist '{Value}'");
+                throw new ArgumentException($"Coverage file does not exist '{value}'");
             }
 
-            var coverageFileString = File.ReadAllText(Value);
+            var coverageFileString = File.ReadAllText(value);
             _value = JsonConvert.DeserializeObject<InstrumentationResult>(coverageFileString);
             _invalidated = true;
         }

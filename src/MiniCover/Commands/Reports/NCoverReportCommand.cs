@@ -19,7 +19,7 @@ namespace MiniCover.Commands.Reports
 
         protected override Task<int> Execute()
         {
-            XmlReport.Execute(_coverageLoadedFileOption.Value, _nCoverOutputOption.Value, _thresholdOption.Value);
+            XmlReport.Execute(_coverageLoadedFileOption.GetValue(), _nCoverOutputOption.GetValue(), _thresholdOption.GetValue());
 
             return Task.FromResult(0);
         }
