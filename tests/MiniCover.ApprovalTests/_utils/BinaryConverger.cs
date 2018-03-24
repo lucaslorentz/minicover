@@ -20,7 +20,7 @@ namespace MiniCover.ApprovalTests
                 }
                 else
                 {
-                    fileBytes = fileBytes.ReplaceTextInByteArray(toRemove + Path.DirectorySeparatorChar, string.Empty );
+                    fileBytes = fileBytes.ReplaceTextInByteArray(toRemove + Path.DirectorySeparatorChar, string.Empty);
                 }
             }
 
