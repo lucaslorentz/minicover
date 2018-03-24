@@ -30,7 +30,7 @@ namespace MiniCover.ApprovalTests
             result.ExitCode.ShouldBe(0);
             result.StdErr.ShouldBeNullOrEmpty();
 
-            var coverageJson = StringConverger.ApplyCleanup(File.ReadAllText(Path.Combine(toolPath, workdir, "coverage.json")), new Uri(sampleRootDirectory).LocalPath, "../../src/sample/");
+            var coverageJson = StringConverger.ApplyCleanup(File.ReadAllText(Path.Combine(toolPath, workdir, "coverage.json")), new Uri(sampleRootDirectory).LocalPath);
             ApprovaleHelper.VerifyJson(coverageJson);
 
             result = MiniCoverRunner.ExecuteReset(toolPath, workdir);
@@ -52,12 +52,9 @@ namespace MiniCover.ApprovalTests
             result.ExitCode.ShouldBe(0);
             result.StdErr.ShouldBeNullOrEmpty();
 
-            var bytes = BinaryConverger.ReplaceTextInFile(Path.Combine(toolPath, workdir, "coverage-hits.txt"), new Uri(sampleRootDirectory).LocalPath);
+            var bytes = File.ReadAllBytes(Path.Combine(toolPath, workdir, "coverage-hits.txt"));
          
             ApprovaleHelper.VerifyByte(bytes);
         }
-
-        
-
     }
 }

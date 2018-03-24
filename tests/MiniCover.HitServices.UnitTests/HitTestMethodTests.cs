@@ -1,5 +1,4 @@
 ﻿using Shouldly;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,9 +13,8 @@ namespace MiniCover.HitServices.UnitTests
         {
             var assembly = this.GetType().Assembly;
 
-            //var sut = new HitTestMethod(assembly.FullName, this.GetType().FullName, nameof(BinarySerializationShouldWork), assembly.Location, 15, new Dictionary<int, int> { { 1, 15 } });
-            var currentUri = new Uri(new Uri(Directory.GetCurrentDirectory()),@"../../../../");
-            var sut = HitTestMethod.From(TestMethodUtils.GetTestMethod(), currentUri);
+            var sut = new HitTestMethod(assembly.FullName, this.GetType().FullName, nameof(BinarySerializationShouldWork), assembly.Location, 15, new Dictionary<int, int> { { 1, 15 } });
+
             byte[] data;
             using (var stream = new MemoryStream())
             {

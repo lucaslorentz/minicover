@@ -16,7 +16,6 @@ namespace MiniCover.ApprovalTests
                     path = toRemove + Path.DirectorySeparatorChar;
                 }
                 var pattern = $"\"{Regex.Escape(Regex.Escape(path))}(.*?)\"";
-                var matches = Regex.Matches(text, pattern);
                 text = Regex.Replace(text, pattern, m => $"\"{CleanPath(m.Groups[1].Value)}\"");
             }
             if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
