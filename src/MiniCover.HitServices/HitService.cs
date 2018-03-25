@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -25,7 +26,8 @@ namespace MiniCover.HitServices
                 this.filePath = filePath;
                 if (TestMethodCache.Value == null)
                 {
-                    TestMethodCache.Value = HitTestMethod.From(TestMethodUtils.GetTestMethod());
+                    var currentUri = new Uri(Directory.GetCurrentDirectory());
+                    TestMethodCache.Value = HitTestMethod.From(TestMethodUtils.GetTestMethod(), currentUri);
                     clearTestMethodCache = true;
                 }
 
