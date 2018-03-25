@@ -11,7 +11,7 @@ namespace MiniCover.ApprovalTests
             foreach (var toRemove in pathToReplace)
             {
                 var path = toRemove;
-                if (!toRemove.EndsWith(Path.DirectorySeparatorChar))
+                if (!toRemove.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 {
                     path = toRemove + Path.DirectorySeparatorChar;
                 }

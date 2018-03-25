@@ -22,7 +22,7 @@ namespace MiniCover.ApprovalTests
             var filedir = Path.Combine(Path.GetDirectoryName(filepath), "Result");
             var namer = new SaneNamer { Name = filename + "." + membername, SourcePath = filedir };
             var reporter = new MultiReporter(new TravisCIReporter(), new DiffReporter());
-            Approver.Verify(new FileApprover(writer, namer), reporter);
+            Approver.Verify(new FileApprover(writer, namer, true), reporter);
         }
 
         public static void VerifyJson(string text, [CallerFilePath] string filepath = null, [CallerMemberName] string membername = null)
@@ -33,7 +33,7 @@ namespace MiniCover.ApprovalTests
             var filedir = Path.Combine(Path.GetDirectoryName(filepath), "Result");
             var namer = new SaneNamer { Name = filename + "." + membername, SourcePath = filedir };
             var reporter = new MultiReporter(new TravisCIReporter(), new DiffReporter());
-            Approver.Verify(new FileApprover(writer, namer), reporter);
+            Approver.Verify(new FileApprover(writer, namer, true), reporter);
         }
 
         public static void VerifyByte(byte[] bytes, [CallerFilePath] string filepath = null, [CallerMemberName] string membername = null)
@@ -43,7 +43,7 @@ namespace MiniCover.ApprovalTests
             var filedir = Path.Combine(Path.GetDirectoryName(filepath), "Result");
             var namer = new SaneNamer { Name = filename + "." + membername, SourcePath = filedir };
             var reporter = new MultiReporter(new TravisCIReporter(), new DiffReporter());
-            Approver.Verify(new FileApprover(writer, namer), reporter);
+            Approver.Verify(new FileApprover(writer, namer, true), reporter);
         }
     }
 }
