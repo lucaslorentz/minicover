@@ -12,17 +12,20 @@ namespace Mono.Cecil.Cil
             if (body.Method.IsConstructor)
             {
                 var ctor = GetFirstConstructorInstruction(body);
-                if (body.Instructions.IndexOf(ctor) > 2)
+                if (ctor != null)
                 {
-                    var lastInstruction = body.Instructions.Last();
-                    EncapsulateWithTryCatch(ilProcessor, firstInstruction, ctor.Previous);
-                    if (ctor.Next.Equals(lastInstruction)) return;
-                }
+                    if (body.Instructions.IndexOf(ctor) > 2)
+                    {
+                        var lastInstruction = body.Instructions.Last();
+                        EncapsulateWithTryCatch(ilProcessor, firstInstruction, ctor.Previous);
+                        if (ctor.Next.Equals(lastInstruction)) return;
+                    }
 
-                if(firstInstruction.Next.OpCode != OpCodes.Nop)
-                {
-                    firstInstruction = Instruction.Create(OpCodes.Nop);
-                    ilProcessor.InsertAfter(ctor, firstInstruction);
+                    if (firstInstruction.Next.OpCode != OpCodes.Nop)
+                    {
+                        firstInstruction = Instruction.Create(OpCodes.Nop);
+                        ilProcessor.InsertAfter(ctor, firstInstruction);
+                    }
                 }
             }
             
@@ -71,7 +74,7 @@ namespace Mono.Cecil.Cil
 
         private static Instruction GetFirstConstructorInstruction(MethodBody body)
         {
-            var constructorInstruction = body.Instructions.First(a => a.OpCode == OpCodes.Call);
+            var constructorInstruction = body.Instructions.FirstOrDefault(a => a.OpCode == OpCodes.Call);
             return constructorInstruction;
         }
 

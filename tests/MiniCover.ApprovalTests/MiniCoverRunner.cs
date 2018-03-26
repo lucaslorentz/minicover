@@ -4,7 +4,7 @@ using Shouldly;
 
 namespace MiniCover.ApprovalTests
 {
-    internal class MiniCoverRunner
+    internal static class MiniCoverRunner
     {
         public static CommandResult ExecuteInstrumenter(string toolsPath, string workdir)
         {

@@ -92,5 +92,17 @@ namespace Sample.Tests.XUnit
                 .ToArray();
             Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, tasks);
         }
+
+        [Fact]
+        public void NunitTestBuilderWithStaticUsage()
+        {
+            var instance = ClassWithMultipleConstructors.Default();
+        }
+
+        [Fact]
+        public void NunitTestBuilderWithParameterWithStaticUsage()
+        {
+            var instance = ClassWithMultipleConstructors.BuildFor(15);
+        }
     }
 }
