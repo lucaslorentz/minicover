@@ -204,8 +204,12 @@ namespace MiniCover
                 var serviceJobIdOption = command.Option("--service-job-id", "Define service_job_id in coveralls json", CommandOptionType.SingleValue);
                 var serviceNameOption = command.Option("--service-name", "Define service_name in coveralls json", CommandOptionType.SingleValue);
                 var repoTokenOption = command.Option("--repo-token", "set the repo token", CommandOptionType.SingleValue);
-                var commitMessageOption = command.Option("--commit-message", "set the commit message", CommandOptionType.SingleValue);
                 var commitOption = command.Option("--commit", "set the git commit id", CommandOptionType.SingleValue);
+                var commitMessageOption = command.Option("--commit-message", "set the commit message", CommandOptionType.SingleValue);
+                var commitAuthorNameOption = command.Option("--commit-author-name", "set the commit author name", CommandOptionType.SingleValue);
+                var commitAuthorEmailOption = command.Option("--commit-author-email", "set the commit author email", CommandOptionType.SingleValue);
+                var commitCommitterNameOption = command.Option("--commit-committer-name", "set the commit committer name", CommandOptionType.SingleValue);
+                var commitCommitterEmailOption = command.Option("--commit-committer-email", "set the commit committer email", CommandOptionType.SingleValue);
                 var branchOption = command.Option("--branch", "set the git branch", CommandOptionType.SingleValue);
                 var remoteOption = command.Option("--remote", "set the git remote name", CommandOptionType.SingleValue);
                 var remoteUrlOption = command.Option("--remote-url", "set the git remote url", CommandOptionType.SingleValue);
@@ -235,6 +239,10 @@ namespace MiniCover
                         commitMessageOption.Value(),
                         rootPath,
                         commitOption.Value(),
+                        commitAuthorNameOption.Value(),
+                        commitAuthorEmailOption.Value(),
+                        commitCommitterNameOption.Value(),
+                        commitCommitterEmailOption.Value(),
                         branchOption.Value(),
                         remoteOption.Value(),
                         remoteUrlOption.Value()

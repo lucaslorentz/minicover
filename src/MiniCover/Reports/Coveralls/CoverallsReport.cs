@@ -24,6 +24,10 @@ namespace MiniCover.Reports.Coveralls
         private readonly string _commitMessage;
         private readonly string _rootFolder;
         private readonly string _commit;
+        private readonly string _commitAuthorName;
+        private readonly string _commitAuthorEmail;
+        private readonly string _commitCommitterName;
+        private readonly string _commitCommitterEmail;
         private readonly string _branch;
         private readonly string _remoteName;
         private readonly string _remoteUrl;
@@ -36,6 +40,10 @@ namespace MiniCover.Reports.Coveralls
             string commitMessage,
             string rootfolder,
             string commit,
+            string commitAuthorName,
+            string commitAuthorEmail,
+            string commitCommitterName,
+            string commitCommitterEmail,
             string branch,
             string remoteName,
             string remoteUrl)
@@ -46,6 +54,10 @@ namespace MiniCover.Reports.Coveralls
             _serviceName = serviceName;
             _rootFolder = rootfolder;
             _commit = commit;
+            _commitAuthorName = commitAuthorName;
+            _commitAuthorEmail = commitAuthorEmail;
+            _commitCommitterName = commitCommitterName;
+            _commitCommitterEmail = commitCommitterEmail;
             _branch = branch;
             _remoteName = remoteName;
             _remoteUrl = remoteUrl;
@@ -67,9 +79,13 @@ namespace MiniCover.Reports.Coveralls
                     ? new CoverallsGitModel
                     {
                         Head = !string.IsNullOrWhiteSpace(_commit)
-                            ? new CoverallsHeadModel
+                            ? new CoverallsCommitModel
                             {
                                 Id = _commit,
+                                AuthorName = _commitAuthorName,
+                                AuthorEmail = _commitAuthorEmail,
+                                CommitterName = _commitCommitterName,
+                                CommitterEmail = _commitCommitterEmail,
                                 Message = _commitMessage
                             }
                             : null,

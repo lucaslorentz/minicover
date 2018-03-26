@@ -6,7 +6,7 @@ namespace MiniCover.Reports.Coveralls.Models
     class CoverallsGitModel
     {
         [JsonProperty("head")]
-        public CoverallsHeadModel Head { get; set; }
+        public CoverallsCommitModel Head { get; set; }
 
         [JsonProperty("branch")]
         public string Branch { get; set; }
