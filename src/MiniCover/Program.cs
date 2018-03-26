@@ -5,6 +5,7 @@ using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports;
 using MiniCover.Reports.Clover;
+using MiniCover.Reports.Coveralls;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;
@@ -195,23 +196,22 @@ namespace MiniCover
                 });
             });
 
-            commandLineApplication.Command("coverallreport", command =>
+            commandLineApplication.Command("coverallsreport", command =>
             {
-                command.Description = "Write a coverall-formatted JSON report to folder";
-                var outputOption = command.Option("--output", "Output file for coverall report [default: coverall.json]", CommandOptionType.SingleValue);
-                var coverall_job_id = command.Option("--job", "Define service_job_id in coverall json", CommandOptionType.SingleValue);
-                var coverall_service_name = command.Option("--servicename", "Define service_name in coverall json", CommandOptionType.SingleValue);
-                var coverall_post = command.Option("--post", "If set post to the specified url" , CommandOptionType.SingleValue);
-                var coverall_token = command.Option("--token", "set the repo token" , CommandOptionType.SingleValue);
-                var coverall_message = command.Option("--msg", "set the commit message" , CommandOptionType.SingleValue);
-                var coverall_git_id = command.Option("--id", "set the git commit id" , CommandOptionType.SingleValue);
-                var coverall_git_branch = command.Option("--branch", "set the git branch" , CommandOptionType.SingleValue);
-                var coverall_git_remote_name = command.Option("--remote", "set the git remote name" , CommandOptionType.SingleValue);
-                var coverall_git_remote_url = command.Option("--remote-url", "set the git remote url" , CommandOptionType.SingleValue);
-                
+                command.Description = "Write a coveralls-formatted JSON report to folder";
+                var rootPathOption = command.Option("--root-path", "Set the git root path", CommandOptionType.SingleValue);
+                var outputOption = command.Option("--output", "Output file for coveralls report", CommandOptionType.SingleValue);
+                var serviceJobIdOption = command.Option("--service-job-id", "Define service_job_id in coveralls json", CommandOptionType.SingleValue);
+                var serviceNameOption = command.Option("--service-name", "Define service_name in coveralls json", CommandOptionType.SingleValue);
+                var repoTokenOption = command.Option("--repo-token", "set the repo token", CommandOptionType.SingleValue);
+                var commitMessageOption = command.Option("--commit-message", "set the commit message", CommandOptionType.SingleValue);
+                var commitOption = command.Option("--commit", "set the git commit id", CommandOptionType.SingleValue);
+                var branchOption = command.Option("--branch", "set the git branch", CommandOptionType.SingleValue);
+                var remoteOption = command.Option("--remote", "set the git remote name", CommandOptionType.SingleValue);
+                var remoteUrlOption = command.Option("--remote-url", "set the git remote url", CommandOptionType.SingleValue);
+
                 var workDirOption = CreateWorkdirOption(command);
                 var coverageFileOption = CreateCoverageFileOption(command);
-                var thresholdOption = CreateThresholdOption(command);
 
                 command.HelpOption("-h | --help");
 
@@ -220,25 +220,27 @@ namespace MiniCover
                     UpdateWorkingDirectory(workDirOption);
 
                     var coverageFile = GetCoverageFile(coverageFileOption);
-                    var threshold = GetThreshold(thresholdOption);
                     var result = LoadCoverageFile(coverageFile);
-                    var output =  outputOption.Value(); 
-                    CoverallsReport report = new CoverallsReport(output
-                            , coverall_token.Value()
-                            , coverall_job_id.Value()
-                            , coverall_service_name.Value()
-                            , coverall_message.Value()
-                            , ( workDirOption.Value() ?? System.IO.Directory.GetCurrentDirectory() )
-                            , coverall_post.Value()
-                            , coverall_git_id.Value()
-                            , coverall_git_branch.Value()
-                            , coverall_git_remote_name.Value()
-                            , coverall_git_remote_url.Value()
-                        );
-                    
-                    report.Execute(result, threshold);
+                    var output = outputOption.Value();
 
-                    return 0;
+                    var rootPath = rootPathOption.HasValue()
+                        ? Path.GetFullPath(rootPathOption.Value())
+                        : Directory.GetCurrentDirectory();
+
+                    var report = new CoverallsReport(
+                        output,
+                        repoTokenOption.Value(),
+                        serviceJobIdOption.Value(),
+                        serviceNameOption.Value(),
+                        commitMessageOption.Value(),
+                        rootPath,
+                        commitOption.Value(),
+                        branchOption.Value(),
+                        remoteOption.Value(),
+                        remoteUrlOption.Value()
+                    );
+
+                    return report.Execute(result).Result;
                 });
 
             });
