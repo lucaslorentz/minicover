@@ -149,7 +149,7 @@ namespace MiniCover
 
             new ResetCommand().AddTo(commandLineApplication);
 
-           commandLineApplication.Command("opencoverreport", command =>
+            commandLineApplication.Command("opencoverreport", command =>
            {
                command.Description = "Write an OpenCover-formatted XML report to folder";
 
@@ -204,11 +204,6 @@ namespace MiniCover
                 var coverall_post = command.Option("--post", "If set post to the specified url" , CommandOptionType.SingleValue);
                 var coverall_token = command.Option("--token", "set the repo token" , CommandOptionType.SingleValue);
                 var coverall_message = command.Option("--msg", "set the commit message" , CommandOptionType.SingleValue);
-<<<<<<< HEAD
-                
-=======
-
->>>>>>> 4c24634... add job id and message
                 var coverall_git_id = command.Option("--id", "set the git commit id" , CommandOptionType.SingleValue);
                 var coverall_git_branch = command.Option("--branch", "set the git branch" , CommandOptionType.SingleValue);
                 var coverall_git_remote_name = command.Option("--remote", "set the git remote name" , CommandOptionType.SingleValue);
@@ -223,10 +218,6 @@ namespace MiniCover
                 command.OnExecute(() =>
                 {
                     UpdateWorkingDirectory(workDirOption);
-<<<<<<< HEAD
-
-=======
->>>>>>> 4c24634... add job id and message
 
                     var coverageFile = GetCoverageFile(coverageFileOption);
                     var threshold = GetThreshold(thresholdOption);
@@ -243,11 +234,6 @@ namespace MiniCover
                             , coverall_git_branch.Value()
                             , coverall_git_remote_name.Value()
                             , coverall_git_remote_url.Value()
-<<<<<<< HEAD
-
-=======
-                            
->>>>>>> 4c24634... add job id and message
                         );
                     
                     report.Execute(result, threshold);

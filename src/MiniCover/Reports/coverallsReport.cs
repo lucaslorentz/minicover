@@ -41,17 +41,9 @@ namespace MiniCover.Reports
 
         public CoverallsReport(string output
             , string repo_token
-<<<<<<< HEAD
-
             , string job_id
             , string service_name
             , string message
-
-=======
-            , string job_id
-            , string service_name
-            , string message
->>>>>>> 4c24634... add job id and message
             , string rootfolder
             , string post
             , string git_id
@@ -88,10 +80,7 @@ namespace MiniCover.Reports
 
             if(null == _git_remote_url)
                 throw new ArgumentException("git remote name not specified");
-<<<<<<< HEAD
 
-=======
->>>>>>> 4c24634... add job id and message
         }
 
         private void WriteWarning(string Warning)
@@ -159,12 +148,6 @@ namespace MiniCover.Reports
 
             StringBuilder json = new StringBuilder();
 
-<<<<<<< HEAD
-=======
-            //
-            //APPVEYOR_BUILD_NUMBER
-
->>>>>>> 4c24634... add job id and message
             json.Append($@"{{ 
                                   ""service_name"": ""{_service_name}""
                                 , ""service_job_id"": ""{_job_id}""
@@ -186,10 +169,7 @@ namespace MiniCover.Reports
                            "
                       );
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 4c24634... add job id and message
             double all_count = 0;
             double all_total = 0;
 
@@ -207,19 +187,13 @@ namespace MiniCover.Reports
                     int InstructionLineCounts = instruction.EndLine - instruction.StartLine;
                     for (int l = instruction.StartLine; l <= instruction.EndLine; l++)
                     {
-<<<<<<< HEAD
 
-=======
->>>>>>> 4c24634... add job id and message
                         CoverallLine line = lines[(l - 1)];
 
                         if (null == line)
                         {
                             lines[(l - 1)] = line = new CoverallLine();
-<<<<<<< HEAD
 
-=======
->>>>>>> 4c24634... add job id and message
                         }
 
                         if (-1 != line.InstructionId)

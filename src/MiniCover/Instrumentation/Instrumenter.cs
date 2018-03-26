@@ -250,7 +250,6 @@ namespace MiniCover.Instrumentation
                    ilProcessor.InsertBefore(instruction, exitMethodInstruction);
                    ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
                });
-            
 
             var currentFirstInstruction = ilProcessor.Body.Instructions.First();
 	        ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
