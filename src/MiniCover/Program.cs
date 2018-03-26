@@ -149,7 +149,7 @@ namespace MiniCover
 
             new ResetCommand().AddTo(commandLineApplication);
 
-            commandLineApplication.Command("opencoverreport", command =>
+           commandLineApplication.Command("opencoverreport", command =>
            {
                command.Description = "Write an OpenCover-formatted XML report to folder";
 
@@ -193,6 +193,68 @@ namespace MiniCover
                     CloverReport.Execute(result, output, threshold);
                     return 0;
                 });
+            });
+
+            commandLineApplication.Command("coverallreport", command =>
+            {
+                command.Description = "Write a coverall-formatted JSON report to folder";
+                var outputOption = command.Option("--output", "Output file for coverall report [default: coverall.json]", CommandOptionType.SingleValue);
+                var coverall_job_id = command.Option("--job", "Define service_job_id in coverall json", CommandOptionType.SingleValue);
+                var coverall_service_name = command.Option("--servicename", "Define service_name in coverall json", CommandOptionType.SingleValue);
+                var coverall_post = command.Option("--post", "If set post to the specified url" , CommandOptionType.SingleValue);
+                var coverall_token = command.Option("--token", "set the repo token" , CommandOptionType.SingleValue);
+                var coverall_message = command.Option("--msg", "set the commit message" , CommandOptionType.SingleValue);
+<<<<<<< HEAD
+                
+=======
+
+>>>>>>> 4c24634... add job id and message
+                var coverall_git_id = command.Option("--id", "set the git commit id" , CommandOptionType.SingleValue);
+                var coverall_git_branch = command.Option("--branch", "set the git branch" , CommandOptionType.SingleValue);
+                var coverall_git_remote_name = command.Option("--remote", "set the git remote name" , CommandOptionType.SingleValue);
+                var coverall_git_remote_url = command.Option("--remote-url", "set the git remote url" , CommandOptionType.SingleValue);
+                
+                var workDirOption = CreateWorkdirOption(command);
+                var coverageFileOption = CreateCoverageFileOption(command);
+                var thresholdOption = CreateThresholdOption(command);
+
+                command.HelpOption("-h | --help");
+
+                command.OnExecute(() =>
+                {
+                    UpdateWorkingDirectory(workDirOption);
+<<<<<<< HEAD
+
+=======
+>>>>>>> 4c24634... add job id and message
+
+                    var coverageFile = GetCoverageFile(coverageFileOption);
+                    var threshold = GetThreshold(thresholdOption);
+                    var result = LoadCoverageFile(coverageFile);
+                    var output =  outputOption.Value(); 
+                    CoverallsReport report = new CoverallsReport(output
+                            , coverall_token.Value()
+                            , coverall_job_id.Value()
+                            , coverall_service_name.Value()
+                            , coverall_message.Value()
+                            , ( workDirOption.Value() ?? System.IO.Directory.GetCurrentDirectory() )
+                            , coverall_post.Value()
+                            , coverall_git_id.Value()
+                            , coverall_git_branch.Value()
+                            , coverall_git_remote_name.Value()
+                            , coverall_git_remote_url.Value()
+<<<<<<< HEAD
+
+=======
+                            
+>>>>>>> 4c24634... add job id and message
+                        );
+                    
+                    report.Execute(result, threshold);
+
+                    return 0;
+                });
+
             });
 
             commandLineApplication.HelpOption("-h | --help");
