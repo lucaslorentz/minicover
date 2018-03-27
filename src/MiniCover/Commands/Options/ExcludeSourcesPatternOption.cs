@@ -2,8 +2,13 @@
 {
     internal class ExcludeSourcesPatternOption : FilesPatternOption
     {
-        protected override string DefaultValue => null;
-        protected override string Description => "Pattern to exclude source files";
-        protected override string OptionTemplate => "--exclude-sources";
+        private const string DefaultValue = null;
+        private const string Description = "Pattern to exclude source files";
+        private const string OptionTemplate = "--exclude-sources";
+
+        internal ExcludeSourcesPatternOption() 
+            : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }

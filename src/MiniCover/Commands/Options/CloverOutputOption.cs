@@ -2,8 +2,13 @@
 {
     internal class CloverOutputOption : MiniCoverTouchOption
     {
-        protected override string DefaultValue => "./clover.xml";
-        protected override string Description => $"Output file for Clover report [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--output";
+        private const string DefaultValue = "./clover.xml";
+        private const string OptionTemplate = "--output";
+        private static readonly string Description = $"Output file for Clover report [default: {DefaultValue}]";
+
+        public CloverOutputOption()
+            : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }

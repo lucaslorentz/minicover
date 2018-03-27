@@ -22,7 +22,7 @@ namespace MiniCover.UnitTests.Commands.Options
             var fileInfo = new FileInfo(actual);
 
             //assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected, fileInfo.FullName);
             Assert.True(fileInfo.Exists);
         }
 
@@ -53,7 +53,7 @@ namespace MiniCover.UnitTests.Commands.Options
             var fileInfo = new FileInfo(actual);
 
             //assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected, fileInfo.FullName);
             Assert.True(fileInfo.Exists);
         }
 

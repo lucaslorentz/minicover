@@ -1,25 +1,28 @@
 ﻿using MiniCover.Commands.Options;
 using MiniCover.Model;
 using MiniCover.Reports.Clover;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands.Reports
 {
     internal class CloverReportCommand : BaseCommand
     {
-        private readonly WorkingDirectoryOption _workingDirectoryOption = new WorkingDirectoryOption();
-        private readonly IMiniCoverOption<InstrumentationResult> _coverageLoadedFileOption = new CoverageLoadedFileOption();
-        private readonly ThresholdOption _thresholdOption = new ThresholdOption();
-        private readonly IMiniCoverOption<string> _cloverOutputOption = new CloverOutputOption();
+        private const string CommandDescription = "Write an Clover-formatted XML report to file";
+        private const string CommandName = "cloverreport";
 
-        protected override string CommandDescription => "Write an Clover-formatted XML report to file";
-        protected override string CommandName => "cloverreport";
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] { _workingDirectoryOption, _coverageLoadedFileOption, _thresholdOption, _cloverOutputOption };
+        private static readonly IMiniCoverOption<string> CloverOutputOption = new CloverOutputOption();
+        private static readonly IMiniCoverOption<InstrumentationResult> CoverageLoadedFileOption = new CoverageLoadedFileOption();
+        private static readonly ThresholdOption ThresholdOption = new ThresholdOption();
+        private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
+
+        internal CloverReportCommand()
+        : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption, CloverOutputOption)
+        {
+        }
 
         protected override Task<int> Execute()
         {
-            CloverReport.Execute(_coverageLoadedFileOption.GetValue(), _cloverOutputOption.GetValue(), _thresholdOption.GetValue());
+            CloverReport.Execute(CoverageLoadedFileOption.GetValue(), CloverOutputOption.GetValue(), ThresholdOption.GetValue());
 
             return Task.FromResult(0);
         }

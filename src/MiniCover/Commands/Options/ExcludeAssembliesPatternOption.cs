@@ -2,8 +2,13 @@
 {
     internal class ExcludeAssembliesPatternOption : FilesPatternOption
     {
-        protected override string DefaultValue => null;
-        protected override string Description => "Pattern to exclude assemblies";
-        protected override string OptionTemplate => "--exclude-assemblies";
+        private const string DefaultValue = null;
+        private const string Description = "Pattern to exclude assemblies";
+        private const string OptionTemplate = "--exclude-assemblies";
+
+        public ExcludeAssembliesPatternOption()
+            : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }

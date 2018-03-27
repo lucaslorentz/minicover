@@ -2,8 +2,14 @@
 {
     internal class IncludeSourcesPatternOption : FilesPatternOption
     {
-        protected override string DefaultValue => "**/*.cs";
-        protected override string Description => $"Pattern to include source files [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--sources";
+        private const string DefaultValue = "**/*.cs";
+        private const string OptionTemplate = "--sources";
+
+        private static readonly string Description = $"Pattern to include source files [default: {DefaultValue}]";
+
+        internal IncludeSourcesPatternOption()
+                    : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }

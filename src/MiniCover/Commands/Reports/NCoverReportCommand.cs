@@ -1,25 +1,28 @@
 ﻿using MiniCover.Commands.Options;
 using MiniCover.Model;
 using MiniCover.Reports;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands.Reports
 {
     internal class NCoverReportCommand : BaseCommand
     {
-        private readonly WorkingDirectoryOption _workingDirectoryOption = new WorkingDirectoryOption();
-        private readonly IMiniCoverOption<InstrumentationResult> _coverageLoadedFileOption = new CoverageLoadedFileOption();
-        private readonly ThresholdOption _thresholdOption = new ThresholdOption();
-        private readonly NCoverOutputOption _nCoverOutputOption = new NCoverOutputOption();
+        private const string CommandDescription = "Write an NCover-formatted XML report to file";
+        private const string CommandName = "xmlreport";
 
-        protected override string CommandDescription => "Write an NCover-formatted XML report to file";
-        protected override string CommandName => "xmlreport";
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] { _workingDirectoryOption, _coverageLoadedFileOption, _thresholdOption, _nCoverOutputOption };
+        private static readonly IMiniCoverOption<InstrumentationResult> CoverageLoadedFileOption = new CoverageLoadedFileOption();
+        private static readonly NCoverOutputOption NCoverOutputOption = new NCoverOutputOption();
+        private static readonly ThresholdOption ThresholdOption = new ThresholdOption();
+        private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
+
+        internal NCoverReportCommand()
+        : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption, NCoverOutputOption)
+        {
+        }
 
         protected override Task<int> Execute()
         {
-            XmlReport.Execute(_coverageLoadedFileOption.GetValue(), _nCoverOutputOption.GetValue(), _thresholdOption.GetValue());
+            XmlReport.Execute(CoverageLoadedFileOption.GetValue(), NCoverOutputOption.GetValue(), ThresholdOption.GetValue());
 
             return Task.FromResult(0);
         }

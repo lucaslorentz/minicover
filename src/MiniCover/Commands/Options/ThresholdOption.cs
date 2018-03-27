@@ -2,9 +2,14 @@
 {
     internal class ThresholdOption : MiniCoverOption<float>
     {
-        protected const float DefaultValue = 90;
-        protected override string Description => $"Coverage percentage threshold [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--threshold";
+        private const float DefaultValue = 90;
+        private const string OptionTemplate = "--threshold";
+
+        private static readonly string Description = $"Coverage percentage threshold [default: {DefaultValue}]";
+
+        public ThresholdOption() : base(Description, OptionTemplate)
+        {
+        }
 
         protected override float GetOptionValue()
         {
@@ -15,5 +20,7 @@
 
             return proposalThreshold / 100;
         }
+
+        protected override bool Validation() => true;
     }
 }

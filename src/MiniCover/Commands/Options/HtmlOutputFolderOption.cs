@@ -5,16 +5,23 @@ namespace MiniCover.Commands.Options
     internal class HtmlOutputFolderOption : MiniCoverOption<DirectoryInfo>
     {
         private const string DefaultValue = "./coverage-html";
-        protected override string Description => $"Output folder for html report [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--output";
+        private const string OptionTemplate = "--output";
+
+        private static readonly string Description = $"Output folder for html report [default: {DefaultValue}]";
+
+        internal HtmlOutputFolderOption()
+            : base(Description, OptionTemplate)
+        {
+        }
 
         protected override DirectoryInfo GetOptionValue()
         {
             var workingDirectoryPath = Option.Value() ?? DefaultValue;
-            Directory.CreateDirectory(workingDirectoryPath);
+            var workingDirectory = Directory.CreateDirectory(workingDirectoryPath);
 
-            var workingDirectory = new DirectoryInfo(workingDirectoryPath);
             return workingDirectory;
         }
+
+        protected override bool Validation() => true;
     }
 }

@@ -2,8 +2,14 @@
 {
     internal class OpenCoverOutputOption : MiniCoverTouchOption
     {
-        protected override string DefaultValue => "./opencovercoverage.xml";
-        protected override string Description => $"Output file for OpenCover report [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--output";
+        private const string DefaultValue = "./opencovercoverage.xml";
+        private const string OptionTemplate = "--output";
+
+        private static readonly string Description = $"Output file for OpenCover report [default: {DefaultValue}]";
+
+        internal OpenCoverOutputOption()
+            : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }

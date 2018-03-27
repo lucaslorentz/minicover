@@ -1,25 +1,27 @@
 ﻿using MiniCover.Commands.Options;
 using MiniCover.Model;
 using MiniCover.Reports;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands.Reports
 {
     internal class ConsoleReportCommand : BaseCommand
     {
-        private readonly WorkingDirectoryOption _workingDirectoryOption = new WorkingDirectoryOption();
-        private readonly IMiniCoverOption<InstrumentationResult> _coverageLoadedFileOption = new CoverageLoadedFileOption();
-        private readonly ThresholdOption _thresholdOption = new ThresholdOption();
+        private const string CommandDescription = "Outputs coverage report";
+        private const string CommandName = "report";
 
-        protected override string CommandDescription => "Outputs coverage report";
-        protected override string CommandName => "report";
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] { _workingDirectoryOption, _coverageLoadedFileOption, _thresholdOption };
+        private static readonly IMiniCoverOption<InstrumentationResult> CoverageLoadedFileOption = new CoverageLoadedFileOption();
+        private static readonly ThresholdOption ThresholdOption = new ThresholdOption();
+        private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
+
+        internal ConsoleReportCommand()
+            : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption)
+        { }
 
         protected override Task<int> Execute()
         {
             var consoleReport = new ConsoleReport();
-            var result = consoleReport.Execute(_coverageLoadedFileOption.GetValue(), _thresholdOption.GetValue());
+            var result = consoleReport.Execute(CoverageLoadedFileOption.GetValue(), ThresholdOption.GetValue());
 
             return Task.FromResult(result);
         }

@@ -6,8 +6,25 @@ namespace MiniCover.Commands.Options
     public abstract class MiniCoverOption<TValue> : IMiniCoverOption<TValue>
     {
         protected CommandOption Option;
+
+        private readonly string _description;
+        private readonly string _optionTemplate;
+        private readonly CommandOptionType _type;
+
+        protected MiniCoverOption(string description, string optionTemplate, CommandOptionType type = CommandOptionType.SingleValue)
+        {
+            _description = description;
+            _optionTemplate = optionTemplate;
+            _type = type;
+        }
+
         protected bool Validated { get; private set; }
         protected TValue ValueField { get; private set; }
+
+        public virtual void AddTo(CommandLineApplication command)
+        {
+            Option = command.Option(_optionTemplate, _description, _type);
+        }
 
         public TValue GetValue()
         {
@@ -17,21 +34,14 @@ namespace MiniCover.Commands.Options
             return ValueField;
         }
 
-        protected abstract string Description { get; }
-        protected abstract string OptionTemplate { get; }
-        protected virtual CommandOptionType Type => CommandOptionType.SingleValue;
-
-        public virtual void AddTo(CommandLineApplication command)
-        {
-            Option = command.Option(OptionTemplate, Description, Type);
-        }
-
-        public virtual void Validate()
+        public void Validate()
         {
             ValueField = GetOptionValue();
-            Validated = true;
+            Validated = Validation();
         }
 
         protected abstract TValue GetOptionValue();
+
+        protected abstract bool Validation();
     }
 }

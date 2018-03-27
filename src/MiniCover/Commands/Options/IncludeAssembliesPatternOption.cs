@@ -2,8 +2,14 @@
 {
     internal class IncludeAssembliesPatternOption : FilesPatternOption
     {
-        protected override string DefaultValue => "**/*.dll";
-        protected override string Description => $"Pattern to include assemblies [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--assemblies";
+        private const string DefaultValue = "**/*.dll";
+        private const string OptionTemplate = "--assemblies";
+
+        private static readonly string Description = $"Pattern to include assemblies [default: {DefaultValue}]";
+
+        internal IncludeAssembliesPatternOption()
+            : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }

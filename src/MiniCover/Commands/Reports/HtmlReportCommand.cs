@@ -1,29 +1,29 @@
 ﻿using MiniCover.Commands.Options;
 using MiniCover.Model;
 using MiniCover.Reports;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands.Reports
 {
     internal class HtmlReportCommand : BaseCommand
     {
-        private readonly IMiniCoverOption<InstrumentationResult> _coverageLoadedFileOption =
-            new CoverageLoadedFileOption();
+        private const string CommandDescription = "Write html report to folder";
+        private const string CommandName = "htmlreport";
 
-        private readonly HtmlOutputFolderOption _htmlOutputFolderOption = new HtmlOutputFolderOption();
-        private readonly ThresholdOption _thresholdOption = new ThresholdOption();
-        private readonly WorkingDirectoryOption _workingDirectoryOption = new WorkingDirectoryOption();
-        protected override string CommandDescription => "Write html report to folder";
-        protected override string CommandName => "htmlreport";
+        private static readonly IMiniCoverOption<InstrumentationResult> CoverageLoadedFileOption = new CoverageLoadedFileOption();
+        private static readonly HtmlOutputFolderOption HtmlOutputFolderOption = new HtmlOutputFolderOption();
+        private static readonly ThresholdOption ThresholdOption = new ThresholdOption();
+        private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
 
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[]
-            {_workingDirectoryOption, _coverageLoadedFileOption, _thresholdOption, _htmlOutputFolderOption};
+        public HtmlReportCommand()
+        : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption, HtmlOutputFolderOption)
+        {
+        }
 
         protected override Task<int> Execute()
         {
-            var consoleReport = new HtmlReport(_htmlOutputFolderOption.GetValue().FullName);
-            var result = consoleReport.Execute(_coverageLoadedFileOption.GetValue(), _thresholdOption.GetValue());
+            var consoleReport = new HtmlReport(HtmlOutputFolderOption.GetValue().FullName);
+            var result = consoleReport.Execute(CoverageLoadedFileOption.GetValue(), ThresholdOption.GetValue());
 
             return Task.FromResult(result);
         }

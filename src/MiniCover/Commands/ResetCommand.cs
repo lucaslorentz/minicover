@@ -1,6 +1,5 @@
 ﻿using MiniCover.Commands.Options;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,21 +8,22 @@ namespace MiniCover.Commands
 {
     internal class ResetCommand : BaseCommand
     {
-        private readonly CoverageHitsFileOption _coverageHitsFileOption = new CoverageHitsFileOption();
-        private readonly WorkingDirectoryOption _workingDirectoryOption = new WorkingDirectoryOption();
+        private const string CommandDescription = "Reset hits count";
+        private const string CommandName = "reset";
 
-        protected override string CommandName => "reset";
-        protected override string CommandDescription => "Reset hits count";
-        protected override IEnumerable<IMiniCoverOption> MiniCoverOptions => new IMiniCoverOption[] {
-            _workingDirectoryOption,
-            _coverageHitsFileOption
-        };
+        private static readonly CoverageHitsFileOption CoverageHitsFileOption = new CoverageHitsFileOption();
+        private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
+
+        public ResetCommand()
+            : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageHitsFileOption)
+        {
+        }
 
         protected override Task<int> Execute()
         {
-            WriteLine($"Reset coverage for directory: '{_workingDirectoryOption.GetValue().FullName}' on pattern '{_coverageHitsFileOption.GetValue()}'");
+            WriteLine($"Reset coverage for directory: '{WorkingDirectoryOption.GetValue().FullName}' on pattern '{CoverageHitsFileOption.GetValue()}'");
 
-            var hitsFiles = _workingDirectoryOption.GetValue().GetFiles(_coverageHitsFileOption.GetValue(), SearchOption.AllDirectories);
+            var hitsFiles = WorkingDirectoryOption.GetValue().GetFiles(CoverageHitsFileOption.GetValue(), SearchOption.AllDirectories);
             if (!hitsFiles.Any())
             {
                 WritePositiveLine("Directory is already cleared");

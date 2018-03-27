@@ -5,15 +5,26 @@ namespace MiniCover.Commands.Options
 {
     internal abstract class MiniCoverTouchOption : MiniCoverOption<string>
     {
-        protected abstract string DefaultValue { get; }
+        private readonly string _defaultValue;
+
+        protected MiniCoverTouchOption(string defaultValue, string description, string optionTemplate)
+                    : base(description, optionTemplate)
+        {
+            _defaultValue = defaultValue;
+        }
 
         protected override string GetOptionValue()
         {
-            var coverageFilePath = Option.Value() ?? DefaultValue;
-            return TouchFile(coverageFilePath);
+            return Option.Value() ?? _defaultValue;
         }
 
-        private string TouchFile(string path)
+        protected override bool Validation()
+        {
+            TouchFile(ValueField);
+            return true;
+        }
+
+        private void TouchFile(string path)
         {
             var directoryContext = Path.GetDirectoryName("./");
 
@@ -26,8 +37,6 @@ namespace MiniCover.Commands.Options
             {
                 File.SetLastWriteTimeUtc(path, DateTime.UtcNow);
             }
-
-            return new FileInfo(path).FullName;
         }
     }
 }

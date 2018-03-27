@@ -2,8 +2,14 @@
 {
     internal class CoverageHitsFileOption : PathOption
     {
-        protected override string DefaultValue => "./coverage-hits.txt";
-        protected override string Description => $"Hits file name pattern [default: {DefaultValue}]";
-        protected override string OptionTemplate => "--hits-file";
+        private const string DefaultValue = "./coverage-hits.txt";
+        private const string OptionTemplate = "--hits-file";
+
+        private static readonly string Description = $"Hits file name pattern [default: {DefaultValue}]";
+
+        public CoverageHitsFileOption()
+            : base(DefaultValue, Description, OptionTemplate)
+        {
+        }
     }
 }
