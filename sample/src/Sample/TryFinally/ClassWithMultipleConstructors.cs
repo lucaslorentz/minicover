@@ -22,4 +22,27 @@ namespace Sample.TryFinally
 
         public static ClassWithMultipleConstructors Default() => new ClassWithMultipleConstructors();
     }
+
+    public class AnotherClassWithMultipleConstructors
+    {
+        public string Text { get; }
+        private readonly int value;
+
+        public AnotherClassWithMultipleConstructors(int value, string text)
+        {
+            Text = text;
+            this.value = value;
+        }
+
+        public AnotherClassWithMultipleConstructors() 
+            : this("test")
+        {
+        }
+
+        public AnotherClassWithMultipleConstructors(string text)
+        : this(12, text)
+        {
+            
+        }
+    }
 }
