@@ -24,7 +24,7 @@ namespace MiniCover.Reports
                 XName.Get("CoverageSession")
             );
 
-            var modulesListElement = result.Assemblies.Select(assembly =>
+            var modulesListElement = new XElement("Modules", result.Assemblies.Select(assembly =>
             {
                 var moduleElement = new XElement(
                     XName.Get("Module"),
@@ -43,7 +43,7 @@ namespace MiniCover.Reports
 
                 Dictionary<SourceFile, int> dctSourceFileCount = new Dictionary<SourceFile, int>();
 
-                var filesElement = assembly.SourceFiles.Select(file =>
+                var filesElement = new XElement("Files", assembly.SourceFiles.Select(file =>
                 {
                     dctSourceFileCount.Add(file.Value, ++fileIndex);
                     var fileElement = new XElement(
@@ -53,9 +53,9 @@ namespace MiniCover.Reports
                     );
 
                     return fileElement;
-                });
+                }));
 
-                var classesElement = assembly.SourceFiles.Select(file =>
+                var classesElement = new XElement("Classes", assembly.SourceFiles.Select(file =>
                 {
                     var hitInstructions = file.Value.Instructions.Where(h => hits.IsInstructionHit(h.Id)).ToArray();
 
@@ -72,7 +72,7 @@ namespace MiniCover.Reports
                             new XText(classes.Key.Class)
                         );
 
-                        var methodsList = classes
+                        var methodsList = new XElement("Methods", classes
                             .GroupBy(instruction => new { instruction.Method, instruction.MethodFullName })
                             .Select(method =>
                             {
@@ -88,7 +88,7 @@ namespace MiniCover.Reports
 
                                 int sequencePointMiniCounter = 0;
 
-                                var sequencePoints = method
+                                var sequencePoints = new XElement("SequencePoints", method
                                     .OrderBy(methodPoint => methodPoint.StartLine)
                                     .Select(methodPoint =>
                                 {
@@ -104,7 +104,7 @@ namespace MiniCover.Reports
                                         new XAttribute(XName.Get("el"), methodPoint.EndLine),
                                         new XAttribute(XName.Get("ec"), methodPoint.EndColumn)
                                     );
-                                });
+                                }));
 
                                 var methodElement = new XElement(
                                     XName.Get("Method"),
@@ -117,14 +117,14 @@ namespace MiniCover.Reports
                                 methodElement.Add(sequencePoints);
 
                                 return methodElement;
-                            });
+                            }));
 
                         classElement.Add(classfullNameElement);
                         classElement.Add(methodsList);
 
                         return classElement;
                     });
-                });
+                }));
 
                 moduleElement.Add(fullNameElement);
                 moduleElement.Add(moduleNameElement);
@@ -132,7 +132,7 @@ namespace MiniCover.Reports
                 moduleElement.Add(classesElement);
 
                 return moduleElement;
-            });
+            }));
 
             coverageElement.Add(modulesListElement);
 

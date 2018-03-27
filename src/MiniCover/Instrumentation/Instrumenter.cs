@@ -10,8 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using MiniCover.HitServices;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace MiniCover.Instrumentation
 {
@@ -154,7 +152,6 @@ namespace MiniCover.Instrumentation
                 Console.WriteLine($"Instrumenting assembly \"{assemblyDefinition.Name.Name}\"");
 
                 var instrumentedAssembly = new InstrumentedAssembly(assemblyDefinition.Name.Name);
-
                 var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
                 assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedAttributeReference));
 
@@ -203,77 +200,7 @@ namespace MiniCover.Instrumentation
                     {
                         var methodDefinition = methodGroup.Key;
 
-                        var ilProcessor = methodDefinition.Body.GetILProcessor();
-
-                        ilProcessor.Body.SimplifyMacros();
-
-                        var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
-
-                        var methodContextVariable = new VariableDefinition(methodContextClassReference);
-                        methodDefinition.Body.Variables.Add(methodContextVariable);
-                        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
-                        var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
-                        var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
-                        ilProcessor.InsertBefore(instructions[0], storeMethodResultInstruction);
-                        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
-                        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
-                        UpdateInstructionReferences(methodDefinition, instructions[0], pathParamLoadInstruction);
-
-                        //Remove tail call optimization
-                        foreach (var instruction in ilProcessor.Body.Instructions.ToArray())
-                        {
-                            if (instruction.OpCode == OpCodes.Tail)
-                            {
-                                var noOpInstruction = ilProcessor.Create(OpCodes.Nop);
-                                ilProcessor.Replace(instruction, noOpInstruction);
-                                UpdateInstructionReferences(methodDefinition, instruction, noOpInstruction);
-                            }
-                        }
-
-                        foreach (var instruction in ilProcessor.Body.Instructions.ToArray())
-                        {
-                            if (instruction.OpCode == OpCodes.Ret)
-                            {
-                                var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
-                                var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
-                                ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-                                ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-                                UpdateInstructionReferences(methodDefinition, instruction, loadMethodContextInstruction);
-                            }
-                        }
-
-                        foreach (var sequencePoint in methodGroup)
-                        {
-                            var code = sequencePoint.ExtractCode(fileLines);
-                            if (code == null || code == "{" || code == "}")
-                                continue;
-
-                            var instruction = instructions[sequencePoint.Offset];
-
-                            // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
-                            // we cannot put an instruction between the two.
-                            if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
-                                continue;
-
-                            var instructionId = ++id;
-
-                            instrumentedAssembly.AddInstruction(sourceRelativePath, new InstrumentedInstruction
-                            {
-                                Id = instructionId,
-                                StartLine = sequencePoint.StartLine,
-                                EndLine = sequencePoint.EndLine,
-                                StartColumn = sequencePoint.StartColumn,
-                                EndColumn = sequencePoint.EndColumn,
-                                Class = methodDefinition.DeclaringType.FullName,
-                                Method = methodDefinition.Name,
-                                MethodFullName = methodDefinition.FullName,
-                                Instruction = instruction.ToString()
-                            });
-
-                            InstrumentInstruction(instructionId, instruction, hitInstructionReference, methodDefinition, ilProcessor, methodContextVariable);
-                        }
-
-                        ilProcessor.Body.OptimizeMacros();
+                        InstrumentMethod(methodDefinition, methodGroup, methodContextClassReference, enterMethodReference, exitMethodReference, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference);
                     }
                 }
 
@@ -288,6 +215,87 @@ namespace MiniCover.Instrumentation
                 instrumentedAssembly.TempPdbFile = instrumentedPdbFile;
 
                 return instrumentedAssembly;
+            }
+        }
+
+	    
+        private void InstrumentMethod(MethodDefinition methodDefinition,
+            IEnumerable<SequencePoint> sequencePoints,
+            TypeReference methodContextClassReference,
+            MethodReference enterMethodReference, MethodReference exitMethodReference,
+            string[] fileLines, InstrumentedAssembly instrumentedAssembly, string sourceRelativePath,
+            MethodReference hitInstructionReference)
+        {
+	        var ilProcessor = methodDefinition.Body.GetILProcessor();
+	        ilProcessor.Body.InitLocals = true;
+	        ilProcessor.Body.SimplifyMacros();
+
+	        var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
+
+	        var methodContextVariable = new VariableDefinition(methodContextClassReference);
+            ilProcessor.Body.Variables.Add(methodContextVariable);
+	        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
+	        var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
+	        var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
+            
+            ilProcessor.RemoveTailInstructions();
+
+	        var firstInstruction = instructions[0];
+
+			
+	        var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+	        var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
+            ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
+               {
+                   ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                   ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+               });
+
+            var currentFirstInstruction = ilProcessor.Body.Instructions.First();
+	        ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
+	        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
+	        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
+            ilProcessor.ReplaceInstructionReferences(currentFirstInstruction, pathParamLoadInstruction);
+			
+            InstrumentInstructions(methodDefinition, sequencePoints, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference, instructions, ilProcessor, methodContextVariable);
+            
+            ilProcessor.Body.OptimizeMacros();
+        }
+
+        private void InstrumentInstructions(MethodDefinition methodDefinition, IEnumerable<SequencePoint> sequencePoints, string[] fileLines,
+            InstrumentedAssembly instrumentedAssembly, string sourceRelativePath, MethodReference hitInstructionReference,
+            Dictionary<int, Instruction> instructions, ILProcessor ilProcessor, VariableDefinition methodContextVariable)
+        {
+            foreach (var sequencePoint in sequencePoints)
+            {
+                var code = sequencePoint.ExtractCode(fileLines);
+                if (code == null || code == "{" || code == "}")
+                    continue;
+
+                var instruction = instructions[sequencePoint.Offset];
+
+                // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
+                // we cannot put an instruction between the two.
+                if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
+                    continue;
+
+                var instructionId = ++id;
+
+                instrumentedAssembly.AddInstruction(sourceRelativePath, new InstrumentedInstruction
+                {
+                    Id = instructionId,
+                    StartLine = sequencePoint.StartLine,
+                    EndLine = sequencePoint.EndLine,
+                    StartColumn = sequencePoint.StartColumn,
+                    EndColumn = sequencePoint.EndColumn,
+                    Class = methodDefinition.DeclaringType.FullName,
+                    Method = methodDefinition.Name,
+                    MethodFullName = methodDefinition.FullName,
+                    Instruction = instruction.ToString()
+                });
+
+                InstrumentInstruction(instructionId, instruction, hitInstructionReference, ilProcessor,
+                    methodContextVariable);
             }
         }
 
@@ -321,7 +329,7 @@ namespace MiniCover.Instrumentation
         }
 
         private void InstrumentInstruction(int instructionId, Instruction instruction,
-            MethodReference hitInstructionReference, MethodDefinition method, ILProcessor ilProcessor,
+            MethodReference hitInstructionReference, ILProcessor ilProcessor,
             VariableDefinition methodContextVariable)
         {
             var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
@@ -332,50 +340,7 @@ namespace MiniCover.Instrumentation
             ilProcessor.InsertBefore(registerInstruction, lineParamLoadInstruction);
             ilProcessor.InsertBefore(lineParamLoadInstruction, loadMethodContextInstruction);
 
-            UpdateInstructionReferences(method, instruction, loadMethodContextInstruction);
-        }
-
-        private static void UpdateInstructionReferences(MethodDefinition methodDefinition,
-            Instruction oldInstruction,
-            Instruction newInstruction)
-        {
-            //change try/finally etc to point to our first instruction if they referenced the one we inserted before
-            foreach (var handler in methodDefinition.Body.ExceptionHandlers)
-            {
-                if (handler.FilterStart == oldInstruction)
-                    handler.FilterStart = newInstruction;
-
-                if (handler.TryStart == oldInstruction)
-                    handler.TryStart = newInstruction;
-                if (handler.TryEnd == oldInstruction)
-                    handler.TryEnd = newInstruction;
-
-                if (handler.HandlerStart == oldInstruction)
-                    handler.HandlerStart = newInstruction;
-                if (handler.HandlerEnd == oldInstruction)
-                    handler.HandlerEnd = newInstruction;
-            }
-
-            //change instructions with a target instruction if they referenced the one we inserted before to be our first instruction
-            foreach (var iteratedInstruction in methodDefinition.Body.Instructions)
-            {
-                var operand = iteratedInstruction.Operand;
-                if (operand == oldInstruction)
-                {
-                    iteratedInstruction.Operand = newInstruction;
-                    continue;
-                }
-
-                if (!(operand is Instruction[]))
-                    continue;
-
-                var operands = (Instruction[])operand;
-                for (var i = 0; i < operands.Length; ++i)
-                {
-                    if (operands[i] == oldInstruction)
-                        operands[i] = newInstruction;
-                }
-            }
+            ilProcessor.ReplaceInstructionReferences(instruction, loadMethodContextInstruction);
         }
 
         private string GetSourceRelativePath(string path)
@@ -408,7 +373,7 @@ namespace MiniCover.Instrumentation
 
         private string GetMiniCoverTempPath()
         {
-            var path = Path.Combine(Path.GetTempPath(), $"minicover");
+            var path = Path.Combine(Path.GetTempPath(), "minicover");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
