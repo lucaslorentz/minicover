@@ -2,6 +2,7 @@
 using MiniCover.Model;
 using MiniCover.Reports;
 using System.Threading.Tasks;
+using MiniCover.Commands.Options.Reports;
 
 namespace MiniCover.Commands.Reports
 {

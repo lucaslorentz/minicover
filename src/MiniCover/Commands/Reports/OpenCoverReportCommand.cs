@@ -2,6 +2,8 @@
 using MiniCover.Model;
 using MiniCover.Reports;
 using System.Threading.Tasks;
+using MiniCover.Commands.Options.FileParameterizations;
+using MiniCover.Commands.Options.Reports;
 
 namespace MiniCover.Commands.Reports
 {
@@ -14,9 +16,10 @@ namespace MiniCover.Commands.Reports
         private static readonly OpenCoverOutputOption OpenCoverOutputOption = new OpenCoverOutputOption();
         private static readonly ThresholdOption ThresholdOption = new ThresholdOption();
         private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
+        private static readonly FileParameterizationOption FileParameterizationOption = new FileParameterizationOption();
 
         internal OpenCoverReportCommand()
-        : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption, OpenCoverOutputOption)
+        : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption, OpenCoverOutputOption, FileParameterizationOption)
         {
         }
 

@@ -1,4 +1,4 @@
-﻿namespace MiniCover.Commands.Options
+﻿namespace MiniCover.Commands.Options.Reports
 {
     internal class NCoverOutputOption : MiniCoverTouchOption
     {

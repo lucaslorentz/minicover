@@ -26,6 +26,11 @@ namespace MiniCover.Commands.Options
             Option = command.Option(_optionTemplate, _description, _type);
         }
 
+        public virtual IMiniCoverOption[] NestedOptions()
+        {
+            return new IMiniCoverOption[] { };
+        }
+
         public TValue GetValue()
         {
             if (!Validated)

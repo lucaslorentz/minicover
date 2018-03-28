@@ -2,6 +2,7 @@
 using MiniCover.Commands.Options;
 using System.Collections.Generic;
 using System.IO;
+using MiniCover.Commands.Options.Reports;
 using Xunit;
 
 namespace MiniCover.UnitTests.Commands.Options

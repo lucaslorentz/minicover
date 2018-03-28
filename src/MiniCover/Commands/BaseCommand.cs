@@ -2,13 +2,14 @@
 using MiniCover.Commands.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands
 {
     internal abstract class BaseCommand
     {
-        protected readonly IEnumerable<IMiniCoverOption> MiniCoverOptions;
+        protected readonly List<IMiniCoverOption> MiniCoverOptions;
         private const string CommandHelpOption = "-h | --help";
 
         private readonly string _commandDescription;
@@ -18,7 +19,8 @@ namespace MiniCover.Commands
         {
             _commandName = commandName;
             _commandDescription = commandDescription;
-            MiniCoverOptions = options;
+            MiniCoverOptions = options.ToList();
+            MiniCoverOptions.AddRange(options.SelectMany(x => x.NestedOptions()));
         }
 
         public void AddTo(CommandLineApplication parentCommandLineApplication)

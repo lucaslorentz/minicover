@@ -2,9 +2,11 @@
 
 namespace MiniCover.Commands.Options
 {
-    internal interface IMiniCoverOption
+    public interface IMiniCoverOption
     {
         void AddTo(CommandLineApplication command);
+
+        IMiniCoverOption[] NestedOptions();
 
         void Validate();
     }
@@ -13,4 +15,6 @@ namespace MiniCover.Commands.Options
     {
         T GetValue();
     }
+
+    internal interface IMiniCoverParameterizationOption<out T> : IMiniCoverOption<T>
 }
