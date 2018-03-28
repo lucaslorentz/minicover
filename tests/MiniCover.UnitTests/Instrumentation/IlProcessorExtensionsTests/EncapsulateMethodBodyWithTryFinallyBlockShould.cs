@@ -38,7 +38,7 @@ IL_0014: ret";
                 var type = module.GetType("Sample.TryFinally.AClassWithFieldInitializedOutsideConstructor");
                 var constructor = type.GetMethod(".ctor");
                 Assert.NotNull(constructor);
-                ApplyTryFinally(constructor, module);
+                ApplyTryFinally(constructor);
                 Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
             });
         }
@@ -102,7 +102,7 @@ IL_0022: ret";
                 var type = module.GetType("Sample.TryFinally.AClassWithATryFinallyInConstructor");
                 var constructor = type.GetMethod(".ctor");
                 Assert.NotNull(constructor);
-                ApplyTryFinally(constructor, module);
+                ApplyTryFinally(constructor);
                 Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
             }, typeof(PdbReaderProvider));
         }
@@ -143,7 +143,7 @@ IL_000f: ret";
                 var type = module.GetType("Sample.TryFinally.AnotherClassWithoutTryFinally");
                 var constructor = type.GetMethod("MultiplyByTwo");
                 Assert.NotNull(constructor);
-                ApplyTryFinally(constructor, module);
+                ApplyTryFinally(constructor);
                 Normalize(Formatter.FormatMethodBody(constructor)).ShouldBe(Normalize(expectedIl));
             }, typeof(PdbReaderProvider));
         }
@@ -211,8 +211,8 @@ IL_000a: ret";
                 var nestedType = type.NestedTypes.First();
                 nestedType.Methods.Where(a => !a.IsConstructor).ShouldHaveSingleItem();
                 var nestedTypeMethod = nestedType.Methods.First(a => !a.IsConstructor);
-                ApplyTryFinally(method, module);
-                ApplyTryFinally(nestedTypeMethod, module);
+                ApplyTryFinally(method);
+                ApplyTryFinally(nestedTypeMethod);
                 Normalize(Formatter.FormatMethodBody(method)).ShouldBe(Normalize(expectedIl));
                 Normalize(Formatter.FormatMethodBody(nestedTypeMethod)).ShouldBe(Normalize(expectedNestedTypeMethodIl));
             });
@@ -273,7 +273,7 @@ IL_0011: ret";
         }
 
 
-        private void ApplyTryFinally(MethodDefinition methodDefinition, ModuleDefinition moduleDefinition)
+        private void ApplyTryFinally(MethodDefinition methodDefinition)
         {
             var processor = methodDefinition.Body.GetILProcessor();
             var firstInstruction = methodDefinition.Body.Instructions.First();

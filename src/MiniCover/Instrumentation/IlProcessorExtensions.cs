@@ -5,6 +5,21 @@ namespace Mono.Cecil.Cil
 {
     public static class IlProcessorExtensions
     {
+        internal static void InsertBeforeAnyReturn(this ILProcessor ilProcessor, Action<ILProcessor, Instruction> insertBeforReturn)
+        {
+            foreach (var instruction in ilProcessor.Body.Instructions.Where(i => i.OpCode == OpCodes.Ret).ToArray())
+            {
+                var currentPrevious = instruction.Previous;
+                insertBeforReturn(ilProcessor, instruction);
+                var exceptionHandlerHandingByTheInstruction =
+                    ilProcessor.Body.ExceptionHandlers.FirstOrDefault(handler =>
+                        handler.HandlerEnd.Equals(instruction));
+                if (exceptionHandlerHandingByTheInstruction != null)
+                {
+                    exceptionHandlerHandingByTheInstruction.HandlerEnd = currentPrevious.Next;
+                }
+            }
+        }
         internal static void EncapsulateMethodBodyWithTryFinallyBlock(this ILProcessor ilProcessor,
             Instruction firstInstruction, Action<ILProcessor, Instruction> insertBeforReturn)
         {

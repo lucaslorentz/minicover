@@ -40,5 +40,13 @@ namespace Sample
         {
             SomeProperty++;
         }
+
+        public dynamic AMethodWithMultipleReturn(int value)
+        {
+            if (value % 2 == 0)
+                return 2;
+            if (value % 3 == 0) return "3";
+            return 1;
+        }
     }
 }
