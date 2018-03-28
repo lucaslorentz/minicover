@@ -230,8 +230,7 @@ namespace MiniCover.Instrumentation
 	        ilProcessor.Body.InitLocals = true;
 	        ilProcessor.Body.SimplifyMacros();
 
-	        var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
-
+	        
 	        var methodContextVariable = new VariableDefinition(methodContextClassReference);
             ilProcessor.Body.Variables.Add(methodContextVariable);
 	        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
@@ -240,10 +239,9 @@ namespace MiniCover.Instrumentation
             
             ilProcessor.RemoveTailInstructions();
 
-	        var firstInstruction = instructions[0];
+	        var firstInstruction = ilProcessor.Body.Instructions.First();
 
-			
-	        var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+            var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
 	        var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
             ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
                {
@@ -256,7 +254,10 @@ namespace MiniCover.Instrumentation
 	        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
 	        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
             ilProcessor.ReplaceInstructionReferences(currentFirstInstruction, pathParamLoadInstruction);
-			
+
+            ilProcessor.Body.OptimizeMacros();
+            var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
+
             InstrumentInstructions(methodDefinition, sequencePoints, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference, instructions, ilProcessor, methodContextVariable);
             
             ilProcessor.Body.OptimizeMacros();

@@ -276,41 +276,34 @@ IL_0032: ret";
             ilProcessor.Body.InitLocals = true;
             ilProcessor.Body.SimplifyMacros();
 
-            var instructions = methodDefinition.Body.Instructions.ToDictionary(i => i.Offset);
 
             var methodContextVariable = new VariableDefinition(methodContextClassReference);
-            methodDefinition.Body.Variables.Add(methodContextVariable);
+            ilProcessor.Body.Variables.Add(methodContextVariable);
             var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
             var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
             var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
 
-            var firstInstruction = instructions[0];
+            ilProcessor.RemoveTailInstructions();
 
+            var firstInstruction = ilProcessor.Body.Instructions.First();
 
             var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
             var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
             ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
-{
-    ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-    ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-});
+            {
+                ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+            });
+
             var currentFirstInstruction = ilProcessor.Body.Instructions.First();
             ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
             ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
             ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
             ilProcessor.ReplaceInstructionReferences(currentFirstInstruction, pathParamLoadInstruction);
 
-            //InstrumentInstructions(methodDefinition, sequencePoints, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference, instructions, ilProcessor, methodContextVariable);
-            foreach (var instruction in ilProcessor.Body.Instructions.ToArray())
-            {
-                if (instruction.OpCode == OpCodes.Tail)
-                {
-                    var noOpInstruction = ilProcessor.Create(OpCodes.Nop);
-                    ilProcessor.Replace(instruction, noOpInstruction);
-                    ilProcessor.ReplaceInstructionReferences(instruction, noOpInstruction);
-                }
-            }
             ilProcessor.Body.OptimizeMacros();
+            var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
+            
         }
 
 
