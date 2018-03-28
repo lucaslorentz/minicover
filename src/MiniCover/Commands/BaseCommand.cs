@@ -4,9 +4,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MiniCover.Commands.Options.FileParameterizations;
 
 namespace MiniCover.Commands
 {
+    internal abstract class ParameterizationCommand : BaseCommand
+    {
+        protected MiniCoverParameterization Parametrization;
+        private readonly IMiniCoverOption<MiniCoverParameterization> _parameterizationOption;
+        protected ParameterizationCommand(string commandName, string commandDescription, params IMiniCoverOption[] options) 
+            : base(commandName, commandDescription, options)
+        {
+            _parameterizationOption = new ParameterizationOption(options.OfType<IMiniCoverParameterizationOption>().ToArray());
+        }
+
+        protected override void AddOptions(CommandLineApplication command)
+        {
+            base.AddOptions(command);
+            _parameterizationOption.AddTo(command);
+        }
+
+        protected override void ValidateOptions()
+        {
+            base.ValidateOptions();
+            _parameterizationOption.Validate();
+            Parametrization = _parameterizationOption.GetValue();
+        }
+    }
     internal abstract class BaseCommand
     {
         protected readonly List<IMiniCoverOption> MiniCoverOptions;
@@ -19,8 +43,8 @@ namespace MiniCover.Commands
         {
             _commandName = commandName;
             _commandDescription = commandDescription;
-            MiniCoverOptions = options.ToList();
-            MiniCoverOptions.AddRange(options.SelectMany(x => x.NestedOptions()));
+            MiniCoverOptions = options.SelectMany(x => x.NestedOptions()).ToList();
+            MiniCoverOptions.AddRange(options);
         }
 
         public void AddTo(CommandLineApplication parentCommandLineApplication)
@@ -61,7 +85,7 @@ namespace MiniCover.Commands
             Console.ResetColor();
         }
 
-        private void AddOptions(CommandLineApplication command)
+        protected virtual void AddOptions(CommandLineApplication command)
         {
             foreach (var miniCoverOption in MiniCoverOptions)
             {
@@ -73,7 +97,7 @@ namespace MiniCover.Commands
             }
         }
 
-        private void ValidateOptions()
+        protected virtual void ValidateOptions()
         {
             foreach (var miniCoverOption in MiniCoverOptions)
             {

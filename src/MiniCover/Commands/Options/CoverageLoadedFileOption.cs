@@ -1,13 +1,17 @@
-﻿using MiniCover.Model;
+﻿using MiniCover.Commands.Options.FileParameterizations;
+using MiniCover.Model;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 
 namespace MiniCover.Commands.Options
 {
-    internal class CoverageLoadedFileOption : CoverageFileOption, IMiniCoverOption<InstrumentationResult>
+    internal class CoverageLoadedFileOption : CoverageFileOption, IMiniCoverOption<InstrumentationResult>, IMiniCoverParameterizationOption
     {
         private InstrumentationResult _value;
+
+        public Action<MiniCoverParameterization> SetParameter =>
+            parameterization => parameterization.InstrumentationResult = _value;
 
         InstrumentationResult IMiniCoverOption<InstrumentationResult>.GetValue()
         {

@@ -1,6 +1,9 @@
-﻿namespace MiniCover.Commands.Options
+﻿using MiniCover.Commands.Options.FileParameterizations;
+using System;
+
+namespace MiniCover.Commands.Options
 {
-    internal class ThresholdOption : MiniCoverOption<float>
+    internal class ThresholdOption : MiniCoverOption<float>, IMiniCoverParameterizationOption
     {
         private const float DefaultValue = 90;
         private const string OptionTemplate = "--threshold";
@@ -10,6 +13,10 @@
         public ThresholdOption() : base(Description, OptionTemplate)
         {
         }
+
+        public Action<MiniCoverParameterization> SetParameter =>
+            parameterization =>
+                parameterization.Threshold = GetValue();
 
         protected override float GetOptionValue()
         {

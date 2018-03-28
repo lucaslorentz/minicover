@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
+using MiniCover.Commands.Options.FileParameterizations;
+using System;
 
 namespace MiniCover.Commands.Options
 {
@@ -16,5 +18,8 @@ namespace MiniCover.Commands.Options
         T GetValue();
     }
 
-    internal interface IMiniCoverParameterizationOption<out T> : IMiniCoverOption<T>
+    internal interface IMiniCoverParameterizationOption : IMiniCoverOption
+    {
+        Action<MiniCoverParameterization> SetParameter { get; }
+    }
 }

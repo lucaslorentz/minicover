@@ -1,6 +1,9 @@
-﻿namespace MiniCover.Commands.Options.Reports
+﻿using MiniCover.Commands.Options.FileParameterizations;
+using System;
+
+namespace MiniCover.Commands.Options.Reports
 {
-    internal class OpenCoverOutputOption : MiniCoverTouchOption
+    internal class OpenCoverOutputOption : MiniCoverTouchOption, IMiniCoverParameterizationOption
     {
         private const string DefaultValue = "./opencovercoverage.xml";
         private const string OptionTemplate = "--output";
@@ -11,5 +14,9 @@
             : base(DefaultValue, Description, OptionTemplate)
         {
         }
+
+        public Action<MiniCoverParameterization> SetParameter =>
+            parameterization =>
+                parameterization.OpenCoverFile = GetValue();
     }
 }

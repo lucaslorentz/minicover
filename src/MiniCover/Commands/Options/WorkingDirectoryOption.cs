@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MiniCover.Commands.Options.FileParameterizations;
+using System;
 using System.IO;
 
 namespace MiniCover.Commands.Options
 {
-    internal class WorkingDirectoryOption : MiniCoverOption<DirectoryInfo>
+    internal class WorkingDirectoryOption : MiniCoverOption<DirectoryInfo>, IMiniCoverParameterizationOption
     {
         private const string DefaultValue = "./";
         private const string OptionTemplate = "--workdir";
@@ -14,6 +15,10 @@ namespace MiniCover.Commands.Options
             : base(Description, OptionTemplate)
         {
         }
+
+        public Action<MiniCoverParameterization> SetParameter =>
+            parameterization =>
+                parameterization.WorkDirectory = GetValue();
 
         protected override DirectoryInfo GetOptionValue()
         {
