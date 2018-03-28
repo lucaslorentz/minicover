@@ -9,7 +9,7 @@ namespace Mono.Cecil.Cil
             Instruction firstInstruction, Action<ILProcessor, Instruction> insertBeforReturn)
         {
             var body = ilProcessor.Body;
-            if (body.Method.IsConstructor)
+            if (body.Method.IsConstructor && !body.Method.IsStatic)
             {
                 var ctor = GetFirstConstructorInstruction(body);
                 if (ctor != null)
@@ -17,8 +17,17 @@ namespace Mono.Cecil.Cil
                     if (body.Instructions.IndexOf(ctor) > 2)
                     {
                         var lastInstruction = body.Instructions.Last();
-                        EncapsulateWithTryCatch(ilProcessor, firstInstruction, ctor.Previous);
-                        if (ctor.Next.Equals(lastInstruction)) return;
+                        var firtLDarg0BeforeCtor = ctor.GetFirstPreviousLdarg_0();
+                        if (firstInstruction != firtLDarg0BeforeCtor)
+                        {
+                            EncapsulateWithTryCatch(ilProcessor, firstInstruction, firtLDarg0BeforeCtor);
+                        }
+
+                        if (ctor.GetFirstNotNopInstruction().Equals(lastInstruction))
+                        {
+                            insertBeforReturn(ilProcessor, lastInstruction);
+                            return;
+                        }
                     }
 
                     if (firstInstruction.Next.OpCode != OpCodes.Nop)
@@ -28,12 +37,18 @@ namespace Mono.Cecil.Cil
                     }
                 }
             }
-            
+
             var returnStart = ilProcessor.FixReturns();
 
             var beforeReturn = Instruction.Create(OpCodes.Endfinally);
             ilProcessor.InsertBefore(returnStart, beforeReturn);
 
+            if (body.Instructions.First().Equals(firstInstruction))
+            {
+                Instruction tryStart = Instruction.Create(OpCodes.Nop);
+                ilProcessor.InsertBefore(firstInstruction, tryStart);
+            }
+            
             Instruction finallyStart = Instruction.Create(OpCodes.Nop);
             ilProcessor.InsertBefore(beforeReturn, finallyStart);
             insertBeforReturn(ilProcessor, beforeReturn);
@@ -49,6 +64,25 @@ namespace Mono.Cecil.Cil
             body.ExceptionHandlers.Add(handler);
         }
 
+        private static Instruction GetFirstPreviousLdarg_0(this Instruction instruction)
+        {
+            var previous = instruction.Previous;
+            if (previous == null)
+            {
+                Console.WriteLine(instruction.ToString());
+                return instruction;
+            }
+            if (previous.OpCode == OpCodes.Ldarg_0 || previous.OpCode == OpCodes.Ldarg && previous.Operand is ParameterDefinition && ((ParameterDefinition)previous.Operand).Name == string.Empty) return previous;
+            return previous.GetFirstPreviousLdarg_0();
+        }
+
+        private static Instruction GetFirstNotNopInstruction(this Instruction instruction)
+        {
+            var next = instruction.Next;
+            if (next.OpCode != OpCodes.Nop ) return next;
+            return next.GetFirstNotNopInstruction();
+        }
+
         internal static void EncapsulateWithTryCatch(ILProcessor ilProcessor, Instruction from,
             Instruction to)
         {
@@ -58,7 +92,8 @@ namespace Mono.Cecil.Cil
 
             Instruction tryStart = Instruction.Create(OpCodes.Nop);
             ilProcessor.InsertBefore(from, tryStart);
-			
+            Instruction beforeTry = Instruction.Create(OpCodes.Nop);
+            ilProcessor.InsertBefore(tryStart, beforeTry);
             Instruction rethrowInstruction = Instruction.Create(OpCodes.Rethrow);
             ilProcessor.InsertAfter(tryEnd, rethrowInstruction);
             var handler = new ExceptionHandler(ExceptionHandlerType.Catch)
@@ -74,7 +109,7 @@ namespace Mono.Cecil.Cil
 
         private static Instruction GetFirstConstructorInstruction(MethodBody body)
         {
-            var constructorInstruction = body.Instructions.FirstOrDefault(a => a.OpCode == OpCodes.Call);
+            var constructorInstruction = body.Instructions.FirstOrDefault(a => a.OpCode == OpCodes.Call && (a.Operand as MethodReference)?.Name == ".ctor");
             return constructorInstruction;
         }
 
@@ -177,7 +212,7 @@ namespace Mono.Cecil.Cil
                 if (!(operand is Instruction[]))
                     continue;
 
-                var operands = (Instruction[])operand;
+                var operands = (Instruction[]) operand;
                 for (var i = 0; i < operands.Length; ++i)
                 {
                     if (operands[i] == oldInstruction)
