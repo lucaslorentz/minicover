@@ -76,9 +76,7 @@ new Dictionary<int, int>());
 
         public void Serialize(Stream stream)
         {
-            Dictionary<int, int> hits;
             lock (_lock)
-                hits = this.HitedInstructions.ToDictionary(a => a.Key, a => a.Value);
             using (var binaryWriter = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 binaryWriter.Write(ClassName);
@@ -87,7 +85,7 @@ new Dictionary<int, int>());
                 binaryWriter.Write(AssemblyLocation);
                 binaryWriter.Write(Counter);
                 binaryWriter.Write(HitedInstructions.Count);
-                foreach (var hitedInstruction in hits)
+                foreach (var hitedInstruction in HitedInstructions)
                 {
                     binaryWriter.Write(hitedInstruction.Key);
                     binaryWriter.Write(hitedInstruction.Value);
