@@ -104,5 +104,12 @@ namespace Sample.Tests.XUnit
         {
             var instance = ClassWithMultipleConstructors.BuildFor(15);
         }
+
+        [Fact]
+        public void NunitTestHeritage()
+        {
+            var instance = new HeritingClass(12);
+            Assert.Equal(180, instance.Value);
+        }
     }
 }

@@ -76,6 +76,7 @@ new Dictionary<int, int>());
 
         public void Serialize(Stream stream)
         {
+            lock (_lock)
             using (var binaryWriter = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 binaryWriter.Write(ClassName);
