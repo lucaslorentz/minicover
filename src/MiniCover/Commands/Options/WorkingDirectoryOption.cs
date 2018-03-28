@@ -10,7 +10,7 @@ namespace MiniCover.Commands.Options
 
         private static readonly string Description = $"Change working directory [default: {DefaultValue}]";
 
-        public WorkingDirectoryOption()
+        internal WorkingDirectoryOption()
             : base(Description, OptionTemplate)
         {
         }
@@ -22,7 +22,7 @@ namespace MiniCover.Commands.Options
             var directory = new DirectoryInfo(workingDirectoryPath);
             Console.WriteLine($"Changing working directory to '{directory.FullName}'");
             Directory.SetCurrentDirectory(directory.FullName);
-            return new DirectoryInfo(workingDirectoryPath);
+            return directory;
         }
 
         protected override bool Validation() => true;
