@@ -229,9 +229,7 @@ namespace MiniCover.Instrumentation
 	        var ilProcessor = methodDefinition.Body.GetILProcessor();
 	        ilProcessor.Body.InitLocals = true;
 	        ilProcessor.Body.SimplifyMacros();
-
-	        var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
-
+	        
 	        var methodContextVariable = new VariableDefinition(methodContextClassReference);
             ilProcessor.Body.Variables.Add(methodContextVariable);
 	        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
@@ -240,12 +238,12 @@ namespace MiniCover.Instrumentation
             
             ilProcessor.RemoveTailInstructions();
 
-	        var firstInstruction = instructions[0];
+            var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
 
-			
-	        var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+            var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
 	        var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
-            ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
+
+            ilProcessor.InsertBeforeAnyReturn((processor, instruction) =>
                {
                    ilProcessor.InsertBefore(instruction, exitMethodInstruction);
                    ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
