@@ -1,21 +1,15 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-
-namespace MiniCover.Commands.Options
+﻿namespace MiniCover.Commands.Options
 {
-    internal class CoverageHitsFileOption : MiniCoverOption<string>
+    internal class CoverageHitsFileOption : PathOption
     {
-        private const string defaultValue = "coverage-hits.txt";
-        protected override string Description => $"Hits file name pattern [default: {defaultValue}]";
-        protected override string OptionTemplate => "--hits-file";
+        private const string DefaultValue = "./coverage-hits.txt";
+        private const string OptionTemplate = "--hits-file";
 
-        protected override string GetOptionValue(CommandOption option)
+        private static readonly string Description = $"Hits file name pattern [default: {DefaultValue}]";
+
+        public CoverageHitsFileOption()
+            : base(DefaultValue, Description, OptionTemplate)
         {
-            var optionValue = option.Value();
-
-            if (string.IsNullOrWhiteSpace(optionValue))
-                return defaultValue;
-
-            return optionValue;
         }
     }
 }

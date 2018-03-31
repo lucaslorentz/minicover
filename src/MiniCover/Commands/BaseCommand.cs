@@ -8,14 +8,25 @@ namespace MiniCover.Commands
 {
     internal abstract class BaseCommand
     {
+        protected readonly IEnumerable<IMiniCoverOption> MiniCoverOptions;
         private const string CommandHelpOption = "-h | --help";
+
+        private readonly string _commandDescription;
+        private readonly string _commandName;
+
+        protected BaseCommand(string commandName, string commandDescription, params IMiniCoverOption[] options)
+        {
+            _commandName = commandName;
+            _commandDescription = commandDescription;
+            MiniCoverOptions = options;
+        }
 
         public void AddTo(CommandLineApplication parentCommandLineApplication)
         {
             parentCommandLineApplication
-                .Command(CommandName, command =>
+                .Command(_commandName, command =>
                 {
-                    command.Description = CommandDescription;
+                    command.Description = _commandDescription;
                     command.HelpOption(CommandHelpOption);
                     AddOptions(command);
                     command.OnExecute(() =>
@@ -26,11 +37,27 @@ namespace MiniCover.Commands
                 });
         }
 
-        protected abstract string CommandName { get; }
-        protected abstract string CommandDescription { get; }
-        protected abstract IEnumerable<IMiniCoverOption> MiniCoverOptions { get; }
-
         protected abstract Task<int> Execute();
+
+        protected void WriteLine(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        protected void WriteNegativeLine(string message, Exception exception = null)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            if (exception != null) Console.WriteLine(exception);
+            Console.ResetColor();
+        }
+
+        protected void WritePositiveLine(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
 
         private void AddOptions(CommandLineApplication command)
         {
@@ -38,7 +65,7 @@ namespace MiniCover.Commands
             {
                 if (miniCoverOption == null)
                 {
-                    throw new ArgumentNullException(nameof(miniCoverOption), "MiniCover option is null");
+                    throw new NullReferenceException("MiniCover option is null");
                 }
                 miniCoverOption.AddTo(command);
             }
@@ -50,26 +77,6 @@ namespace MiniCover.Commands
             {
                 miniCoverOption.Validate();
             }
-        }
-
-        protected void WritePositiveLine(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(message);
-            Console.ResetColor();
-        }
-
-        protected void WriteNegativeLine(string message, Exception exception = null)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            if (exception != null) Console.WriteLine(exception);
-            Console.ResetColor();
-        }
-
-        protected void WriteLine(string message)
-        {
-            Console.WriteLine(message);
         }
     }
 }
