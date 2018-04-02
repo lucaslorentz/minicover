@@ -111,5 +111,12 @@ namespace Sample.Tests.XUnit
             var instance = new HeritingClass(12);
             Assert.Equal(180, instance.Value);
         }
+
+        [Fact]
+        public void NunitMultipleReturn()
+        {
+            var instance = new AnotherClass();
+            Assert.Equal(1, instance.AMethodWithMultipleReturn(1));
+        }
     }
 }

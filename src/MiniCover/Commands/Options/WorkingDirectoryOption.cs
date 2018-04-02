@@ -23,8 +23,7 @@ namespace MiniCover.Commands.Options
         protected override DirectoryInfo GetOptionValue()
         {
             var workingDirectoryPath = Option.Value() ?? DefaultValue;
-            Directory.CreateDirectory(workingDirectoryPath);
-            var directory = new DirectoryInfo(workingDirectoryPath);
+            var directory = Directory.CreateDirectory(workingDirectoryPath);
             Console.WriteLine($"Changing working directory to '{directory.FullName}'");
             Directory.SetCurrentDirectory(directory.FullName);
             return directory;

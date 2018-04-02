@@ -25,16 +25,16 @@ namespace MiniCover.ApprovalTests
 
             var commandBuild = Command.CreateDotNet("build", new[] {sampleSolution, "--no-restore"});
             result = commandBuild.Execute();
-            result.ExitCode.ShouldBe(0);
+            result.ExitCode.ShouldBe(0, $"output:{result.StdOut}{Environment.NewLine}errors:{result.StdErr}");
             result = MiniCoverRunner.ExecuteInstrumenter(toolPath,workdir);
-            result.ExitCode.ShouldBe(0);
+            result.ExitCode.ShouldBe(0, $"output:{result.StdOut}{Environment.NewLine}errors:{result.StdErr}");
             result.StdErr.ShouldBeNullOrEmpty();
 
             var coverageJson = StringConverger.ApplyCleanup(File.ReadAllText(Path.Combine(toolPath, workdir, "coverage.json")), new Uri(sampleRootDirectory).LocalPath);
             ApprovaleHelper.VerifyJson(coverageJson);
 
             result = MiniCoverRunner.ExecuteReset(toolPath, workdir);
-            result.ExitCode.ShouldBe(0);
+            result.ExitCode.ShouldBe(0, $"output:{result.StdOut}{Environment.NewLine}errors:{result.StdErr}");
             result.StdErr.ShouldBeNullOrEmpty();
 
             var testProjects = Directory.EnumerateFiles(Path.Combine(sampleRootDirectory, "test"), "*.csproj",
@@ -45,11 +45,11 @@ namespace MiniCover.ApprovalTests
                 commandTest.CaptureStdOut();
                 commandTest.CaptureStdErr();
                 result = commandTest.Execute();
-                result.ExitCode.ShouldBe(0);
+                result.ExitCode.ShouldBe(0, $"output:{result.StdOut}{Environment.NewLine}errors:{result.StdErr}");
                 result.StdErr.ShouldBeNullOrEmpty();
             }
             result = MiniCoverRunner.ExecuteUninstrument(toolPath, workdir);
-            result.ExitCode.ShouldBe(0);
+            result.ExitCode.ShouldBe(0, $"output:{result.StdOut}{Environment.NewLine}errors:{result.StdErr}");
             result.StdErr.ShouldBeNullOrEmpty();
 
             var bytes = File.ReadAllBytes(Path.Combine(toolPath, workdir, "coverage-hits.txt"));

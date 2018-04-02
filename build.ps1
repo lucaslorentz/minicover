@@ -1,6 +1,7 @@
 dotnet restore
 
-dotnet pack -c Release --output "$(Resolve-Path .)/artifacts" --version-suffix ci-$(Get-Date -UFormat +%Y%m%d%H%M%S)
+$env:Version="$(Get-Content version)-local-$(Get-Date -UFormat +%Y%m%d%H%M%S)"
+dotnet pack -c Release --output "$(Resolve-Path .)/artifacts/local"
 
 dotnet test tests/MiniCover.HitServices.UnitTests/MiniCover.HitServices.UnitTests.csproj
 dotnet test tests/MiniCover.UnitTests/MiniCover.UnitTests.csproj

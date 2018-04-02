@@ -7,10 +7,10 @@ namespace MiniCover.Utils
 {
     public class DepsJsonUtils
     {
-        public static void PatchDepsJson(string depsJsonFile)
+        public static void PatchDepsJson(string depsJsonFile, string hitServicesVersion)
         {
             var content = File.ReadAllText(depsJsonFile);
-            var newContent = PatchDepsJsonContent(content);
+            var newContent = PatchDepsJsonContent(content, hitServicesVersion);
             File.WriteAllText(depsJsonFile, newContent);
         }
 
@@ -21,7 +21,7 @@ namespace MiniCover.Utils
             File.WriteAllText(depsJsonFile, newContent);
         }
 
-        public static string PatchDepsJsonContent(string content)
+        public static string PatchDepsJsonContent(string content, string hitServicesVersion)
         {
             var json = JsonConvert.DeserializeObject<JObject>(content);
 
@@ -31,7 +31,7 @@ namespace MiniCover.Utils
             {
                 foreach (var target in targets.PropertyValues().OfType<JObject>())
                 {
-                    target["MiniCover.HitServices/1.0.0"] = new JObject
+                    target[$"MiniCover.HitServices/{hitServicesVersion}"] = new JObject
                     {
                         ["runtime"] = new JObject
                         {
@@ -44,7 +44,7 @@ namespace MiniCover.Utils
             var libraries = json["libraries"] as JObject;
             if (libraries != null)
             {
-                libraries["MiniCover.HitServices/1.0.0"] = new JObject
+                libraries[$"MiniCover.HitServices/{hitServicesVersion}"] = new JObject
                 {
                     ["type"] = "project",
                     ["serviceable"] = false,
@@ -64,14 +64,24 @@ namespace MiniCover.Utils
             {
                 foreach (var target in targets.PropertyValues().OfType<JObject>())
                 {
-                    target.Remove("MiniCover.HitServices/1.0.0");
+                    var miniCoverProperties = target.Properties()
+                        .Where(p => p.Name.StartsWith("MiniCover.HitServices/"))
+                        .ToArray();
+
+                    foreach (var property in miniCoverProperties)
+                        property.Remove();
                 }
             }
 
             var libraries = json["libraries"] as JObject;
             if (libraries != null)
             {
-                libraries.Remove("MiniCover.HitServices/1.0.0");
+                var miniCoverProperties = libraries.Properties()
+                    .Where(p => p.Name.StartsWith("MiniCover.HitServices/"))
+                    .ToArray();
+
+                foreach (var property in miniCoverProperties)
+                    property.Remove();
             }
 
             return JsonConvert.SerializeObject(json, Formatting.Indented);
