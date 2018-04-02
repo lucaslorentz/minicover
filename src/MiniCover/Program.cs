@@ -92,7 +92,7 @@ namespace MiniCover
                 commandLineApplication.ShowHelp();
                 return 0;
             });
-
+            Console.WriteLine($"Starting program with parameters '{string.Join(" ", args)}'");
             return commandLineApplication.Execute(args);
         }
 

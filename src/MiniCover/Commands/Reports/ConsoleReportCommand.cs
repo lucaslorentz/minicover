@@ -13,14 +13,15 @@ namespace MiniCover.Commands.Reports
         private static readonly IMiniCoverOption<InstrumentationResult> CoverageLoadedFileOption = new CoverageLoadedFileOption();
         private static readonly ThresholdOption ThresholdOption = new ThresholdOption();
         private static readonly WorkingDirectoryOption WorkingDirectoryOption = new WorkingDirectoryOption();
+        private static readonly VerbosityOption VerbosityOption = new VerbosityOption();
 
         internal ConsoleReportCommand()
-            : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption)
+            : base(CommandName, CommandDescription, WorkingDirectoryOption, CoverageLoadedFileOption, ThresholdOption, VerbosityOption)
         { }
 
         protected override Task<int> Execute()
         {
-            var consoleReport = new ConsoleReport();
+            var consoleReport = new ConsoleReport(VerbosityOption.GetValue());
             var result = consoleReport.Execute(CoverageLoadedFileOption.GetValue(), ThresholdOption.GetValue());
 
             return Task.FromResult(result);

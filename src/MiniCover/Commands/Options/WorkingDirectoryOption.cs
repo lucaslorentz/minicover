@@ -19,7 +19,7 @@ namespace MiniCover.Commands.Options
         {
             var workingDirectoryPath = Option.Value() ?? DefaultValue;
             var directory = Directory.CreateDirectory(workingDirectoryPath);
-            Console.WriteLine($"Changing working directory to '{directory.FullName}'");
+            Console.WriteLine($"Referring to '{ workingDirectoryPath }', working directory is changed to '{directory.FullName}'");
             Directory.SetCurrentDirectory(directory.FullName);
             return directory;
         }

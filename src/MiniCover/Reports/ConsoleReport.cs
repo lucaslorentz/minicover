@@ -1,11 +1,18 @@
 ﻿using MiniCover.Model;
 using System;
 using System.Collections.Generic;
+using MiniCover.Commands.Options;
 
 namespace MiniCover.Reports
 {
     public class ConsoleReport : BaseReport
     {
+        private readonly Verbosity _verbosity;
+
+        public ConsoleReport(Verbosity verbosity)
+        {
+            _verbosity = verbosity;
+        }
         private int _fileColumnLength;
 
         protected override void SetFileColumnLength(int fileColumnsLength)
@@ -15,6 +22,11 @@ namespace MiniCover.Reports
 
         protected override void WriteHeader()
         {
+            if (_verbosity == Verbosity.Quiet)
+            {
+                return;
+            }
+
             WriteHorizontalLine(_fileColumnLength);
 
             Write("| ");
@@ -33,6 +45,10 @@ namespace MiniCover.Reports
 
         protected override void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
         {
+            if (_verbosity == Verbosity.Quiet)
+            {
+                return;
+            }
             Write("| ");
             Write(Pad(kvFile.Key, _fileColumnLength), color);
             Write(" | ");
@@ -51,6 +67,12 @@ namespace MiniCover.Reports
 
         protected override void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color)
         {
+            if (_verbosity == Verbosity.Quiet)
+            {
+                Write(coveragePercentage.ToString("P") + " covered");
+                Write(Environment.NewLine);
+                return;
+            }
             WriteHorizontalLine(_fileColumnLength);
 
             Write("| ");
@@ -106,7 +128,7 @@ namespace MiniCover.Reports
         {
             var originalColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
-            Console.Write(text);
+            Write(text);
             Console.ForegroundColor = originalColor;
         }
 
