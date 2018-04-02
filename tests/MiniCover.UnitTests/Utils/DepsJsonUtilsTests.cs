@@ -11,8 +11,8 @@ namespace MiniCover.UnitTests.Utils
         {
             var originalContent = GetOriginalDepsJsonContent();
             var expectedResult = GetPatchedDepsJsonContent();
-            var result = DepsJsonUtils.PatchDepsJsonContent(originalContent);
-            result.ShouldBe(expectedResult);
+            var result = DepsJsonUtils.PatchDepsJsonContent(originalContent, "1.0.0");
+            NormalizeLineEnding(result).ShouldBe(NormalizeLineEnding(expectedResult));
         }
 
         [Fact]
@@ -21,7 +21,12 @@ namespace MiniCover.UnitTests.Utils
             var patchedContent = GetPatchedDepsJsonContent();
             var expectedResult = GetOriginalDepsJsonContent();
             var result = DepsJsonUtils.UnpatchDepsJsonContent(patchedContent);
-            result.ShouldBe(expectedResult);
+            NormalizeLineEnding(result).ShouldBe(NormalizeLineEnding(expectedResult));
+        }
+
+        public string NormalizeLineEnding(string text)
+        {
+            return text.Replace("\r\n", "\n");
         }
 
         private static string GetOriginalDepsJsonContent()

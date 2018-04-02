@@ -1,0 +1,1849 @@
+﻿{
+  "SourcePath": "coverage/test/",
+  "HitsFile": "coverage/test/coverage-hits.txt",
+  "ExtraAssemblies": [
+    "src/Sample/bin/Debug/netstandard2.0/MiniCover.HitServices.dll",
+    "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/MiniCover.HitServices.dll",
+    "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/MiniCover.HitServices.dll"
+  ],
+  "Assemblies": [
+    {
+      "Name": "Sample",
+      "SourceFiles": {
+        "../../src/Sample/AnotherClass.cs": {
+          "Instructions": [
+            {
+              "Id": 1,
+              "StartLine": 13,
+              "EndLine": 13,
+              "StartColumn": 17,
+              "EndColumn": 38,
+              "Class": "Sample.AnotherClass",
+              "Method": "get_SomeProperty",
+              "MethodFullName": "System.Int32 Sample.AnotherClass::get_SomeProperty()",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 2,
+              "StartLine": 17,
+              "EndLine": 17,
+              "StartColumn": 17,
+              "EndColumn": 39,
+              "Class": "Sample.AnotherClass",
+              "Method": "set_SomeProperty",
+              "MethodFullName": "System.Void Sample.AnotherClass::set_SomeProperty(System.Int32)",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 3,
+              "StartLine": 23,
+              "EndLine": 23,
+              "StartColumn": 13,
+              "EndColumn": 37,
+              "Class": "Sample.AnotherClass",
+              "Method": "SomeMethod",
+              "MethodFullName": "System.Int32 Sample.AnotherClass::SomeMethod()",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 4,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 18,
+              "EndColumn": 27,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_0001: ldc.i4 0"
+            },
+            {
+              "Id": 5,
+              "StartLine": 30,
+              "EndLine": 30,
+              "StartColumn": 17,
+              "EndColumn": 30,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_0006: ldarg "
+            },
+            {
+              "Id": 6,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 40,
+              "EndColumn": 43,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_000e: ldloc V_0"
+            },
+            {
+              "Id": 7,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 29,
+              "EndColumn": 38,
+              "Class": "Sample.AnotherClass",
+              "Method": "AnotherMethod",
+              "MethodFullName": "System.Void Sample.AnotherClass::AnotherMethod()",
+              "Instruction": "IL_0012: ldloc V_0"
+            },
+            {
+              "Id": 8,
+              "StartLine": 36,
+              "EndLine": 36,
+              "StartColumn": 13,
+              "EndColumn": 39,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodAsync",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.AnotherClass::AMethodAsync()",
+              "Instruction": "IL_0001: ldc.i4 1"
+            },
+            {
+              "Id": 9,
+              "StartLine": 41,
+              "EndLine": 41,
+              "StartColumn": 13,
+              "EndColumn": 28,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodNotAsync",
+              "MethodFullName": "System.Void Sample.AnotherClass::AMethodNotAsync()",
+              "Instruction": "IL_0001: ldarg "
+            },
+            {
+              "Id": 10,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodWithMultipleReturn",
+              "MethodFullName": "System.Object Sample.AnotherClass::AMethodWithMultipleReturn(System.Int32)",
+              "Instruction": "IL_0001: ldarg value"
+            },
+            {
+              "Id": 11,
+              "StartLine": 47,
+              "EndLine": 47,
+              "StartColumn": 17,
+              "EndColumn": 26,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodWithMultipleReturn",
+              "MethodFullName": "System.Object Sample.AnotherClass::AMethodWithMultipleReturn(System.Int32)",
+              "Instruction": "IL_000b: ldc.i4 2"
+            },
+            {
+              "Id": 12,
+              "StartLine": 48,
+              "EndLine": 48,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodWithMultipleReturn",
+              "MethodFullName": "System.Object Sample.AnotherClass::AMethodWithMultipleReturn(System.Int32)",
+              "Instruction": "IL_0014: ldarg value"
+            },
+            {
+              "Id": 13,
+              "StartLine": 48,
+              "EndLine": 48,
+              "StartColumn": 33,
+              "EndColumn": 44,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodWithMultipleReturn",
+              "MethodFullName": "System.Object Sample.AnotherClass::AMethodWithMultipleReturn(System.Int32)",
+              "Instruction": "IL_001e: ldstr \"3\""
+            },
+            {
+              "Id": 14,
+              "StartLine": 49,
+              "EndLine": 49,
+              "StartColumn": 13,
+              "EndColumn": 22,
+              "Class": "Sample.AnotherClass",
+              "Method": "AMethodWithMultipleReturn",
+              "MethodFullName": "System.Object Sample.AnotherClass::AMethodWithMultipleReturn(System.Int32)",
+              "Instruction": "IL_0026: ldc.i4 1"
+            },
+            {
+              "Id": 15,
+              "StartLine": 7,
+              "EndLine": 7,
+              "StartColumn": 9,
+              "EndColumn": 39,
+              "Class": "Sample.AnotherClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.AnotherClass::.ctor()",
+              "Instruction": "IL_0000: ldarg "
+            }
+          ]
+        },
+        "../../src/Sample/PartialClass.cs": {
+          "Instructions": [
+            {
+              "Id": 16,
+              "StartLine": 7,
+              "EndLine": 7,
+              "StartColumn": 9,
+              "EndColumn": 39,
+              "Class": "Sample.PartialClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.PartialClass::.ctor(System.Int32)",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 17,
+              "StartLine": 9,
+              "EndLine": 9,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.PartialClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.PartialClass::.ctor(System.Int32)",
+              "Instruction": "IL_0008: ldarg "
+            },
+            {
+              "Id": 18,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.PartialClass",
+              "Method": "CallPartialMethod",
+              "MethodFullName": "System.Void Sample.PartialClass::CallPartialMethod()",
+              "Instruction": "IL_0001: ldarg "
+            }
+          ]
+        },
+        "../../src/Sample/PartialClassB.cs": {
+          "Instructions": [
+            {
+              "Id": 19,
+              "StartLine": 9,
+              "EndLine": 9,
+              "StartColumn": 13,
+              "EndColumn": 60,
+              "Class": "Sample.PartialClass",
+              "Method": "APartialMethod",
+              "MethodFullName": "System.Void Sample.PartialClass::APartialMethod()",
+              "Instruction": "IL_0001: ldarg "
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/AClassWithATryFinallyInConstructor.cs": {
+          "Instructions": [
+            {
+              "Id": 20,
+              "StartLine": 8,
+              "EndLine": 8,
+              "StartColumn": 9,
+              "EndColumn": 52,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::.ctor()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 21,
+              "StartLine": 12,
+              "EndLine": 12,
+              "StartColumn": 17,
+              "EndColumn": 27,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::.ctor()",
+              "Instruction": "IL_0009: ldarg "
+            },
+            {
+              "Id": 22,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 17,
+              "EndColumn": 24,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::.ctor()",
+              "Instruction": "IL_0014: ldarg "
+            },
+            {
+              "Id": 23,
+              "StartLine": 24,
+              "EndLine": 24,
+              "StartColumn": 17,
+              "EndColumn": 43,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": "Exit",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::Exit()",
+              "Instruction": "IL_0002: ldstr \"test\""
+            },
+            {
+              "Id": 24,
+              "StartLine": 26,
+              "EndLine": 26,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": "Exit",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::Exit()",
+              "Instruction": "IL_0010: pop"
+            },
+            {
+              "Id": 25,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 17,
+              "EndColumn": 43,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": "Exit",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::Exit()",
+              "Instruction": "IL_0012: ldstr \"erro\""
+            },
+            {
+              "Id": 26,
+              "StartLine": 29,
+              "EndLine": 29,
+              "StartColumn": 17,
+              "EndColumn": 23,
+              "Class": "Sample.TryFinally.AClassWithATryFinallyInConstructor",
+              "Method": "Exit",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::Exit()",
+              "Instruction": "IL_001d: rethrow"
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/AClassWithFieldInitializedOutsideConstructor.cs": {
+          "Instructions": [
+            {
+              "Id": 27,
+              "StartLine": 5,
+              "EndLine": 5,
+              "StartColumn": 9,
+              "EndColumn": 40,
+              "Class": "Sample.TryFinally.AClassWithFieldInitializedOutsideConstructor",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AClassWithFieldInitializedOutsideConstructor::.ctor()",
+              "Instruction": "IL_0000: ldarg "
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/AClassWithSomeTryFinally.cs": {
+          "Instructions": [
+            {
+              "Id": 28,
+              "StartLine": 7,
+              "EndLine": 7,
+              "StartColumn": 13,
+              "EndColumn": 65,
+              "Class": "Sample.TryFinally.AClassWithSomeTryFinally",
+              "Method": "MultiplyByTwo",
+              "MethodFullName": "System.Int32 Sample.TryFinally.AClassWithSomeTryFinally::MultiplyByTwo(System.Int32)",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AClassWithATryFinallyInConstructor::.ctor()"
+            },
+            {
+              "Id": 29,
+              "StartLine": 10,
+              "EndLine": 10,
+              "StartColumn": 17,
+              "EndColumn": 34,
+              "Class": "Sample.TryFinally.AClassWithSomeTryFinally",
+              "Method": "MultiplyByTwo",
+              "MethodFullName": "System.Int32 Sample.TryFinally.AClassWithSomeTryFinally::MultiplyByTwo(System.Int32)",
+              "Instruction": "IL_0008: ldarg value"
+            },
+            {
+              "Id": 30,
+              "StartLine": 14,
+              "EndLine": 14,
+              "StartColumn": 17,
+              "EndColumn": 29,
+              "Class": "Sample.TryFinally.AClassWithSomeTryFinally",
+              "Method": "MultiplyByTwo",
+              "MethodFullName": "System.Int32 Sample.TryFinally.AClassWithSomeTryFinally::MultiplyByTwo(System.Int32)",
+              "Instruction": "IL_000f: ldloc V_0"
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/AnAbstractClass.cs": {
+          "Instructions": [
+            {
+              "Id": 31,
+              "StartLine": 5,
+              "EndLine": 5,
+              "StartColumn": 35,
+              "EndColumn": 39,
+              "Class": "Sample.TryFinally.AnAbstractClass",
+              "Method": "get_AnotherValue",
+              "MethodFullName": "System.Int32 Sample.TryFinally.AnAbstractClass::get_AnotherValue()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 32,
+              "StartLine": 6,
+              "EndLine": 6,
+              "StartColumn": 9,
+              "EndColumn": 40,
+              "Class": "Sample.TryFinally.AnAbstractClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnAbstractClass::.ctor(System.Int32)",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 33,
+              "StartLine": 8,
+              "EndLine": 8,
+              "StartColumn": 9,
+              "EndColumn": 52,
+              "Class": "Sample.TryFinally.AnAbstractClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnAbstractClass::.ctor(System.Int32)",
+              "Instruction": "IL_0007: ldarg "
+            },
+            {
+              "Id": 34,
+              "StartLine": 10,
+              "EndLine": 10,
+              "StartColumn": 13,
+              "EndColumn": 41,
+              "Class": "Sample.TryFinally.AnAbstractClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnAbstractClass::.ctor(System.Int32)",
+              "Instruction": "IL_000f: ldarg "
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/AnotherClassWithoutTryFinally.cs": {
+          "Instructions": [
+            {
+              "Id": 35,
+              "StartLine": 7,
+              "EndLine": 7,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.TryFinally.AnotherClassWithoutTryFinally",
+              "Method": "MultiplyByTwo",
+              "MethodFullName": "System.Int32 Sample.TryFinally.AnotherClassWithoutTryFinally::MultiplyByTwo(System.Int32)",
+              "Instruction": "IL_0001: ldarg value"
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/ClassWithComplicatedLambda.cs": {
+          "Instructions": [
+            {
+              "Id": 36,
+              "StartLine": 10,
+              "EndLine": 15,
+              "StartColumn": 13,
+              "EndColumn": 22,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda",
+              "Method": "Add2ToEachValueAndSumThemWithConsoleWrite",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda::Add2ToEachValueAndSumThemWithConsoleWrite(System.Int32[])",
+              "Instruction": "IL_0001: ldarg values"
+            },
+            {
+              "Id": 37,
+              "StartLine": 12,
+              "EndLine": 12,
+              "StartColumn": 17,
+              "EndColumn": 35,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0001: ldarg a"
+            },
+            {
+              "Id": 38,
+              "StartLine": 13,
+              "EndLine": 13,
+              "StartColumn": 17,
+              "EndColumn": 42,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 39,
+              "StartLine": 14,
+              "EndLine": 14,
+              "StartColumn": 17,
+              "EndColumn": 30,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_000c: ldloc V_0"
+            },
+            {
+              "Id": 40,
+              "StartLine": 12,
+              "EndLine": 12,
+              "StartColumn": 17,
+              "EndColumn": 35,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0001: ldarg a"
+            },
+            {
+              "Id": 41,
+              "StartLine": 13,
+              "EndLine": 13,
+              "StartColumn": 17,
+              "EndColumn": 42,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 42,
+              "StartLine": 14,
+              "EndLine": 14,
+              "StartColumn": 17,
+              "EndColumn": 30,
+              "Class": "Sample.TryFinally.ClassWithComplicatedLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithComplicatedLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_000c: ldloc V_0"
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/ClassWithMultipleConstructors.cs": {
+          "Instructions": [
+            {
+              "Id": 43,
+              "StartLine": 7,
+              "EndLine": 7,
+              "StartColumn": 51,
+              "EndColumn": 59,
+              "Class": "Sample.TryFinally.ClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.ClassWithMultipleConstructors::.ctor()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 44,
+              "StartLine": 11,
+              "EndLine": 11,
+              "StartColumn": 9,
+              "EndColumn": 57,
+              "Class": "Sample.TryFinally.ClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.ClassWithMultipleConstructors::.ctor(System.Int32)",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 45,
+              "StartLine": 13,
+              "EndLine": 13,
+              "StartColumn": 13,
+              "EndColumn": 46,
+              "Class": "Sample.TryFinally.ClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.ClassWithMultipleConstructors::.ctor(System.Int32)",
+              "Instruction": "IL_0008: ldarg "
+            },
+            {
+              "Id": 46,
+              "StartLine": 18,
+              "EndLine": 18,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.TryFinally.ClassWithMultipleConstructors",
+              "Method": ".cctor",
+              "MethodFullName": "System.Void Sample.TryFinally.ClassWithMultipleConstructors::.cctor()",
+              "Instruction": "IL_0001: ldc.i4 15"
+            },
+            {
+              "Id": 47,
+              "StartLine": 21,
+              "EndLine": 21,
+              "StartColumn": 76,
+              "EndColumn": 116,
+              "Class": "Sample.TryFinally.ClassWithMultipleConstructors",
+              "Method": "BuildFor",
+              "MethodFullName": "Sample.TryFinally.ClassWithMultipleConstructors Sample.TryFinally.ClassWithMultipleConstructors::BuildFor(System.Int32)",
+              "Instruction": "IL_0000: ldarg value"
+            },
+            {
+              "Id": 48,
+              "StartLine": 23,
+              "EndLine": 23,
+              "StartColumn": 66,
+              "EndColumn": 101,
+              "Class": "Sample.TryFinally.ClassWithMultipleConstructors",
+              "Method": "Default",
+              "MethodFullName": "Sample.TryFinally.ClassWithMultipleConstructors Sample.TryFinally.ClassWithMultipleConstructors::Default()",
+              "Instruction": "IL_0000: newobj System.Void Sample.TryFinally.ClassWithMultipleConstructors::.ctor()"
+            },
+            {
+              "Id": 49,
+              "StartLine": 28,
+              "EndLine": 28,
+              "StartColumn": 30,
+              "EndColumn": 34,
+              "Class": "Sample.TryFinally.AnotherClassWithMultipleConstructors",
+              "Method": "get_Text",
+              "MethodFullName": "System.String Sample.TryFinally.AnotherClassWithMultipleConstructors::get_Text()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 50,
+              "StartLine": 31,
+              "EndLine": 31,
+              "StartColumn": 9,
+              "EndColumn": 76,
+              "Class": "Sample.TryFinally.AnotherClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnotherClassWithMultipleConstructors::.ctor(System.Int32,System.String)",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 51,
+              "StartLine": 33,
+              "EndLine": 33,
+              "StartColumn": 13,
+              "EndColumn": 25,
+              "Class": "Sample.TryFinally.AnotherClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnotherClassWithMultipleConstructors::.ctor(System.Int32,System.String)",
+              "Instruction": "IL_0008: ldarg "
+            },
+            {
+              "Id": 52,
+              "StartLine": 34,
+              "EndLine": 34,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.TryFinally.AnotherClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnotherClassWithMultipleConstructors::.ctor(System.Int32,System.String)",
+              "Instruction": "IL_000f: ldarg "
+            },
+            {
+              "Id": 53,
+              "StartLine": 38,
+              "EndLine": 38,
+              "StartColumn": 15,
+              "EndColumn": 27,
+              "Class": "Sample.TryFinally.AnotherClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnotherClassWithMultipleConstructors::.ctor()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 54,
+              "StartLine": 43,
+              "EndLine": 43,
+              "StartColumn": 11,
+              "EndColumn": 25,
+              "Class": "Sample.TryFinally.AnotherClassWithMultipleConstructors",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.AnotherClassWithMultipleConstructors::.ctor(System.String)",
+              "Instruction": "IL_0000: ldarg "
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/ClassWithSimpleLambda.cs": {
+          "Instructions": [
+            {
+              "Id": 55,
+              "StartLine": 9,
+              "EndLine": 9,
+              "StartColumn": 13,
+              "EndColumn": 52,
+              "Class": "Sample.TryFinally.ClassWithSimpleLambda",
+              "Method": "Add2ToEachValueAndSumThem",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithSimpleLambda::Add2ToEachValueAndSumThem(System.Int32[])",
+              "Instruction": "IL_0001: ldarg values"
+            },
+            {
+              "Id": 56,
+              "StartLine": 9,
+              "EndLine": 9,
+              "StartColumn": 39,
+              "EndColumn": 44,
+              "Class": "Sample.TryFinally.ClassWithSimpleLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThem>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithSimpleLambda/<>c::<Add2ToEachValueAndSumThem>b__0_0(System.Int32)",
+              "Instruction": "IL_0000: ldarg a"
+            },
+            {
+              "Id": 57,
+              "StartLine": 9,
+              "EndLine": 9,
+              "StartColumn": 39,
+              "EndColumn": 44,
+              "Class": "Sample.TryFinally.ClassWithSimpleLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThem>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithSimpleLambda/<>c::<Add2ToEachValueAndSumThem>b__0_0(System.Int32)",
+              "Instruction": "IL_0000: ldarg a"
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/ClassWithTryFinallyInLambda.cs": {
+          "Instructions": [
+            {
+              "Id": 58,
+              "StartLine": 12,
+              "EndLine": 22,
+              "StartColumn": 17,
+              "EndColumn": 26,
+              "Class": "Sample.TryFinally.ClassWithTryFinallyInLambda",
+              "Method": "Add2ToEachValueAndSumThemWithConsoleWrite",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithTryFinallyInLambda::Add2ToEachValueAndSumThemWithConsoleWrite(System.Int32[])",
+              "Instruction": "IL_0002: ldarg values"
+            },
+            {
+              "Id": 59,
+              "StartLine": 26,
+              "EndLine": 26,
+              "StartColumn": 17,
+              "EndColumn": 42,
+              "Class": "Sample.TryFinally.ClassWithTryFinallyInLambda",
+              "Method": "Add2ToEachValueAndSumThemWithConsoleWrite",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithTryFinallyInLambda::Add2ToEachValueAndSumThemWithConsoleWrite(System.Int32[])",
+              "Instruction": "IL_0030: ldstr \"end\""
+            },
+            {
+              "Id": 60,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 25,
+              "EndColumn": 38,
+              "Class": "Sample.TryFinally.ClassWithTryFinallyInLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithTryFinallyInLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0002: ldarg a"
+            },
+            {
+              "Id": 61,
+              "StartLine": 20,
+              "EndLine": 20,
+              "StartColumn": 25,
+              "EndColumn": 50,
+              "Class": "Sample.TryFinally.ClassWithTryFinallyInLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithTryFinallyInLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0009: ldstr \"end\""
+            },
+            {
+              "Id": 62,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 25,
+              "EndColumn": 38,
+              "Class": "Sample.TryFinally.ClassWithTryFinallyInLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithTryFinallyInLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0002: ldarg a"
+            },
+            {
+              "Id": 63,
+              "StartLine": 20,
+              "EndLine": 20,
+              "StartColumn": 25,
+              "EndColumn": 50,
+              "Class": "Sample.TryFinally.ClassWithTryFinallyInLambda/<>c",
+              "Method": "<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0",
+              "MethodFullName": "System.Int32 Sample.TryFinally.ClassWithTryFinallyInLambda/<>c::<Add2ToEachValueAndSumThemWithConsoleWrite>b__0_0(System.Int32)",
+              "Instruction": "IL_0009: ldstr \"end\""
+            }
+          ]
+        },
+        "../../src/Sample/TryFinally/HeritingClass.cs": {
+          "Instructions": [
+            {
+              "Id": 64,
+              "StartLine": 11,
+              "EndLine": 11,
+              "StartColumn": 49,
+              "EndColumn": 67,
+              "Class": "Sample.TryFinally.HeritingClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.HeritingClass::.ctor(System.Int32)",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 65,
+              "StartLine": 6,
+              "EndLine": 6,
+              "StartColumn": 15,
+              "EndColumn": 33,
+              "Class": "Sample.TryFinally.HeritingClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.HeritingClass::.ctor(System.Int32)",
+              "Instruction": "IL_000b: ldarg "
+            },
+            {
+              "Id": 66,
+              "StartLine": 8,
+              "EndLine": 8,
+              "StartColumn": 13,
+              "EndColumn": 44,
+              "Class": "Sample.TryFinally.HeritingClass",
+              "Method": ".ctor",
+              "MethodFullName": "System.Void Sample.TryFinally.HeritingClass::.ctor(System.Int32)",
+              "Instruction": "IL_0014: ldarg "
+            },
+            {
+              "Id": 67,
+              "StartLine": 11,
+              "EndLine": 11,
+              "StartColumn": 40,
+              "EndColumn": 44,
+              "Class": "Sample.TryFinally.HeritingClass",
+              "Method": "get_Instance",
+              "MethodFullName": "Sample.AnotherClass Sample.TryFinally.HeritingClass::get_Instance()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 68,
+              "StartLine": 12,
+              "EndLine": 12,
+              "StartColumn": 28,
+              "EndColumn": 32,
+              "Class": "Sample.TryFinally.HeritingClass",
+              "Method": "get_Value",
+              "MethodFullName": "System.Int32 Sample.TryFinally.HeritingClass::get_Value()",
+              "Instruction": "IL_0000: ldarg "
+            }
+          ]
+        }
+      },
+      "Locations": [
+        {
+          "File": "src/Sample/bin/Debug/netstandard2.0/Sample.dll",
+          "BackupFile": "src/Sample/bin/Debug/netstandard2.0/Sample.uninstrumented.dll",
+          "PdbFile": "src/Sample/bin/Debug/netstandard2.0/Sample.pdb",
+          "BackupPdbFile": "src/Sample/bin/Debug/netstandard2.0/Sample.uninstrumented.pdb"
+        },
+        {
+          "File": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.dll",
+          "BackupFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.pdb",
+          "BackupPdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.pdb"
+        },
+        {
+          "File": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.dll",
+          "BackupFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.pdb",
+          "BackupPdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.uninstrumented.pdb"
+        }
+      ]
+    },
+    {
+      "Name": "Sample.Tests.NUnit",
+      "SourceFiles": {
+        "../../test/Sample.Tests.NUnit/UnitTest1.cs": {
+          "Instructions": [
+            {
+              "Id": 69,
+              "StartLine": 15,
+              "EndLine": 15,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 70,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 71,
+              "StartLine": 17,
+              "EndLine": 17,
+              "StartColumn": 13,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 72,
+              "StartLine": 19,
+              "EndLine": 19,
+              "StartColumn": 13,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0009: ldloc V_0"
+            },
+            {
+              "Id": 73,
+              "StartLine": 20,
+              "EndLine": 20,
+              "StartColumn": 13,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_001b: ldc.i4 4"
+            },
+            {
+              "Id": 74,
+              "StartLine": 22,
+              "EndLine": 22,
+              "StartColumn": 13,
+              "EndColumn": 42,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_002d: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 75,
+              "StartLine": 23,
+              "EndLine": 23,
+              "StartColumn": 13,
+              "EndColumn": 34,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_0033: ldloc V_3"
+            },
+            {
+              "Id": 76,
+              "StartLine": 24,
+              "EndLine": 24,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest1()",
+              "Instruction": "IL_003b: ldloc V_3"
+            },
+            {
+              "Id": 77,
+              "StartLine": 30,
+              "EndLine": 30,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 78,
+              "StartLine": 31,
+              "EndLine": 31,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 79,
+              "StartLine": 33,
+              "EndLine": 33,
+              "StartColumn": 13,
+              "EndColumn": 24,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 80,
+              "StartLine": 35,
+              "EndLine": 35,
+              "StartColumn": 17,
+              "EndColumn": 39,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0011: ldloc V_0"
+            },
+            {
+              "Id": 81,
+              "StartLine": 38,
+              "EndLine": 38,
+              "StartColumn": 18,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0024: ldc.i4 0"
+            },
+            {
+              "Id": 82,
+              "StartLine": 40,
+              "EndLine": 40,
+              "StartColumn": 17,
+              "EndColumn": 52,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0029: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 83,
+              "StartLine": 38,
+              "EndLine": 38,
+              "StartColumn": 37,
+              "EndColumn": 40,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0035: ldloc V_3"
+            },
+            {
+              "Id": 84,
+              "StartLine": 38,
+              "EndLine": 38,
+              "StartColumn": 29,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTest2()",
+              "Instruction": "IL_0039: ldloc V_3"
+            },
+            {
+              "Id": 85,
+              "StartLine": 47,
+              "EndLine": 47,
+              "StartColumn": 13,
+              "EndColumn": 55,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnCodeWithTryFinally()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AClassWithSomeTryFinally::.ctor()"
+            },
+            {
+              "Id": 86,
+              "StartLine": 48,
+              "EndLine": 48,
+              "StartColumn": 13,
+              "EndColumn": 48,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnCodeWithTryFinally()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 87,
+              "StartLine": 49,
+              "EndLine": 49,
+              "StartColumn": 13,
+              "EndColumn": 40,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnCodeWithTryFinally()",
+              "Instruction": "IL_000f: ldc.i4 4"
+            },
+            {
+              "Id": 88,
+              "StartLine": 55,
+              "EndLine": 55,
+              "StartColumn": 13,
+              "EndColumn": 60,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithoutTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnCodeWithoutTryFinally()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AnotherClassWithoutTryFinally::.ctor()"
+            },
+            {
+              "Id": 89,
+              "StartLine": 56,
+              "EndLine": 56,
+              "StartColumn": 13,
+              "EndColumn": 48,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithoutTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnCodeWithoutTryFinally()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 90,
+              "StartLine": 57,
+              "EndLine": 57,
+              "StartColumn": 13,
+              "EndColumn": 40,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithoutTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnCodeWithoutTryFinally()",
+              "Instruction": "IL_000f: ldc.i4 4"
+            },
+            {
+              "Id": 91,
+              "StartLine": 63,
+              "EndLine": 63,
+              "StartColumn": 13,
+              "EndColumn": 52,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnSimpleLambda",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnSimpleLambda()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.ClassWithSimpleLambda::.ctor()"
+            },
+            {
+              "Id": 92,
+              "StartLine": 64,
+              "EndLine": 64,
+              "StartColumn": 13,
+              "EndColumn": 63,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnSimpleLambda",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnSimpleLambda()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 93,
+              "StartLine": 65,
+              "EndLine": 65,
+              "StartColumn": 13,
+              "EndColumn": 41,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnSimpleLambda",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnSimpleLambda()",
+              "Instruction": "IL_001c: ldc.i4 10"
+            },
+            {
+              "Id": 94,
+              "StartLine": 71,
+              "EndLine": 71,
+              "StartColumn": 13,
+              "EndColumn": 57,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnComplicatedLambda",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnComplicatedLambda()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.ClassWithComplicatedLambda::.ctor()"
+            },
+            {
+              "Id": 95,
+              "StartLine": 72,
+              "EndLine": 72,
+              "StartColumn": 13,
+              "EndColumn": 79,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnComplicatedLambda",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnComplicatedLambda()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 96,
+              "StartLine": 73,
+              "EndLine": 73,
+              "StartColumn": 13,
+              "EndColumn": 41,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestOnComplicatedLambda",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestOnComplicatedLambda()",
+              "Instruction": "IL_001c: ldc.i4 10"
+            },
+            {
+              "Id": 97,
+              "StartLine": 79,
+              "EndLine": 79,
+              "StartColumn": 13,
+              "EndColumn": 53,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitTestAPartialClass",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitTestAPartialClass()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 98,
+              "StartLine": 80,
+              "EndLine": 80,
+              "StartColumn": 13,
+              "EndColumn": 85,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitTestAPartialClass",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitTestAPartialClass()",
+              "Instruction": "IL_0014: ldloc V_0"
+            },
+            {
+              "Id": 99,
+              "StartLine": 86,
+              "EndLine": 86,
+              "StartColumn": 13,
+              "EndColumn": 108,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestAsync",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestAsync()",
+              "Instruction": "IL_0001: ldc.i4 0"
+            },
+            {
+              "Id": 100,
+              "StartLine": 92,
+              "EndLine": 92,
+              "StartColumn": 13,
+              "EndColumn": 177,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NUnitTestParallelAsync",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NUnitTestParallelAsync()",
+              "Instruction": "IL_0001: newobj System.Void System.Threading.Tasks.ParallelOptions::.ctor()"
+            },
+            {
+              "Id": 101,
+              "StartLine": 98,
+              "EndLine": 98,
+              "StartColumn": 13,
+              "EndColumn": 68,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitTestBuilderWithStaticUsage",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitTestBuilderWithStaticUsage()",
+              "Instruction": "IL_0001: call Sample.TryFinally.ClassWithMultipleConstructors Sample.TryFinally.ClassWithMultipleConstructors::Default()"
+            },
+            {
+              "Id": 102,
+              "StartLine": 104,
+              "EndLine": 104,
+              "StartColumn": 13,
+              "EndColumn": 71,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitTestBuilderWithParameterWithStaticUsage",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitTestBuilderWithParameterWithStaticUsage()",
+              "Instruction": "IL_0001: ldc.i4 15"
+            },
+            {
+              "Id": 103,
+              "StartLine": 110,
+              "EndLine": 110,
+              "StartColumn": 13,
+              "EndColumn": 50,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitTestHeritage",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitTestHeritage()",
+              "Instruction": "IL_0001: ldc.i4 12"
+            },
+            {
+              "Id": 104,
+              "StartLine": 111,
+              "EndLine": 111,
+              "StartColumn": 13,
+              "EndColumn": 50,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitTestHeritage",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitTestHeritage()",
+              "Instruction": "IL_0009: ldc.i4 180"
+            },
+            {
+              "Id": 105,
+              "StartLine": 117,
+              "EndLine": 117,
+              "StartColumn": 13,
+              "EndColumn": 47,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitMultipleReturn",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitMultipleReturn()",
+              "Instruction": "IL_0001: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 106,
+              "StartLine": 118,
+              "EndLine": 118,
+              "StartColumn": 13,
+              "EndColumn": 71,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitMultipleReturn",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitMultipleReturn()",
+              "Instruction": "IL_0007: ldsfld System.Runtime.CompilerServices.CallSite`1<System.Action`4<System.Runtime.CompilerServices.CallSite,System.Type,System.Int32,System.Object>> Sample.Tests.NUnit.UnitTest1/<>o__12::<>p__0"
+            },
+            {
+              "Id": 107,
+              "StartLine": 80,
+              "EndLine": 80,
+              "StartColumn": 45,
+              "EndColumn": 77,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 108,
+              "StartLine": 80,
+              "EndLine": 80,
+              "StartColumn": 45,
+              "EndColumn": 77,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 109,
+              "StartLine": 86,
+              "EndLine": 86,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 110,
+              "StartLine": 86,
+              "EndLine": 86,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 111,
+              "StartLine": 92,
+              "EndLine": 92,
+              "StartColumn": 130,
+              "EndColumn": 164,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestParallelAsync>b__8_0",
+              "MethodFullName": "System.Action Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestParallelAsync>b__8_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 112,
+              "StartLine": 92,
+              "EndLine": 92,
+              "StartColumn": 130,
+              "EndColumn": 164,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestParallelAsync>b__8_0",
+              "MethodFullName": "System.Action Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestParallelAsync>b__8_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            }
+          ]
+        }
+      },
+      "Locations": [
+        {
+          "File": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.dll",
+          "BackupFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.pdb",
+          "BackupPdbFile": "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/Sample.Tests.NUnit.uninstrumented.pdb"
+        }
+      ]
+    },
+    {
+      "Name": "Sample.Tests.XUnit",
+      "SourceFiles": {
+        "../../test/Sample.Tests.XUnit/UnitTest1.cs": {
+          "Instructions": [
+            {
+              "Id": 113,
+              "StartLine": 14,
+              "EndLine": 14,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 114,
+              "StartLine": 15,
+              "EndLine": 15,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 115,
+              "StartLine": 16,
+              "EndLine": 16,
+              "StartColumn": 13,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 116,
+              "StartLine": 18,
+              "EndLine": 18,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0009: ldloc V_0"
+            },
+            {
+              "Id": 117,
+              "StartLine": 19,
+              "EndLine": 19,
+              "StartColumn": 13,
+              "EndColumn": 32,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0011: ldc.i4 4"
+            },
+            {
+              "Id": 118,
+              "StartLine": 21,
+              "EndLine": 21,
+              "StartColumn": 13,
+              "EndColumn": 42,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0019: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 119,
+              "StartLine": 22,
+              "EndLine": 22,
+              "StartColumn": 13,
+              "EndColumn": 34,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_001f: ldloc V_3"
+            },
+            {
+              "Id": 120,
+              "StartLine": 23,
+              "EndLine": 23,
+              "StartColumn": 13,
+              "EndColumn": 30,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest1",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest1()",
+              "Instruction": "IL_0027: ldloc V_3"
+            },
+            {
+              "Id": 121,
+              "StartLine": 29,
+              "EndLine": 29,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0001: ldc.i4 2"
+            },
+            {
+              "Id": 122,
+              "StartLine": 30,
+              "EndLine": 30,
+              "StartColumn": 13,
+              "EndColumn": 23,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0003: ldc.i4 2"
+            },
+            {
+              "Id": 123,
+              "StartLine": 32,
+              "EndLine": 32,
+              "StartColumn": 13,
+              "EndColumn": 24,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0005: ldloc V_0"
+            },
+            {
+              "Id": 124,
+              "StartLine": 34,
+              "EndLine": 34,
+              "StartColumn": 17,
+              "EndColumn": 36,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_0011: ldloc V_0"
+            },
+            {
+              "Id": 125,
+              "StartLine": 37,
+              "EndLine": 37,
+              "StartColumn": 18,
+              "EndColumn": 27,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_001a: ldc.i4 0"
+            },
+            {
+              "Id": 126,
+              "StartLine": 39,
+              "EndLine": 39,
+              "StartColumn": 17,
+              "EndColumn": 52,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_001f: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 127,
+              "StartLine": 37,
+              "EndLine": 37,
+              "StartColumn": 37,
+              "EndColumn": 40,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_002b: ldloc V_3"
+            },
+            {
+              "Id": 128,
+              "StartLine": 37,
+              "EndLine": 37,
+              "StartColumn": 29,
+              "EndColumn": 35,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTest2",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTest2()",
+              "Instruction": "IL_002f: ldloc V_3"
+            },
+            {
+              "Id": 129,
+              "StartLine": 46,
+              "EndLine": 46,
+              "StartColumn": 13,
+              "EndColumn": 55,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnCodeWithTryFinally()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AClassWithSomeTryFinally::.ctor()"
+            },
+            {
+              "Id": 130,
+              "StartLine": 47,
+              "EndLine": 47,
+              "StartColumn": 13,
+              "EndColumn": 48,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnCodeWithTryFinally()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 131,
+              "StartLine": 48,
+              "EndLine": 48,
+              "StartColumn": 13,
+              "EndColumn": 37,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnCodeWithTryFinally()",
+              "Instruction": "IL_000f: ldc.i4 4"
+            },
+            {
+              "Id": 132,
+              "StartLine": 54,
+              "EndLine": 54,
+              "StartColumn": 13,
+              "EndColumn": 60,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithoutTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnCodeWithoutTryFinally()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AnotherClassWithoutTryFinally::.ctor()"
+            },
+            {
+              "Id": 133,
+              "StartLine": 55,
+              "EndLine": 55,
+              "StartColumn": 13,
+              "EndColumn": 48,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithoutTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnCodeWithoutTryFinally()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 134,
+              "StartLine": 56,
+              "EndLine": 56,
+              "StartColumn": 13,
+              "EndColumn": 37,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnCodeWithoutTryFinally",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnCodeWithoutTryFinally()",
+              "Instruction": "IL_000f: ldc.i4 4"
+            },
+            {
+              "Id": 135,
+              "StartLine": 62,
+              "EndLine": 62,
+              "StartColumn": 13,
+              "EndColumn": 52,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnSimpleLambda",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnSimpleLambda()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.ClassWithSimpleLambda::.ctor()"
+            },
+            {
+              "Id": 136,
+              "StartLine": 63,
+              "EndLine": 63,
+              "StartColumn": 13,
+              "EndColumn": 63,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnSimpleLambda",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnSimpleLambda()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 137,
+              "StartLine": 64,
+              "EndLine": 64,
+              "StartColumn": 13,
+              "EndColumn": 38,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnSimpleLambda",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnSimpleLambda()",
+              "Instruction": "IL_001c: ldc.i4 10"
+            },
+            {
+              "Id": 138,
+              "StartLine": 70,
+              "EndLine": 70,
+              "StartColumn": 13,
+              "EndColumn": 57,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnComplicatedLambda",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnComplicatedLambda()",
+              "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.ClassWithComplicatedLambda::.ctor()"
+            },
+            {
+              "Id": 139,
+              "StartLine": 71,
+              "EndLine": 71,
+              "StartColumn": 13,
+              "EndColumn": 79,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnComplicatedLambda",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnComplicatedLambda()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 140,
+              "StartLine": 72,
+              "EndLine": 72,
+              "StartColumn": 13,
+              "EndColumn": 38,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NUnitTestOnComplicatedLambda",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NUnitTestOnComplicatedLambda()",
+              "Instruction": "IL_001c: ldc.i4 10"
+            },
+            {
+              "Id": 141,
+              "StartLine": 78,
+              "EndLine": 78,
+              "StartColumn": 13,
+              "EndColumn": 53,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitTestAPartialClass",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitTestAPartialClass()",
+              "Instruction": "IL_0007: ldloc V_0"
+            },
+            {
+              "Id": 142,
+              "StartLine": 79,
+              "EndLine": 79,
+              "StartColumn": 13,
+              "EndColumn": 78,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitTestAPartialClass",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitTestAPartialClass()",
+              "Instruction": "IL_0014: ldloc V_0"
+            },
+            {
+              "Id": 143,
+              "StartLine": 85,
+              "EndLine": 85,
+              "StartColumn": 13,
+              "EndColumn": 108,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTestAsync",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTestAsync()",
+              "Instruction": "IL_0001: ldc.i4 0"
+            },
+            {
+              "Id": 144,
+              "StartLine": 91,
+              "EndLine": 92,
+              "StartColumn": 13,
+              "EndColumn": 28,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTestParallelAsync",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTestParallelAsync()",
+              "Instruction": "IL_0001: ldc.i4 0"
+            },
+            {
+              "Id": 145,
+              "StartLine": 93,
+              "EndLine": 93,
+              "StartColumn": 13,
+              "EndColumn": 89,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "XUnitTestParallelAsync",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::XUnitTestParallelAsync()",
+              "Instruction": "IL_0033: newobj System.Void System.Threading.Tasks.ParallelOptions::.ctor()"
+            },
+            {
+              "Id": 146,
+              "StartLine": 99,
+              "EndLine": 99,
+              "StartColumn": 13,
+              "EndColumn": 68,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitTestBuilderWithStaticUsage",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitTestBuilderWithStaticUsage()",
+              "Instruction": "IL_0001: call Sample.TryFinally.ClassWithMultipleConstructors Sample.TryFinally.ClassWithMultipleConstructors::Default()"
+            },
+            {
+              "Id": 147,
+              "StartLine": 105,
+              "EndLine": 105,
+              "StartColumn": 13,
+              "EndColumn": 71,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitTestBuilderWithParameterWithStaticUsage",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitTestBuilderWithParameterWithStaticUsage()",
+              "Instruction": "IL_0001: ldc.i4 15"
+            },
+            {
+              "Id": 148,
+              "StartLine": 111,
+              "EndLine": 111,
+              "StartColumn": 13,
+              "EndColumn": 50,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitTestHeritage",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitTestHeritage()",
+              "Instruction": "IL_0001: ldc.i4 12"
+            },
+            {
+              "Id": 149,
+              "StartLine": 112,
+              "EndLine": 112,
+              "StartColumn": 13,
+              "EndColumn": 47,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitTestHeritage",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitTestHeritage()",
+              "Instruction": "IL_0009: ldc.i4 180"
+            },
+            {
+              "Id": 150,
+              "StartLine": 118,
+              "EndLine": 118,
+              "StartColumn": 13,
+              "EndColumn": 47,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitMultipleReturn",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitMultipleReturn()",
+              "Instruction": "IL_0001: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 151,
+              "StartLine": 119,
+              "EndLine": 119,
+              "StartColumn": 13,
+              "EndColumn": 68,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitMultipleReturn",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitMultipleReturn()",
+              "Instruction": "IL_0007: ldsfld System.Runtime.CompilerServices.CallSite`1<System.Action`4<System.Runtime.CompilerServices.CallSite,System.Type,System.Int32,System.Object>> Sample.Tests.XUnit.UnitTest1/<>o__12::<>p__0"
+            },
+            {
+              "Id": 152,
+              "StartLine": 79,
+              "EndLine": 79,
+              "StartColumn": 44,
+              "EndColumn": 76,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 153,
+              "StartLine": 79,
+              "EndLine": 79,
+              "StartColumn": 44,
+              "EndColumn": 76,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 154,
+              "StartLine": 85,
+              "EndLine": 85,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 155,
+              "StartLine": 85,
+              "EndLine": 85,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 156,
+              "StartLine": 91,
+              "EndLine": 91,
+              "StartColumn": 74,
+              "EndColumn": 108,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestParallelAsync>b__8_0",
+              "MethodFullName": "System.Action Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestParallelAsync>b__8_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 157,
+              "StartLine": 91,
+              "EndLine": 91,
+              "StartColumn": 74,
+              "EndColumn": 108,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestParallelAsync>b__8_0",
+              "MethodFullName": "System.Action Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestParallelAsync>b__8_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            }
+          ]
+        }
+      },
+      "Locations": [
+        {
+          "File": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.dll",
+          "BackupFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.uninstrumented.dll",
+          "PdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.pdb",
+          "BackupPdbFile": "test/Sample.Tests.XUnit/bin/Debug/netcoreapp2.0/Sample.Tests.XUnit.uninstrumented.pdb"
+        }
+      ]
+    }
+  ]
+}

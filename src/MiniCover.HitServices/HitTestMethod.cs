@@ -11,11 +11,11 @@ namespace MiniCover.HitServices
     {
         private readonly object _lock = new object();
 
-        internal static HitTestMethod From(MethodBase testMethod)
+        public static HitTestMethod From(MethodBase testMethod, Uri currentDirectory)
         {
             return new HitTestMethod(testMethod.DeclaringType.Assembly.FullName,
-                testMethod.DeclaringType.FullName, testMethod.Name, testMethod.DeclaringType.Assembly.Location, 0,
-                new Dictionary<int, int>());
+testMethod.DeclaringType.FullName, testMethod.Name, currentDirectory.MakeRelativeUri(new Uri(testMethod.DeclaringType.Assembly.Location)).ToString(), 0,
+new Dictionary<int, int>());
         }
 
         public HitTestMethod(string assemblyName,
@@ -76,6 +76,7 @@ namespace MiniCover.HitServices
 
         public void Serialize(Stream stream)
         {
+            lock (_lock)
             using (var binaryWriter = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 binaryWriter.Write(ClassName);
@@ -95,7 +96,7 @@ namespace MiniCover.HitServices
         public static IEnumerable<HitTestMethod> Deserialize(Stream stream)
         {
             var result = new List<HitTestMethod>();
-            using (var binaryReader = new BinaryReader(stream))
+            using (var binaryReader = new BinaryReader(stream, Encoding.UTF8))
             {
                 while (stream.Position < stream.Length)
                 {

@@ -12,6 +12,7 @@ namespace MiniCover.HitServices.UnitTests
         public void BinarySerializationShouldWork()
         {
             var assembly = this.GetType().Assembly;
+
             var sut = new HitTestMethod(assembly.FullName, this.GetType().FullName, nameof(BinarySerializationShouldWork), assembly.Location, 15, new Dictionary<int, int> { { 1, 15 } });
 
             byte[] data;
