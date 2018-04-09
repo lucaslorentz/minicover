@@ -43,7 +43,7 @@ The **tools.csproj** will be similar to:
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-20180301063918" />
+    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-20180329054201" />
   </ItemGroup>
 </Project>
 ```
