@@ -130,12 +130,33 @@ namespace MiniCover.Instrumentation
             File.Delete(instrumentedAssembly.TempPdbFile);
         }
 
+        private AssemblyDefinition AssemblyResolveFailure(object sender, AssemblyNameReference reference)
+        {
+            var defaultInclude = $"**/{reference.Name}.dll";
+            Console.WriteLine($"Warning! DefaultAssemblyResolver returned failure! \n Do search with mask {defaultInclude} in {normalizedWorkDir}");
+            var assemblies = FileUtils.GetFiles(null, null, defaultInclude, normalizedWorkDir);
+            if (assemblies.Length == 0)
+            {
+                return null;
+            }
+
+            var directoryWithAssembly = new FileInfo(assemblies.First()).Directory.FullName;
+            Console.WriteLine($"Add search directory {directoryWithAssembly}");
+
+            var resolver = (BaseAssemblyResolver)sender;
+            resolver.AddSearchDirectory(directoryWithAssembly);
+            return resolver.Resolve(reference);
+        }
+
         private InstrumentedAssembly InstrumentAssemblyIfNecessary(string assemblyFile)
         {
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
-
+            
             var resolver = new DefaultAssemblyResolver();
             resolver.AddSearchDirectory(assemblyDirectory);
+            resolver.ResolveFailure += this.AssemblyResolveFailure;
+
+            Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
 
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
@@ -154,11 +175,11 @@ namespace MiniCover.Instrumentation
                 var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
                 var exitMethodInfo = methodContextType.GetMethod("Exit");
                 var hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
-
+                
                 var methodContextClassReference = assemblyDefinition.MainModule.ImportReference(methodContextType);
                 var enterMethodReference = assemblyDefinition.MainModule.ImportReference(enterMethodInfo);
                 var exitMethodReference = assemblyDefinition.MainModule.ImportReference(exitMethodInfo);
-
+                
                 var hitInstructionReference = assemblyDefinition.MainModule.ImportReference(hitInstructionMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
@@ -172,7 +193,7 @@ namespace MiniCover.Instrumentation
                     })
                     .GroupBy(j => j.Document)
                     .ToArray();
-
+                
                 foreach (var documentGroup in documentsGroups)
                 {
                     if (!sourceFiles.Contains(documentGroup.Key.Url))
