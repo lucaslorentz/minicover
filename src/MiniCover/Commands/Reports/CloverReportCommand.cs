@@ -1,6 +1,7 @@
 ﻿using MiniCover.Commands.Options;
 using MiniCover.Model;
 using MiniCover.Reports.Clover;
+using MiniCover.Utils;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands.Reports
@@ -22,8 +23,8 @@ namespace MiniCover.Commands.Reports
 
         protected override Task<int> Execute()
         {
-            var result = CloverReport.Execute(CoverageLoadedFileOption.GetValue(), CloverOutputOption.GetValue(), ThresholdOption.GetValue());
-
+            CloverReport.Execute(CoverageLoadedFileOption.GetValue(), CloverOutputOption.GetValue(), ThresholdOption.GetValue());
+            var result = CalcUtils.IsHigherThanThreshold(CoverageLoadedFileOption.GetValue(), ThresholdOption.GetValue());
             return Task.FromResult(result);
         }
     }
