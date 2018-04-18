@@ -42,7 +42,8 @@ namespace MiniCover.ApprovalTests
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-
+            stdOut.Capture();
+            stdError.Capture();
             var process = new Process {StartInfo = processStartInfo};
 
             process.Start();

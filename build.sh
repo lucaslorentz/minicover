@@ -2,15 +2,17 @@
 
 set -e
 
-export "MiniCover=dotnet run -p src/MiniCover/MiniCover.csproj --"
+rm -r artifacts || true
 
 dotnet restore
 
-dotnet pack -c Release --output $PWD/artifacts --version-suffix ci-`date +%Y%m%d%H%M%S`
+export Version=$(cat version)-local-$(date +%Y%m%d%H%M%S)
+dotnet pack -c Release --output $PWD/artifacts/local
 
 dotnet build tests/MiniCover.HitServices.UnitTests/MiniCover.HitServices.UnitTests.csproj
 dotnet build tests/MiniCover.UnitTests/MiniCover.UnitTests.csproj
 
+export "MiniCover=dotnet run -p src/MiniCover/MiniCover.csproj --"
 $MiniCover instrument --workdir ./coverage --parentdir ../ --assemblies "tests/**/bin/**/*.dll" --sources "src/**/*.cs"
 
 dotnet test --no-build tests/MiniCover.HitServices.UnitTests/MiniCover.HitServices.UnitTests.csproj
@@ -29,8 +31,3 @@ echo "### Running sample build"
 cd sample
 ./build.sh
 cd ..
-
-if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then	
-	echo "### Publishing packages"
-	dotnet nuget push artifacts/*.nupkg -k $NUGET_KEY -s https://api.nuget.org/v3/index.json
-fi

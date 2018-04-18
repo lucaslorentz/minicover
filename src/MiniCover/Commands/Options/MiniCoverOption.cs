@@ -5,36 +5,43 @@ namespace MiniCover.Commands.Options
 {
     public abstract class MiniCoverOption<TValue> : IMiniCoverOption<TValue>
     {
-        private CommandOption option;
-        private bool validated;
-        private TValue value;
+        protected CommandOption Option;
 
-        protected abstract string Description { get; }
-        protected abstract string OptionTemplate { get; }
-        protected virtual CommandOptionType Type => CommandOptionType.SingleValue;
+        private readonly string _description;
+        private readonly string _optionTemplate;
+        private readonly CommandOptionType _type;
 
-        public TValue Value
+        protected MiniCoverOption(string description, string optionTemplate, CommandOptionType type = CommandOptionType.SingleValue)
         {
-            get
-            {
-                if (!validated)
-                    throw new MemberAccessException("Option should be validated before Value access");
-
-                return value;
-            }
+            _description = description;
+            _optionTemplate = optionTemplate;
+            _type = type;
         }
+
+        protected bool Validated { get; private set; }
+        protected TValue ValueField { get; private set; }
 
         public virtual void AddTo(CommandLineApplication command)
         {
-            option = command.Option(OptionTemplate, Description, Type);
+            Option = command.Option(_optionTemplate, _description, _type);
+        }
+
+        public TValue GetValue()
+        {
+            if (!Validated)
+                throw new MemberAccessException("Option should be validated before GetValue access");
+
+            return ValueField;
         }
 
         public void Validate()
         {
-            value = GetOptionValue(option);
-            validated = true;
+            ValueField = GetOptionValue();
+            Validated = Validation();
         }
 
-        protected abstract TValue GetOptionValue(CommandOption option);
+        protected abstract TValue GetOptionValue();
+
+        protected abstract bool Validation();
     }
 }

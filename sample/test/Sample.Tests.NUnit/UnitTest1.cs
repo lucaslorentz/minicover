@@ -103,5 +103,19 @@ namespace Sample.Tests.NUnit
         {
             var instance = ClassWithMultipleConstructors.BuildFor(15);
         }
+
+        [Test]
+        public void NunitTestHeritage()
+        {
+            var instance = new HeritingClass(12);
+            Assert.AreEqual(180, instance.Value);
+        }
+
+        [Test]
+        public void NunitMultipleReturn()
+        {
+            var instance = new AnotherClass();
+            Assert.AreEqual(1, instance.AMethodWithMultipleReturn(1));
+        }
     }
 }
