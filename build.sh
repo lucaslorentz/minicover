@@ -20,12 +20,14 @@ dotnet test --no-build tests/MiniCover.UnitTests/MiniCover.UnitTests.csproj
 
 $MiniCover report --workdir ./coverage --threshold 0
 
-$MiniCover coverallsreport \
-	--workdir ./coverage \
-	--root-path ../ \
-	--output "coveralls.json" \
-	--service-name "travis-ci" \
-	--service-job-id "$TRAVIS_JOB_ID"
+if [ -n "${TRAVIS_JOB_ID}" ]; then
+	$MiniCover coverallsreport \
+		--workdir ./coverage \
+		--root-path ../ \
+		--output "coveralls.json" \
+		--service-name "travis-ci" \
+		--service-job-id "$TRAVIS_JOB_ID"
+fi
 
 echo "### Running sample build"
 cd sample
