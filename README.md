@@ -57,6 +57,13 @@ dotnet minicover --help
 
 After the last command you should see minicover help instructions on your console.
 
+## Nuget packages
+Continuous integration nuget packages are pushed to:
+https://www.myget.org/feed/minicover/package/nuget/MiniCover
+
+Pre-releases and releases nuget packages are pushed to:
+https://www.nuget.org/packages/MiniCover
+
 ## Build script example with MiniCover
 ```shell
 dotnet restore
