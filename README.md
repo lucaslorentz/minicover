@@ -3,6 +3,7 @@ Minimalist Code Coverage Tool for .NET Core
 
 [![Build Status](https://travis-ci.org/lucaslorentz/minicover.svg?branch=master)](https://travis-ci.org/lucaslorentz/minicover)
 [![Build status](https://ci.appveyor.com/api/projects/status/wtoyadiphqee8hy0/branch/master?svg=true)](https://ci.appveyor.com/project/lucaslorentz/minicover/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/lucaslorentz/minicover/badge.svg?branch=master)](https://coveralls.io/github/lucaslorentz/minicover?branch=master)
 
 Heavily based on: https://github.com/gaillard/SharpCover
 
@@ -55,6 +56,13 @@ dotnet minicover --help
 ```
 
 After the last command you should see minicover help instructions on your console.
+
+## Nuget packages
+Continuous integration nuget packages are pushed to:
+https://www.myget.org/feed/minicover/package/nuget/MiniCover
+
+Pre-releases and releases nuget packages are pushed to:
+https://www.nuget.org/packages/MiniCover
 
 ## Build script example with MiniCover
 ```shell
