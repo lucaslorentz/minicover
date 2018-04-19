@@ -139,6 +139,9 @@ namespace MiniCover.Reports
             document.Add(coverageElement);
 
             File.WriteAllText(output, document.ToString());
+            
+            
+            
         }
     }
 }
