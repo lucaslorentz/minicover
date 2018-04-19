@@ -11,8 +11,6 @@ using System.Linq;
 using System.Reflection;
 using MiniCover.HitServices;
 using System.Diagnostics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Instrumentation
 {

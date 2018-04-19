@@ -1,6 +1,7 @@
 ﻿using MiniCover.Commands.Options;
 using MiniCover.Model;
 using MiniCover.Reports;
+using MiniCover.Utils;
 using System.Threading.Tasks;
 
 namespace MiniCover.Commands.Reports
@@ -23,8 +24,8 @@ namespace MiniCover.Commands.Reports
         protected override Task<int> Execute()
         {
             XmlReport.Execute(CoverageLoadedFileOption.GetValue(), NCoverOutputOption.GetValue(), ThresholdOption.GetValue());
-
-            return Task.FromResult(0);
+            var result = CalcUtils.IsHigherThanThreshold(CoverageLoadedFileOption.GetValue(), ThresholdOption.GetValue());
+            return Task.FromResult(result);
         }
     }
 }
