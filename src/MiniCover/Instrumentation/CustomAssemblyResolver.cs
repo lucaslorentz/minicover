@@ -3,7 +3,7 @@ using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 
-namespace MiniCover.Extensions
+namespace MiniCover.Instrumentation
 {
     public class CustomAssemblyResolver : DefaultAssemblyResolver
     {
