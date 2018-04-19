@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -85,6 +86,34 @@ namespace MiniCover.Utils
             }
 
             return JsonConvert.SerializeObject(json, Formatting.Indented);
+        }
+
+        public static List<string> GetAdditionalPaths(string runtimeConfigContent)
+        {
+            var additionalPaths = new List<string>();
+            if (string.IsNullOrEmpty(runtimeConfigContent))
+            {
+                return additionalPaths;
+            }
+
+            var runtimeConfig = JsonConvert.DeserializeObject<JObject>(runtimeConfigContent);
+            if (runtimeConfig == null)
+            {
+                return additionalPaths;
+            }
+
+            var additionalProbingPaths = runtimeConfig["runtimeOptions"]?["additionalProbingPaths"];
+            if (additionalProbingPaths != null)
+            {
+                foreach (var path in additionalProbingPaths.Values<string>())
+                {
+                    if (!path.Contains("|"))
+                    {
+                        additionalPaths.Add(path);
+                    }
+                }
+            }
+            return additionalPaths;
         }
     }
 }

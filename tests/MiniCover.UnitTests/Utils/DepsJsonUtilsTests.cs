@@ -24,6 +24,40 @@ namespace MiniCover.UnitTests.Utils
             NormalizeLineEnding(result).ShouldBe(NormalizeLineEnding(expectedResult));
         }
 
+        [Fact]
+        public void GetAdditionalPaths_EmptyRuntimeConfigContext_NoError()
+        {
+            var result = DepsJsonUtils.GetAdditionalPaths(string.Empty);
+            result.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void GetAdditionalPaths_EmptyObject_NoError()
+        {
+            var result = DepsJsonUtils.GetAdditionalPaths(@"{}");
+            result.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void GetAdditionalPaths_RuntimeConfigContext_PathsReturned()
+        {
+            var runtimeConfigContent = @"{
+  ""runtimeOptions"": {
+    ""additionalProbingPaths"": [
+      ""/root/.dotnet/store/|arch|/|tfm|"",
+      ""/api/.nuget/packages"",
+      ""/usr/share/dotnet/sdk/NuGetFallbackFolder""
+    ]
+    }
+}";
+
+            var result = DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent);
+            result.ShouldNotBeEmpty();
+            result.Count.ShouldBe(2);
+            result.ShouldContain("/api/.nuget/packages");
+            result.ShouldContain("/usr/share/dotnet/sdk/NuGetFallbackFolder");
+        }
+
         public string NormalizeLineEnding(string text)
         {
             return text.Replace("\r\n", "\n");

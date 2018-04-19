@@ -11,6 +11,8 @@ using System.Linq;
 using System.Reflection;
 using MiniCover.HitServices;
 using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Instrumentation
 {
@@ -130,34 +132,31 @@ namespace MiniCover.Instrumentation
             File.Delete(instrumentedAssembly.TempPdbFile);
         }
 
-        private AssemblyDefinition AssemblyResolveFailure(object sender, AssemblyNameReference reference)
+        private IAssemblyResolver GetAssemblyResolver(string assemblyFile)
         {
-            var defaultInclude = $"**/{reference.Name}.dll";
-            Console.WriteLine($"Warning! DefaultAssemblyResolver returned failure! \n Do search with mask {defaultInclude} in {normalizedWorkDir}");
-            var assemblies = FileUtils.GetFiles(null, null, defaultInclude, normalizedWorkDir);
-            if (assemblies.Length == 0)
+            var resolver = new CustomAssemblyResolver();
+
+            var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
+            resolver.AddSearchDirectory(assemblyDirectory);
+
+            var additionalPaths = new List<string>();
+            var runtimeConfigPaths = FileUtils.GetFiles(null, null, "**/*.runtimeconfig.dev.json", assemblyDirectory);
+            if (runtimeConfigPaths.Length > 0)
             {
-                return null;
+                var runtimeConfigContent = File.ReadAllText(runtimeConfigPaths[0]);
+                foreach (var path in DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
+                {
+                    resolver.AddSearchDirectory(path);
+                }
             }
 
-            var directoryWithAssembly = new FileInfo(assemblies.First()).Directory.FullName;
-            Console.WriteLine($"Add search directory {directoryWithAssembly}");
-
-            var resolver = (BaseAssemblyResolver)sender;
-            resolver.AddSearchDirectory(directoryWithAssembly);
-            return resolver.Resolve(reference);
+            Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
+            return resolver;
         }
 
         private InstrumentedAssembly InstrumentAssemblyIfNecessary(string assemblyFile)
         {
-            var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
-            
-            var resolver = new DefaultAssemblyResolver();
-            resolver.AddSearchDirectory(assemblyDirectory);
-            resolver.ResolveFailure += this.AssemblyResolveFailure;
-
-            Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
-
+            var resolver = GetAssemblyResolver(assemblyFile);
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
                 if (!HasSourceFiles(assemblyDefinition))
@@ -235,7 +234,6 @@ namespace MiniCover.Instrumentation
             }
         }
 
-	    
         private void InstrumentMethod(MethodDefinition methodDefinition,
             IEnumerable<SequencePoint> sequencePoints,
             TypeReference methodContextClassReference,
