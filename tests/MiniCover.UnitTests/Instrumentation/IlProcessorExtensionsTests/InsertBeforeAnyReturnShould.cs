@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using Mono.Cecil;
+﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
 using Mono.Cecil.Rocks;
 using Mono.Cecil.Tests;
 using Shouldly;
+using System.Linq;
 using Xunit;
 
 namespace MiniCover.UnitTests.Instrumentation.IlProcessorExtensionsTests
@@ -66,7 +66,7 @@ IL_000b: stfld System.Int32 Sample.TryFinally.AClassWithATryFinallyInConstructor
 
 // [13 13 - 13 14]
 IL_0010: nop
-IL_0011: leave.s IL_001e
+IL_0011: leave.s IL_001d
 }
 finally
 {
@@ -102,8 +102,12 @@ IL_001e: ret";
         private void ApplyInstrumentation(MethodDefinition methodDefinition)
         {
             var processor = methodDefinition.Body.GetILProcessor();
-            processor.InsertBeforeAnyReturn((ilProcessor, instruction) => { ilProcessor.InsertBefore(instruction, Instruction.Create(OpCodes.Nop)); });
-
+            processor.Body.SimplifyMacros();
+            processor.ForEachReturn((ilProcessor, instruction) => {
+                var noOpInstruction = Instruction.Create(OpCodes.Nop);
+                ilProcessor.InsertBefore(instruction, noOpInstruction);
+                processor.ReplaceInstructionReferences(instruction, noOpInstruction);
+            });
             processor.Body.OptimizeMacros();
         }
     }
