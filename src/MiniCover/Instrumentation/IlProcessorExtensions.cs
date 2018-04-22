@@ -5,23 +5,18 @@ namespace Mono.Cecil.Cil
 {
     public static class IlProcessorExtensions
     {
-        internal static void InsertBeforeAnyReturn(this ILProcessor ilProcessor, Action<ILProcessor, Instruction> insertBeforReturn)
+        internal static void ForEachReturn(this ILProcessor ilProcessor, Action<ILProcessor, Instruction> action)
         {
             foreach (var instruction in ilProcessor.Body.Instructions.Where(i => i.OpCode == OpCodes.Ret).ToArray())
             {
-                var currentPrevious = instruction.Previous;
-                insertBeforReturn(ilProcessor, instruction);
-                var exceptionHandlerHandingByTheInstruction =
-                    ilProcessor.Body.ExceptionHandlers.FirstOrDefault(handler =>
-                        handler.HandlerEnd.Equals(instruction));
-                if (exceptionHandlerHandingByTheInstruction != null)
-                {
-                    exceptionHandlerHandingByTheInstruction.HandlerEnd = currentPrevious.Next;
-                }
+                action(ilProcessor, instruction);
             }
         }
-        internal static void EncapsulateMethodBodyWithTryFinallyBlock(this ILProcessor ilProcessor,
-            Instruction firstInstruction, Action<ILProcessor, Instruction> insertBeforReturn)
+
+        internal static void EncapsulateMethodBodyWithTryFinallyBlock(
+            this ILProcessor ilProcessor,
+            Instruction firstInstruction,
+            Action<ILProcessor, Instruction> insertBeforReturn)
         {
             var body = ilProcessor.Body;
             if (body.Method.IsConstructor && !body.Method.IsStatic)
@@ -63,7 +58,7 @@ namespace Mono.Cecil.Cil
                 Instruction tryStart = Instruction.Create(OpCodes.Nop);
                 ilProcessor.InsertBefore(firstInstruction, tryStart);
             }
-            
+
             Instruction finallyStart = Instruction.Create(OpCodes.Nop);
             ilProcessor.InsertBefore(beforeReturn, finallyStart);
             insertBeforReturn(ilProcessor, beforeReturn);
@@ -94,7 +89,7 @@ namespace Mono.Cecil.Cil
         private static Instruction GetFirstNotNopInstruction(this Instruction instruction)
         {
             var next = instruction.Next;
-            if (next.OpCode != OpCodes.Nop ) return next;
+            if (next.OpCode != OpCodes.Nop) return next;
             return next.GetFirstNotNopInstruction();
         }
 
@@ -124,13 +119,15 @@ namespace Mono.Cecil.Cil
 
         private static Instruction GetFirstConstructorInstruction(MethodBody body)
         {
-            var constructorInstruction = body.Instructions.FirstOrDefault(a => a.OpCode == OpCodes.Call && (a.Operand as MethodReference)?.Name == ".ctor");
+            var constructorInstruction = body.Instructions
+                .FirstOrDefault(a => a.OpCode == OpCodes.Call && (a.Operand as MethodReference)?.Name == ".ctor");
             return constructorInstruction;
         }
 
         internal static Instruction FixReturns(this ILProcessor ilProcessor)
         {
             var methodDefinition = ilProcessor.Body.Method;
+
             if (methodDefinition.ReturnType == methodDefinition.Module.TypeSystem.Void)
             {
                 var instructions = ilProcessor.Body.Instructions.ToArray();
@@ -144,7 +141,6 @@ namespace Mono.Cecil.Cil
                     {
                         var leaveInstruction = ilProcessor.Create(OpCodes.Leave, newReturnInstruction);
                         ilProcessor.Replace(instruction, leaveInstruction);
-
                         ilProcessor.ReplaceInstructionReferences(instruction, leaveInstruction);
                     }
                 }
@@ -167,12 +163,12 @@ namespace Mono.Cecil.Cil
                 {
                     if (instruction.OpCode == OpCodes.Ret)
                     {
-                        var saveResultInstruction = ilProcessor.Create(OpCodes.Stloc, returnVariable);
-                        ilProcessor.Replace(instruction, saveResultInstruction);
                         var leaveInstruction = ilProcessor.Create(OpCodes.Leave, loadResultInstruction);
-                        ilProcessor.InsertAfter(saveResultInstruction, leaveInstruction);
-
+                        ilProcessor.Replace(instruction, leaveInstruction);
                         ilProcessor.ReplaceInstructionReferences(instruction, leaveInstruction);
+                        var saveResultInstruction = ilProcessor.Create(OpCodes.Stloc, returnVariable);
+                        ilProcessor.InsertBefore(leaveInstruction, saveResultInstruction);
+                        ilProcessor.ReplaceInstructionReferences(leaveInstruction, saveResultInstruction);
                     }
                 }
 
@@ -188,16 +184,16 @@ namespace Mono.Cecil.Cil
                 {
                     var noOpInstruction = ilProcessor.Create(OpCodes.Nop);
                     ilProcessor.Replace(instruction, noOpInstruction);
-                    ReplaceInstructionReferences(ilProcessor, instruction, noOpInstruction);
+                    ilProcessor.ReplaceInstructionReferences(instruction, noOpInstruction);
                 }
             }
         }
 
-        internal static void ReplaceInstructionReferences(this ILProcessor ilProcessor,
+        internal static void ReplaceInstructionReferences(
+            this ILProcessor ilProcessor,
             Instruction oldInstruction,
             Instruction newInstruction)
         {
-            //change try/finally etc to point to our first instruction if they referenced the one we inserted before
             foreach (var handler in ilProcessor.Body.ExceptionHandlers)
             {
                 if (handler.FilterStart == oldInstruction)
@@ -205,33 +201,34 @@ namespace Mono.Cecil.Cil
 
                 if (handler.TryStart == oldInstruction)
                     handler.TryStart = newInstruction;
+
                 if (handler.TryEnd == oldInstruction)
                     handler.TryEnd = newInstruction;
 
                 if (handler.HandlerStart == oldInstruction)
                     handler.HandlerStart = newInstruction;
+
                 if (handler.HandlerEnd == oldInstruction)
                     handler.HandlerEnd = newInstruction;
             }
 
-            //change instructions with a target instruction if they referenced the one we inserted before to be our first instruction
+            // Update instructions with a target instruction
             foreach (var iteratedInstruction in ilProcessor.Body.Instructions)
             {
                 var operand = iteratedInstruction.Operand;
+
                 if (operand == oldInstruction)
                 {
                     iteratedInstruction.Operand = newInstruction;
                     continue;
                 }
-
-                if (!(operand is Instruction[]))
-                    continue;
-
-                var operands = (Instruction[]) operand;
-                for (var i = 0; i < operands.Length; ++i)
+                else if (operand is Instruction[] operands)
                 {
-                    if (operands[i] == oldInstruction)
-                        operands[i] = newInstruction;
+                    for (var i = 0; i < operands.Length; ++i)
+                    {
+                        if (operands[i] == oldInstruction)
+                            operands[i] = newInstruction;
+                    }
                 }
             }
         }

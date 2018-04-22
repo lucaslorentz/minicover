@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using MiniCover.HitServices;
+﻿using MiniCover.HitServices;
 using MiniCover.Model;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using Mono.Cecil.Tests;
 using Shouldly;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace MiniCover.UnitTests
@@ -286,14 +286,15 @@ IL_0032: ret";
 
             var firstInstruction = instructions[0];
 
-
-            var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
-            var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
             ilProcessor.EncapsulateMethodBodyWithTryFinallyBlock(firstInstruction, (processor, instruction) =>
-{
-    ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-    ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-});
+            {
+                var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+                var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
+                ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+                ilProcessor.ReplaceInstructionReferences(instruction, loadMethodContextInstruction);
+            });
+
             var currentFirstInstruction = ilProcessor.Body.Instructions.First();
             ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
             ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
@@ -312,7 +313,5 @@ IL_0032: ret";
             }
             ilProcessor.Body.OptimizeMacros();
         }
-
-
     }
 }
