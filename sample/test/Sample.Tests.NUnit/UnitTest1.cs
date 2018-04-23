@@ -112,6 +112,13 @@ namespace Sample.Tests.NUnit
         }
 
         [Test]
+        public void NunitYield()
+        {
+            var instance = new ClassWithYield();
+            instance.Execute();
+        }
+
+        [Test]
         public void NunitMultipleReturn()
         {
             var instance = new AnotherClass();

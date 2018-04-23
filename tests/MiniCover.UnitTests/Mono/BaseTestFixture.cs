@@ -7,7 +7,6 @@ using Xunit;
 
 namespace Mono.Cecil.Tests
 {
-
     public abstract class BaseTestFixture
     {
         public static string GetResourcePath(string name, Assembly assembly)

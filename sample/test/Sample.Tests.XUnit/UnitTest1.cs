@@ -113,6 +113,13 @@ namespace Sample.Tests.XUnit
         }
 
         [Fact]
+        public void XunitYield()
+        {
+            var instance = new ClassWithYield();
+            instance.Execute();
+        }
+
+        [Fact]
         public void NunitMultipleReturn()
         {
             var instance = new AnotherClass();

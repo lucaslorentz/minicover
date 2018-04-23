@@ -1,4 +1,5 @@
 ﻿using MiniCover.Extensions;
+using MiniCover.HitServices;
 using MiniCover.Model;
 using MiniCover.Utils;
 using Mono.Cecil;
@@ -6,11 +7,10 @@ using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MiniCover.HitServices;
-using System.Diagnostics;
 
 namespace MiniCover.Instrumentation
 {
@@ -130,13 +130,31 @@ namespace MiniCover.Instrumentation
             File.Delete(instrumentedAssembly.TempPdbFile);
         }
 
-        private InstrumentedAssembly InstrumentAssemblyIfNecessary(string assemblyFile)
+        private IAssemblyResolver GetAssemblyResolver(string assemblyFile)
         {
-            var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
+            var resolver = new CustomAssemblyResolver();
 
-            var resolver = new DefaultAssemblyResolver();
+            var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
             resolver.AddSearchDirectory(assemblyDirectory);
 
+            var additionalPaths = new List<string>();
+            var runtimeConfigPaths = FileUtils.GetFiles(null, null, "**/*.runtimeconfig.dev.json", assemblyDirectory);
+            if (runtimeConfigPaths.Length > 0)
+            {
+                var runtimeConfigContent = File.ReadAllText(runtimeConfigPaths[0]);
+                foreach (var path in DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
+                {
+                    resolver.AddSearchDirectory(path);
+                }
+            }
+
+            Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
+            return resolver;
+        }
+
+        private InstrumentedAssembly InstrumentAssemblyIfNecessary(string assemblyFile)
+        {
+            var resolver = GetAssemblyResolver(assemblyFile);
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
                 if (!HasSourceFiles(assemblyDefinition))
@@ -154,11 +172,11 @@ namespace MiniCover.Instrumentation
                 var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
                 var exitMethodInfo = methodContextType.GetMethod("Exit");
                 var hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
-
+                
                 var methodContextClassReference = assemblyDefinition.MainModule.ImportReference(methodContextType);
                 var enterMethodReference = assemblyDefinition.MainModule.ImportReference(enterMethodInfo);
                 var exitMethodReference = assemblyDefinition.MainModule.ImportReference(exitMethodInfo);
-
+                
                 var hitInstructionReference = assemblyDefinition.MainModule.ImportReference(hitInstructionMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
@@ -172,7 +190,7 @@ namespace MiniCover.Instrumentation
                     })
                     .GroupBy(j => j.Document)
                     .ToArray();
-
+                
                 foreach (var documentGroup in documentsGroups)
                 {
                     if (!sourceFiles.Contains(documentGroup.Key.Url))
@@ -214,45 +232,48 @@ namespace MiniCover.Instrumentation
             }
         }
 
-	    
-        private void InstrumentMethod(MethodDefinition methodDefinition,
+        public void InstrumentMethod(
+            MethodDefinition methodDefinition,
             IEnumerable<SequencePoint> sequencePoints,
             TypeReference methodContextClassReference,
-            MethodReference enterMethodReference, MethodReference exitMethodReference,
-            string[] fileLines, InstrumentedAssembly instrumentedAssembly, string sourceRelativePath,
+            MethodReference enterMethodReference,
+            MethodReference exitMethodReference,
+            string[] fileLines,
+            InstrumentedAssembly instrumentedAssembly,
+            string sourceRelativePath,
             MethodReference hitInstructionReference)
         {
-	        var ilProcessor = methodDefinition.Body.GetILProcessor();
-	        ilProcessor.Body.InitLocals = true;
-	        ilProcessor.Body.SimplifyMacros();
-	        
-	        var methodContextVariable = new VariableDefinition(methodContextClassReference);
+            var ilProcessor = methodDefinition.Body.GetILProcessor();
+            ilProcessor.Body.InitLocals = true;
+            ilProcessor.Body.SimplifyMacros();
+
+            var methodContextVariable = new VariableDefinition(methodContextClassReference);
             ilProcessor.Body.Variables.Add(methodContextVariable);
-	        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
-	        var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
-	        var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
-            
+            var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
+            var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
+            var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
+
             ilProcessor.RemoveTailInstructions();
 
             var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
 
-            var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
-	        var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
-
-            ilProcessor.InsertBeforeAnyReturn((processor, instruction) =>
-               {
-                   ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-                   ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-               });
+            ilProcessor.ForEachReturn((processor, instruction) =>
+            {
+                var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+                var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
+                ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+                ilProcessor.ReplaceInstructionReferences(instruction, loadMethodContextInstruction);
+            });
 
             var currentFirstInstruction = ilProcessor.Body.Instructions.First();
-	        ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
-	        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
-	        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
+            ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
+            ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
+            ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
             ilProcessor.ReplaceInstructionReferences(currentFirstInstruction, pathParamLoadInstruction);
-			
+
             InstrumentInstructions(methodDefinition, sequencePoints, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference, instructions, ilProcessor, methodContextVariable);
-            
+
             ilProcessor.Body.OptimizeMacros();
         }
 
