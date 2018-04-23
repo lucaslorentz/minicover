@@ -1,4 +1,5 @@
 ﻿using MiniCover.Extensions;
+using MiniCover.HitServices;
 using MiniCover.Model;
 using MiniCover.Utils;
 using Mono.Cecil;
@@ -6,11 +7,10 @@ using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MiniCover.HitServices;
-using System.Diagnostics;
 
 namespace MiniCover.Instrumentation
 {
@@ -232,44 +232,48 @@ namespace MiniCover.Instrumentation
             }
         }
 
-        private void InstrumentMethod(MethodDefinition methodDefinition,
+        public void InstrumentMethod(
+            MethodDefinition methodDefinition,
             IEnumerable<SequencePoint> sequencePoints,
             TypeReference methodContextClassReference,
-            MethodReference enterMethodReference, MethodReference exitMethodReference,
-            string[] fileLines, InstrumentedAssembly instrumentedAssembly, string sourceRelativePath,
+            MethodReference enterMethodReference,
+            MethodReference exitMethodReference,
+            string[] fileLines,
+            InstrumentedAssembly instrumentedAssembly,
+            string sourceRelativePath,
             MethodReference hitInstructionReference)
         {
-	        var ilProcessor = methodDefinition.Body.GetILProcessor();
-	        ilProcessor.Body.InitLocals = true;
-	        ilProcessor.Body.SimplifyMacros();
-	        
-	        var methodContextVariable = new VariableDefinition(methodContextClassReference);
+            var ilProcessor = methodDefinition.Body.GetILProcessor();
+            ilProcessor.Body.InitLocals = true;
+            ilProcessor.Body.SimplifyMacros();
+
+            var methodContextVariable = new VariableDefinition(methodContextClassReference);
             ilProcessor.Body.Variables.Add(methodContextVariable);
-	        var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
-	        var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
-	        var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
-            
+            var pathParamLoadInstruction = ilProcessor.Create(OpCodes.Ldstr, hitsFile);
+            var enterMethodInstruction = ilProcessor.Create(OpCodes.Call, enterMethodReference);
+            var storeMethodResultInstruction = ilProcessor.Create(OpCodes.Stloc, methodContextVariable);
+
             ilProcessor.RemoveTailInstructions();
 
             var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
 
-            var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
-	        var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
-
-            ilProcessor.InsertBeforeAnyReturn((processor, instruction) =>
-               {
-                   ilProcessor.InsertBefore(instruction, exitMethodInstruction);
-                   ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
-               });
+            ilProcessor.ForEachReturn((processor, instruction) =>
+            {
+                var loadMethodContextInstruction = ilProcessor.Create(OpCodes.Ldloc, methodContextVariable);
+                var exitMethodInstruction = ilProcessor.Create(OpCodes.Callvirt, exitMethodReference);
+                ilProcessor.InsertBefore(instruction, exitMethodInstruction);
+                ilProcessor.InsertBefore(exitMethodInstruction, loadMethodContextInstruction);
+                ilProcessor.ReplaceInstructionReferences(instruction, loadMethodContextInstruction);
+            });
 
             var currentFirstInstruction = ilProcessor.Body.Instructions.First();
-	        ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
-	        ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
-	        ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
+            ilProcessor.InsertBefore(currentFirstInstruction, storeMethodResultInstruction);
+            ilProcessor.InsertBefore(storeMethodResultInstruction, enterMethodInstruction);
+            ilProcessor.InsertBefore(enterMethodInstruction, pathParamLoadInstruction);
             ilProcessor.ReplaceInstructionReferences(currentFirstInstruction, pathParamLoadInstruction);
-			
+
             InstrumentInstructions(methodDefinition, sequencePoints, fileLines, instrumentedAssembly, sourceRelativePath, hitInstructionReference, instructions, ilProcessor, methodContextVariable);
-            
+
             ilProcessor.Body.OptimizeMacros();
         }
 
