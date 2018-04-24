@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyModel;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -86,6 +87,25 @@ namespace MiniCover.Utils
             }
 
             return JsonConvert.SerializeObject(json, Formatting.Indented);
+        }
+
+        public static DependencyContext LoadDependencyContext(string assemblyDirectory)
+        {
+            var depsJsonPath = Directory.GetFiles(assemblyDirectory, "*.deps.json", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+
+            if (depsJsonPath != null)
+            {
+                using (var depsJsonStream = File.OpenRead(depsJsonPath))
+                {
+                    using (var reader = new DependencyContextJsonReader())
+                    {
+                        return reader.Read(depsJsonStream);
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static List<string> GetAdditionalPaths(string runtimeConfigContent)

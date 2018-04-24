@@ -1,19 +1,40 @@
-﻿using MiniCover.Utils;
+﻿using Microsoft.Extensions.DependencyModel;
+using MiniCover.Utils;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace MiniCover.Instrumentation
 {
     public class CustomAssemblyResolver : DefaultAssemblyResolver
     {
-        public CustomAssemblyResolver() : base()
+        private DependencyContext _dependencyContext;
+
+        public CustomAssemblyResolver(string assemblyDirectory)
         {
             RemoveSearchDirectory(".");
             RemoveSearchDirectory("bin");
+
+            AddSearchDirectory(assemblyDirectory);
+
+            _dependencyContext = DepsJsonUtils.LoadDependencyContext(assemblyDirectory);
+
+            var runtimeConfigPath = Directory.GetFiles(assemblyDirectory, "*.runtimeconfig.dev.json", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+
+            if (runtimeConfigPath != null)
+            {
+                var runtimeConfigContent = File.ReadAllText(runtimeConfigPath);
+                foreach (var path in DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
+                {
+                    AddSearchDirectory(path);
+                }
+            }
         }
 
-        AssemblyDefinition GetAssembly(string file, ReaderParameters parameters)
+        private AssemblyDefinition GetAssembly(string file, ReaderParameters parameters)
         {
             if (parameters.AssemblyResolver == null)
             {
@@ -25,22 +46,37 @@ namespace MiniCover.Instrumentation
 
         protected override AssemblyDefinition SearchDirectory(AssemblyNameReference name, IEnumerable<string> directories, ReaderParameters parameters)
         {
-            foreach (var directory in directories)
+            if (_dependencyContext != null)
             {
-                var files = FileUtils.GetFiles(null, null, $"**/{name.Name}.dll", directory);
-                foreach (var file in files)
+                var dependency = _dependencyContext.CompileLibraries.FirstOrDefault(c =>
                 {
-                    try
+                    return c.Name == name.Name;
+                });
+
+                if (dependency != null)
+                {
+                    foreach (var depAssembly in dependency.Assemblies)
                     {
-                        return GetAssembly(file, parameters);
-                    }
-                    catch (BadImageFormatException)
-                    {
-                        continue;
+                        foreach (var p in directories)
+                        {
+                            var file = Path.Combine(new[] { p, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
+                            if (File.Exists(file))
+                            {
+                                try
+                                {
+                                    return GetAssembly(file, parameters);
+                                }
+                                catch (BadImageFormatException)
+                                {
+                                    continue;
+                                }
+                            }
+                        }
                     }
                 }
             }
-            return null;
+
+            return base.SearchDirectory(name, directories, parameters);
         }
     }
 }

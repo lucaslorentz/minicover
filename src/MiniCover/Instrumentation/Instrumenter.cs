@@ -130,31 +130,11 @@ namespace MiniCover.Instrumentation
             File.Delete(instrumentedAssembly.TempPdbFile);
         }
 
-        private IAssemblyResolver GetAssemblyResolver(string assemblyFile)
-        {
-            var resolver = new CustomAssemblyResolver();
-
-            var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
-            resolver.AddSearchDirectory(assemblyDirectory);
-
-            var additionalPaths = new List<string>();
-            var runtimeConfigPaths = FileUtils.GetFiles(null, null, "**/*.runtimeconfig.dev.json", assemblyDirectory);
-            if (runtimeConfigPaths.Length > 0)
-            {
-                var runtimeConfigContent = File.ReadAllText(runtimeConfigPaths[0]);
-                foreach (var path in DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
-                {
-                    resolver.AddSearchDirectory(path);
-                }
-            }
-
-            Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
-            return resolver;
-        }
-
         private InstrumentedAssembly InstrumentAssemblyIfNecessary(string assemblyFile)
         {
-            var resolver = GetAssemblyResolver(assemblyFile);
+            var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
+            var resolver = new CustomAssemblyResolver(assemblyDirectory);
+            Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
                 if (!HasSourceFiles(assemblyDefinition))
