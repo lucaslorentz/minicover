@@ -57,9 +57,9 @@ namespace MiniCover.Instrumentation
                 {
                     foreach (var depAssembly in dependency.Assemblies)
                     {
-                        foreach (var p in directories)
+                        foreach (var directory in directories)
                         {
-                            var file = Path.Combine(new[] { p, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
+                            var file = Path.Combine(new[] { directory, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
                             if (File.Exists(file))
                             {
                                 try
