@@ -57,8 +57,10 @@ namespace MiniCover.Instrumentation
                 {
                     foreach (var depAssembly in dependency.Assemblies)
                     {
+                        Console.WriteLine($"For assembly {depAssembly}");
                         foreach (var directory in directories)
                         {
+                            Console.WriteLine($"For directory {directory}");
                             var file = Path.Combine(new[] { directory, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
                             Console.WriteLine($"Try to load file {file}");
                             if (File.Exists(file))

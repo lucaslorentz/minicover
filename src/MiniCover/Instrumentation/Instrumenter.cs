@@ -135,6 +135,7 @@ namespace MiniCover.Instrumentation
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
             var resolver = new CustomAssemblyResolver(assemblyDirectory);
             Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
+            Console.WriteLine($"Ver 15-27");
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
                 if (!HasSourceFiles(assemblyDefinition))
