@@ -48,34 +48,49 @@ namespace MiniCover.Instrumentation
         {
             if (_dependencyContext != null)
             {
-                var dependency = _dependencyContext.CompileLibraries.FirstOrDefault(c =>
+                var library = _dependencyContext.RuntimeLibraries.FirstOrDefault(c =>
                 {
                     return c.Name == name.Name;
                 });
 
-                if (dependency != null)
+                if (library != null)
                 {
-                    foreach (var depAssembly in dependency.Assemblies)
+                    foreach (var runtimeAssemblyGroup in library.RuntimeAssemblyGroups)
                     {
-                        foreach (var directory in directories)
+                        foreach (var runtimeAssemblyPath in runtimeAssemblyGroup.AssetPaths)
                         {
-                            var file = Path.Combine(new[] { directory, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
-                            if (File.Exists(file))
+                            foreach (var directory in directories)
                             {
-                                try
+                                var file = Path.Combine(directory, Path.Combine(library.Path.Split("/")));
+                                file = Path.Combine(file, Path.Combine(runtimeAssemblyPath.Split("/")));
+                                Console.WriteLine($"Try to load file {file}");
+                                if (File.Exists(file))
                                 {
-                                    return GetAssembly(file, parameters);
-                                }
-                                catch (BadImageFormatException)
-                                {
-                                    continue;
+                                    try
+                                    {
+                                        return GetAssembly(file, parameters);
+                                    }
+                                    catch (BadImageFormatException)
+                                    {
+                                        Console.WriteLine($"BadImageFormatException!");
+                                        continue;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                else
+                {
+                    Console.WriteLine($"DependencyContext.RuntimeLibraries. No information about assebmly {name.Name}!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Dependency context is null!");
             }
 
+            Console.WriteLine("base SearchDirectory");
             return base.SearchDirectory(name, directories, parameters);
         }
     }

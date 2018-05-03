@@ -152,11 +152,11 @@ namespace MiniCover.Instrumentation
                 var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
                 var exitMethodInfo = methodContextType.GetMethod("Exit");
                 var hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
-                
+
                 var methodContextClassReference = assemblyDefinition.MainModule.ImportReference(methodContextType);
                 var enterMethodReference = assemblyDefinition.MainModule.ImportReference(enterMethodInfo);
                 var exitMethodReference = assemblyDefinition.MainModule.ImportReference(exitMethodInfo);
-                
+
                 var hitInstructionReference = assemblyDefinition.MainModule.ImportReference(hitInstructionMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
@@ -170,7 +170,7 @@ namespace MiniCover.Instrumentation
                     })
                     .GroupBy(j => j.Document)
                     .ToArray();
-                
+
                 foreach (var documentGroup in documentsGroups)
                 {
                     if (!sourceFiles.Contains(documentGroup.Key.Url))
