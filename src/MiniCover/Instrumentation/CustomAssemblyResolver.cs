@@ -61,7 +61,7 @@ namespace MiniCover.Instrumentation
                         foreach (var directory in directories)
                         {
                             Console.WriteLine($"For directory {directory}");
-                            var file = Path.Combine(new[] { directory, library.Path, assembly.Name }.Where(x => x != null).ToArray());
+                            var file = Path.Combine(new[] { directory, library.Path, $"{assembly.Name}.dll" }.Where(x => x != null).ToArray());
                             Console.WriteLine($"Try to load file {file}");
                             if (File.Exists(file))
                             {
