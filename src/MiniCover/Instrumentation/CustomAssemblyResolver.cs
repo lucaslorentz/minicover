@@ -89,6 +89,7 @@ namespace MiniCover.Instrumentation
                 Console.WriteLine("Dependency context is null!");
             }
 
+            Console.WriteLine("Call base SearchDirectory");
             return base.SearchDirectory(name, directories, parameters);
         }
     }
