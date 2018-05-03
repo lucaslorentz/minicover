@@ -135,7 +135,6 @@ namespace MiniCover.Instrumentation
             var assemblyDirectory = Path.GetDirectoryName(assemblyFile);
             var resolver = new CustomAssemblyResolver(assemblyDirectory);
             Console.WriteLine($"Assembly resolver search directories:\n{string.Join("\n", resolver.GetSearchDirectories())}\n");
-            Console.WriteLine($"Ver 15-27");
             using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
             {
                 if (!HasSourceFiles(assemblyDefinition))
@@ -153,11 +152,11 @@ namespace MiniCover.Instrumentation
                 var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
                 var exitMethodInfo = methodContextType.GetMethod("Exit");
                 var hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
-                
+
                 var methodContextClassReference = assemblyDefinition.MainModule.ImportReference(methodContextType);
                 var enterMethodReference = assemblyDefinition.MainModule.ImportReference(enterMethodInfo);
                 var exitMethodReference = assemblyDefinition.MainModule.ImportReference(exitMethodInfo);
-                
+
                 var hitInstructionReference = assemblyDefinition.MainModule.ImportReference(hitInstructionMethodInfo);
 
                 var methods = assemblyDefinition.GetAllMethods();
@@ -171,7 +170,7 @@ namespace MiniCover.Instrumentation
                     })
                     .GroupBy(j => j.Document)
                     .ToArray();
-                
+
                 foreach (var documentGroup in documentsGroups)
                 {
                     if (!sourceFiles.Contains(documentGroup.Key.Url))

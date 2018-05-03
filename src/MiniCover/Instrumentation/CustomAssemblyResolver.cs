@@ -57,15 +57,11 @@ namespace MiniCover.Instrumentation
                 {
                     foreach (var runtimeAssemblyGroup in library.RuntimeAssemblyGroups)
                     {
-                        Console.WriteLine($"For runtime {runtimeAssemblyGroup.Runtime}");
                         foreach (var runtimeAssemblyPath in runtimeAssemblyGroup.AssetPaths)
                         {
-                            Console.WriteLine($"For assembly {runtimeAssemblyPath}");
                             foreach (var directory in directories)
                             {
-                                Console.WriteLine($"For directory {directory}");
-                                var file = Path.Combine(directory);
-                                file = Path.Combine(file, Path.Combine(library.Path.Split("/")));
+                                var file = Path.Combine(directory, Path.Combine(library.Path.Split("/")));
                                 file = Path.Combine(file, Path.Combine(runtimeAssemblyPath.Split("/")));
                                 Console.WriteLine($"Try to load file {file}");
                                 if (File.Exists(file))
@@ -86,8 +82,7 @@ namespace MiniCover.Instrumentation
                 }
                 else
                 {
-                    Console.WriteLine($"DependencyContext.CompileLibraries doesn't contain information about assebmly {name.Name}!");
-                    _dependencyContext.CompileLibraries.ToList().ForEach(lib => Console.WriteLine(lib.Name));
+                    Console.WriteLine($"DependencyContext.RuntimeLibraries. No information about assebmly {name.Name}!");
                 }
             }
             else
@@ -95,7 +90,7 @@ namespace MiniCover.Instrumentation
                 Console.WriteLine("Dependency context is null!");
             }
 
-            Console.WriteLine("Call base SearchDirectory");
+            Console.WriteLine("base SearchDirectory");
             return base.SearchDirectory(name, directories, parameters);
         }
     }
