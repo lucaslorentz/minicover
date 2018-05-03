@@ -48,20 +48,20 @@ namespace MiniCover.Instrumentation
         {
             if (_dependencyContext != null)
             {
-                var dependency = _dependencyContext.CompileLibraries.FirstOrDefault(c =>
+                var library = _dependencyContext.RuntimeLibraries.FirstOrDefault(c =>
                 {
                     return c.Name == name.Name;
                 });
 
-                if (dependency != null)
+                if (library != null)
                 {
-                    foreach (var depAssembly in dependency.Assemblies)
+                    foreach (var assembly in library.GetDefaultAssemblyNames(_dependencyContext))
                     {
-                        Console.WriteLine($"For assembly {depAssembly}");
+                        Console.WriteLine($"For assembly {assembly.Name}");
                         foreach (var directory in directories)
                         {
                             Console.WriteLine($"For directory {directory}");
-                            var file = Path.Combine(new[] { directory, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
+                            var file = Path.Combine(new[] { directory, library.Path, assembly.Name }.Where(x => x != null).ToArray());
                             Console.WriteLine($"Try to load file {file}");
                             if (File.Exists(file))
                             {
