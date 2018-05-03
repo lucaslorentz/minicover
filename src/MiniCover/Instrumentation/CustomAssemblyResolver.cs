@@ -60,6 +60,7 @@ namespace MiniCover.Instrumentation
                         foreach (var directory in directories)
                         {
                             var file = Path.Combine(new[] { directory, dependency.Path, depAssembly }.Where(x => x != null).ToArray());
+                            Console.WriteLine($"Try to load file {file}");
                             if (File.Exists(file))
                             {
                                 try
@@ -68,6 +69,7 @@ namespace MiniCover.Instrumentation
                                 }
                                 catch (BadImageFormatException)
                                 {
+                                    Console.WriteLine($"BadImageFormatException!");
                                     continue;
                                 }
                             }
