@@ -55,24 +55,30 @@ namespace MiniCover.Instrumentation
 
                 if (library != null)
                 {
-                    foreach (var assembly in library.GetDefaultAssemblyNames(_dependencyContext))
+                    foreach (var runtimeAssemblyGroup in library.RuntimeAssemblyGroups)
                     {
-                        Console.WriteLine($"For assembly {assembly.Name}");
-                        foreach (var directory in directories)
+                        Console.WriteLine($"For runtime {runtimeAssemblyGroup.Runtime}");
+                        foreach (var runtimeAssemblyPath in runtimeAssemblyGroup.AssetPaths)
                         {
-                            Console.WriteLine($"For directory {directory}");
-                            var file = Path.Combine(new[] { directory, library.Path, $"{assembly.Name}.dll" }.Where(x => x != null).ToArray());
-                            Console.WriteLine($"Try to load file {file}");
-                            if (File.Exists(file))
+                            Console.WriteLine($"For assembly {runtimeAssemblyPath}");
+                            foreach (var directory in directories)
                             {
-                                try
+                                Console.WriteLine($"For directory {directory}");
+                                var file = Path.Combine(directory);
+                                file = Path.Combine(file, Path.Combine(library.Path.Split("/")));
+                                file = Path.Combine(file, Path.Combine(runtimeAssemblyPath.Split("/")));
+                                Console.WriteLine($"Try to load file {file}");
+                                if (File.Exists(file))
                                 {
-                                    return GetAssembly(file, parameters);
-                                }
-                                catch (BadImageFormatException)
-                                {
-                                    Console.WriteLine($"BadImageFormatException!");
-                                    continue;
+                                    try
+                                    {
+                                        return GetAssembly(file, parameters);
+                                    }
+                                    catch (BadImageFormatException)
+                                    {
+                                        Console.WriteLine($"BadImageFormatException!");
+                                        continue;
+                                    }
                                 }
                             }
                         }
