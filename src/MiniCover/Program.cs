@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using MiniCover.Commands;
 using MiniCover.Commands.Reports;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
 using MiniCover.Reports.Coveralls;
-using MiniCover.Utils;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MiniCover
@@ -18,18 +19,16 @@ namespace MiniCover
         {
             Console.OutputEncoding = Encoding.UTF8;
 
-            var commandLineApplication = new CommandLineApplication
-            {
-                Name = "MiniCover",
-                Description = "MiniCover - Code coverage for .NET Core via assembly instrumentation"
-            };
+            var commandLineApplication = new CommandLineApplication();
+            commandLineApplication.Name = "MiniCover";
+            commandLineApplication.Description = "MiniCover - Code coverage for .NET Core via assembly instrumentation";
 
             commandLineApplication.Command("instrument", command =>
             {
                 command.Description = "Instrument assemblies";
 
                 var workDirOption = CreateWorkdirOption(command);
-                var parentDirOption = command.Option("--parentdir", "Set parent directory for assemblies and source directories (if not used, falls back to --workdir)", CommandOptionType.SingleValue);
+                var parentDirOption = CreateParentdirOption(command);
                 var includeAssembliesOption = command.Option("--assemblies", "Pattern to include assemblies [default: **/*.dll]", CommandOptionType.MultipleValue);
                 var excludeAssembliesOption = command.Option("--exclude-assemblies", "Pattern to exclude assemblies", CommandOptionType.MultipleValue);
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
@@ -44,19 +43,11 @@ namespace MiniCover
                 {
                     var workdir = UpdateWorkingDirectory(workDirOption);
 
-                    var assemblies = FileUtils.GetFiles(
-                        includeAssembliesOption.HasValue() ? includeAssembliesOption.Values : null,
-                        excludeAssembliesOption.HasValue() ? includeAssembliesOption.Values : null,
-                        "**/*.dll",
-                        parentDirOption.Value());
+                    var assemblies = GetFiles(includeAssembliesOption, excludeAssembliesOption, "**/*.dll", parentDirOption);
                     if (assemblies.Length == 0)
                         throw new Exception("No assemblies found");
 
-                    var sourceFiles = FileUtils.GetFiles(
-                        includeSourceOption.HasValue() ? includeSourceOption.Values : null,
-                        excludeSourceOption.HasValue() ? excludeSourceOption.Values : null,
-                        "**/*.cs",
-                        parentDirOption.Value());
+                    var sourceFiles = GetFiles(includeSourceOption, excludeSourceOption, "**/*.cs", parentDirOption);
                     if (sourceFiles.Length == 0)
                         throw new Exception("No source files found");
 
@@ -168,6 +159,11 @@ namespace MiniCover
             return command.Option("--workdir", "Change working directory", CommandOptionType.SingleValue);
         }
 
+        private static CommandOption CreateParentdirOption(CommandLineApplication command)
+        {
+            return command.Option("--parentdir", "Set parent directory for assemblies and source directories (if not used, falls back to --workdir)", CommandOptionType.SingleValue);
+        }
+
         private static string UpdateWorkingDirectory(CommandOption workDirOption)
         {
             if (workDirOption.HasValue())
@@ -196,7 +192,43 @@ namespace MiniCover
         {
             return Path.GetFullPath(hitsFileOption.Value() ?? "coverage-hits.txt");
         }
-        
+
+        private static string[] GetFiles(CommandOption includeOption, CommandOption excludeOption, string defaultInclude, CommandOption parentDirOption)
+        {
+            var matcher = new Microsoft.Extensions.FileSystemGlobbing.Matcher();
+
+            if (includeOption.HasValue())
+            {
+                foreach (var include in includeOption.Values)
+                {
+                    matcher.AddInclude(include);
+                }
+            }
+            else if (!string.IsNullOrEmpty(defaultInclude))
+            {
+                matcher.AddInclude(defaultInclude);
+            }
+
+            foreach (var exclude in excludeOption.Values)
+            {
+                matcher.AddExclude(exclude);
+            }
+
+            DirectoryInfo directoryInfo = null;
+            if (parentDirOption.HasValue())
+            {
+                directoryInfo = new DirectoryInfo(parentDirOption.Value());
+            }
+            else
+            {
+                directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+            }
+            var fileMatchResult = matcher.Execute(new DirectoryInfoWrapper(directoryInfo));
+            return fileMatchResult.Files
+                .Select(f => Path.GetFullPath(Path.Combine(directoryInfo.ToString(), f.Path)))
+                .ToArray();
+        }
+
         private static void SaveCoverageFile(string coverageFile, InstrumentationResult result)
         {
             File.WriteAllText(coverageFile, JsonConvert.SerializeObject(result, Formatting.Indented));
