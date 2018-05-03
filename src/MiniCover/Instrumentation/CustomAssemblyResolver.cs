@@ -74,6 +74,15 @@ namespace MiniCover.Instrumentation
                         }
                     }
                 }
+                else
+                {
+                    Console.WriteLine($"DependencyContext.CompileLibraries doesn't contain information about assebmly {name.Name}!");
+                    _dependencyContext.CompileLibraries.ToList().ForEach(lib => Console.WriteLine(lib.Name));
+                }
+            }
+            else
+            {
+                Console.WriteLine("Dependency context is null!");
             }
 
             return base.SearchDirectory(name, directories, parameters);
