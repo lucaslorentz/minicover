@@ -61,7 +61,8 @@ namespace MiniCover.Instrumentation
                         {
                             foreach (var directory in directories)
                             {
-                                var file = Path.Combine(directory, library.Path, runtimeAssemblyPath);
+                                var file = Path.Combine(directory, Path.Combine(library.Path.Split("/")));
+                                file = Path.Combine(file, Path.Combine(runtimeAssemblyPath.Split("/")));
                                 Console.WriteLine($"Try to load file {file}");
                                 if (File.Exists(file))
                                 {
