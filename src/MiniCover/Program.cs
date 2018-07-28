@@ -33,7 +33,7 @@ namespace MiniCover
                 var excludeAssembliesOption = command.Option("--exclude-assemblies", "Pattern to exclude assemblies", CommandOptionType.MultipleValue);
                 var includeSourceOption = command.Option("--sources", "Pattern to include source files [default: **/*]", CommandOptionType.MultipleValue);
                 var excludeSourceOption = command.Option("--exclude-sources", "Pattern to exclude source files", CommandOptionType.MultipleValue);
-                var hitsFileOption = command.Option("--hits-file", "Hits file name [default: coverage-hits.txt]", CommandOptionType.SingleValue);
+                var hitsFileOption = command.Option("--hits-file", "Hits file name [default: coverage.hits]", CommandOptionType.SingleValue);
 
                 var coverageFileOption = CreateCoverageFileOption(command);
 
@@ -190,7 +190,7 @@ namespace MiniCover
 
         private static string GetHitsFile(CommandOption hitsFileOption)
         {
-            return Path.GetFullPath(hitsFileOption.Value() ?? "coverage-hits.txt");
+            return Path.GetFullPath(hitsFileOption.Value() ?? "coverage.hits");
         }
 
         private static string[] GetFiles(CommandOption includeOption, CommandOption excludeOption, string defaultInclude, CommandOption parentDirOption)

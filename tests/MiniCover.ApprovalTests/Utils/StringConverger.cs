@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace MiniCover.ApprovalTests
+namespace MiniCover.ApprovalTests.Utils
 {
     internal static class StringConverger
     {

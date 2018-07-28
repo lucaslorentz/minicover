@@ -1,6 +1,6 @@
 ﻿{
-  "SourcePath": "coverage/test/",
-  "HitsFile": "coverage/test/coverage-hits.txt",
+  "SourcePath": "coverage/",
+  "HitsFile": "coverage/coverage.hits",
   "ExtraAssemblies": [
     "src/Sample/bin/Debug/netstandard2.0/MiniCover.HitServices.dll",
     "test/Sample.Tests.NUnit/bin/Debug/netcoreapp2.0/MiniCover.HitServices.dll",
@@ -10,7 +10,7 @@
     {
       "Name": "Sample",
       "SourceFiles": {
-        "../../src/Sample/AnotherClass.cs": {
+        "../src/Sample/AnotherClass.cs": {
           "Instructions": [
             {
               "Id": 1,
@@ -179,7 +179,7 @@
             }
           ]
         },
-        "../../src/Sample/ClassWithYield.cs": {
+        "../src/Sample/ClassWithYield.cs": {
           "Instructions": [
             {
               "Id": 16,
@@ -315,7 +315,7 @@
             }
           ]
         },
-        "../../src/Sample/PartialClass.cs": {
+        "../src/Sample/PartialClass.cs": {
           "Instructions": [
             {
               "Id": 28,
@@ -352,7 +352,7 @@
             }
           ]
         },
-        "../../src/Sample/PartialClassB.cs": {
+        "../src/Sample/PartialClassB.cs": {
           "Instructions": [
             {
               "Id": 31,
@@ -367,7 +367,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/AClassWithATryFinallyInConstructor.cs": {
+        "../src/Sample/TryFinally/AClassWithATryFinallyInConstructor.cs": {
           "Instructions": [
             {
               "Id": 32,
@@ -448,7 +448,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/AClassWithFieldInitializedOutsideConstructor.cs": {
+        "../src/Sample/TryFinally/AClassWithFieldInitializedOutsideConstructor.cs": {
           "Instructions": [
             {
               "Id": 39,
@@ -463,7 +463,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/AClassWithSomeTryFinally.cs": {
+        "../src/Sample/TryFinally/AClassWithSomeTryFinally.cs": {
           "Instructions": [
             {
               "Id": 40,
@@ -500,7 +500,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/AnAbstractClass.cs": {
+        "../src/Sample/TryFinally/AnAbstractClass.cs": {
           "Instructions": [
             {
               "Id": 43,
@@ -548,7 +548,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/AnotherClassWithoutTryFinally.cs": {
+        "../src/Sample/TryFinally/AnotherClassWithoutTryFinally.cs": {
           "Instructions": [
             {
               "Id": 47,
@@ -563,7 +563,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/ClassWithComplicatedLambda.cs": {
+        "../src/Sample/TryFinally/ClassWithComplicatedLambda.cs": {
           "Instructions": [
             {
               "Id": 48,
@@ -644,7 +644,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/ClassWithMultipleConstructors.cs": {
+        "../src/Sample/TryFinally/ClassWithMultipleConstructors.cs": {
           "Instructions": [
             {
               "Id": 55,
@@ -780,7 +780,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/ClassWithSimpleLambda.cs": {
+        "../src/Sample/TryFinally/ClassWithSimpleLambda.cs": {
           "Instructions": [
             {
               "Id": 67,
@@ -817,7 +817,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/ClassWithTryFinallyInLambda.cs": {
+        "../src/Sample/TryFinally/ClassWithTryFinallyInLambda.cs": {
           "Instructions": [
             {
               "Id": 70,
@@ -887,7 +887,7 @@
             }
           ]
         },
-        "../../src/Sample/TryFinally/HeritingClass.cs": {
+        "../src/Sample/TryFinally/HeritingClass.cs": {
           "Instructions": [
             {
               "Id": 76,
@@ -971,7 +971,7 @@
     {
       "Name": "Sample.Tests.NUnit",
       "SourceFiles": {
-        "../../test/Sample.Tests.NUnit/UnitTest1.cs": {
+        "../test/Sample.Tests.NUnit/UnitTest1.cs": {
           "Instructions": [
             {
               "Id": 81,
@@ -1415,17 +1415,28 @@
             },
             {
               "Id": 121,
-              "StartLine": 80,
-              "EndLine": 80,
-              "StartColumn": 45,
-              "EndColumn": 77,
-              "Class": "Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0",
-              "Method": "<NunitTestAPartialClass>b__0",
-              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
-              "Instruction": "IL_0000: ldarg "
+              "StartLine": 131,
+              "EndLine": 131,
+              "StartColumn": 13,
+              "EndColumn": 36,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitEnumParamWithDefault",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitEnumParamWithDefault()",
+              "Instruction": "IL_0001: ldarg "
             },
             {
               "Id": 122,
+              "StartLine": 132,
+              "EndLine": 132,
+              "StartColumn": 13,
+              "EndColumn": 28,
+              "Class": "Sample.Tests.NUnit.UnitTest1",
+              "Method": "NunitEnumParamWithDefault",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1::NunitEnumParamWithDefault()",
+              "Instruction": "IL_000e: ldarg "
+            },
+            {
+              "Id": 123,
               "StartLine": 80,
               "EndLine": 80,
               "StartColumn": 45,
@@ -1436,29 +1447,40 @@
               "Instruction": "IL_0000: ldarg "
             },
             {
-              "Id": 123,
-              "StartLine": 86,
-              "EndLine": 86,
-              "StartColumn": 62,
-              "EndColumn": 95,
-              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
-              "Method": "<NUnitTestAsync>b__7_0",
-              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__7_0(System.Int32)",
-              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
-            },
-            {
               "Id": 124,
-              "StartLine": 86,
-              "EndLine": 86,
-              "StartColumn": 62,
-              "EndColumn": 95,
-              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
-              "Method": "<NUnitTestAsync>b__7_0",
-              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__7_0(System.Int32)",
-              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+              "StartLine": 80,
+              "EndLine": 80,
+              "StartColumn": 45,
+              "EndColumn": 77,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.NUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
             },
             {
               "Id": 125,
+              "StartLine": 86,
+              "EndLine": 86,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 126,
+              "StartLine": 86,
+              "EndLine": 86,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.NUnit.UnitTest1/<>c",
+              "Method": "<NUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.NUnit.UnitTest1/<>c::<NUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 127,
               "StartLine": 92,
               "EndLine": 92,
               "StartColumn": 130,
@@ -1469,7 +1491,7 @@
               "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
             },
             {
-              "Id": 126,
+              "Id": 128,
               "StartLine": 92,
               "EndLine": 92,
               "StartColumn": 130,
@@ -1494,10 +1516,10 @@
     {
       "Name": "Sample.Tests.XUnit",
       "SourceFiles": {
-        "../../test/Sample.Tests.XUnit/UnitTest1.cs": {
+        "../test/Sample.Tests.XUnit/UnitTest1.cs": {
           "Instructions": [
             {
-              "Id": 127,
+              "Id": 129,
               "StartLine": 14,
               "EndLine": 14,
               "StartColumn": 13,
@@ -1508,7 +1530,7 @@
               "Instruction": "IL_0001: ldc.i4 2"
             },
             {
-              "Id": 128,
+              "Id": 130,
               "StartLine": 15,
               "EndLine": 15,
               "StartColumn": 13,
@@ -1519,7 +1541,7 @@
               "Instruction": "IL_0003: ldc.i4 2"
             },
             {
-              "Id": 129,
+              "Id": 131,
               "StartLine": 16,
               "EndLine": 16,
               "StartColumn": 13,
@@ -1530,7 +1552,7 @@
               "Instruction": "IL_0005: ldloc V_0"
             },
             {
-              "Id": 130,
+              "Id": 132,
               "StartLine": 18,
               "EndLine": 18,
               "StartColumn": 13,
@@ -1541,7 +1563,7 @@
               "Instruction": "IL_0009: ldloc V_0"
             },
             {
-              "Id": 131,
+              "Id": 133,
               "StartLine": 19,
               "EndLine": 19,
               "StartColumn": 13,
@@ -1552,7 +1574,7 @@
               "Instruction": "IL_0011: ldc.i4 4"
             },
             {
-              "Id": 132,
+              "Id": 134,
               "StartLine": 21,
               "EndLine": 21,
               "StartColumn": 13,
@@ -1563,7 +1585,7 @@
               "Instruction": "IL_0019: newobj System.Void Sample.AnotherClass::.ctor()"
             },
             {
-              "Id": 133,
+              "Id": 135,
               "StartLine": 22,
               "EndLine": 22,
               "StartColumn": 13,
@@ -1574,7 +1596,7 @@
               "Instruction": "IL_001f: ldloc V_3"
             },
             {
-              "Id": 134,
+              "Id": 136,
               "StartLine": 23,
               "EndLine": 23,
               "StartColumn": 13,
@@ -1585,7 +1607,7 @@
               "Instruction": "IL_0027: ldloc V_3"
             },
             {
-              "Id": 135,
+              "Id": 137,
               "StartLine": 29,
               "EndLine": 29,
               "StartColumn": 13,
@@ -1596,7 +1618,7 @@
               "Instruction": "IL_0001: ldc.i4 2"
             },
             {
-              "Id": 136,
+              "Id": 138,
               "StartLine": 30,
               "EndLine": 30,
               "StartColumn": 13,
@@ -1607,7 +1629,7 @@
               "Instruction": "IL_0003: ldc.i4 2"
             },
             {
-              "Id": 137,
+              "Id": 139,
               "StartLine": 32,
               "EndLine": 32,
               "StartColumn": 13,
@@ -1618,7 +1640,7 @@
               "Instruction": "IL_0005: ldloc V_0"
             },
             {
-              "Id": 138,
+              "Id": 140,
               "StartLine": 34,
               "EndLine": 34,
               "StartColumn": 17,
@@ -1629,7 +1651,7 @@
               "Instruction": "IL_0011: ldloc V_0"
             },
             {
-              "Id": 139,
+              "Id": 141,
               "StartLine": 37,
               "EndLine": 37,
               "StartColumn": 18,
@@ -1640,7 +1662,7 @@
               "Instruction": "IL_001a: ldc.i4 0"
             },
             {
-              "Id": 140,
+              "Id": 142,
               "StartLine": 39,
               "EndLine": 39,
               "StartColumn": 17,
@@ -1651,7 +1673,7 @@
               "Instruction": "IL_001f: newobj System.Void Sample.AnotherClass::.ctor()"
             },
             {
-              "Id": 141,
+              "Id": 143,
               "StartLine": 37,
               "EndLine": 37,
               "StartColumn": 37,
@@ -1662,7 +1684,7 @@
               "Instruction": "IL_002b: ldloc V_3"
             },
             {
-              "Id": 142,
+              "Id": 144,
               "StartLine": 37,
               "EndLine": 37,
               "StartColumn": 29,
@@ -1673,7 +1695,7 @@
               "Instruction": "IL_002f: ldloc V_3"
             },
             {
-              "Id": 143,
+              "Id": 145,
               "StartLine": 46,
               "EndLine": 46,
               "StartColumn": 13,
@@ -1684,7 +1706,7 @@
               "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AClassWithSomeTryFinally::.ctor()"
             },
             {
-              "Id": 144,
+              "Id": 146,
               "StartLine": 47,
               "EndLine": 47,
               "StartColumn": 13,
@@ -1695,7 +1717,7 @@
               "Instruction": "IL_0007: ldloc V_0"
             },
             {
-              "Id": 145,
+              "Id": 147,
               "StartLine": 48,
               "EndLine": 48,
               "StartColumn": 13,
@@ -1706,7 +1728,7 @@
               "Instruction": "IL_000f: ldc.i4 4"
             },
             {
-              "Id": 146,
+              "Id": 148,
               "StartLine": 54,
               "EndLine": 54,
               "StartColumn": 13,
@@ -1717,7 +1739,7 @@
               "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.AnotherClassWithoutTryFinally::.ctor()"
             },
             {
-              "Id": 147,
+              "Id": 149,
               "StartLine": 55,
               "EndLine": 55,
               "StartColumn": 13,
@@ -1728,7 +1750,7 @@
               "Instruction": "IL_0007: ldloc V_0"
             },
             {
-              "Id": 148,
+              "Id": 150,
               "StartLine": 56,
               "EndLine": 56,
               "StartColumn": 13,
@@ -1739,7 +1761,7 @@
               "Instruction": "IL_000f: ldc.i4 4"
             },
             {
-              "Id": 149,
+              "Id": 151,
               "StartLine": 62,
               "EndLine": 62,
               "StartColumn": 13,
@@ -1750,7 +1772,7 @@
               "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.ClassWithSimpleLambda::.ctor()"
             },
             {
-              "Id": 150,
+              "Id": 152,
               "StartLine": 63,
               "EndLine": 63,
               "StartColumn": 13,
@@ -1761,7 +1783,7 @@
               "Instruction": "IL_0007: ldloc V_0"
             },
             {
-              "Id": 151,
+              "Id": 153,
               "StartLine": 64,
               "EndLine": 64,
               "StartColumn": 13,
@@ -1772,7 +1794,7 @@
               "Instruction": "IL_001c: ldc.i4 10"
             },
             {
-              "Id": 152,
+              "Id": 154,
               "StartLine": 70,
               "EndLine": 70,
               "StartColumn": 13,
@@ -1783,7 +1805,7 @@
               "Instruction": "IL_0001: newobj System.Void Sample.TryFinally.ClassWithComplicatedLambda::.ctor()"
             },
             {
-              "Id": 153,
+              "Id": 155,
               "StartLine": 71,
               "EndLine": 71,
               "StartColumn": 13,
@@ -1794,7 +1816,7 @@
               "Instruction": "IL_0007: ldloc V_0"
             },
             {
-              "Id": 154,
+              "Id": 156,
               "StartLine": 72,
               "EndLine": 72,
               "StartColumn": 13,
@@ -1805,7 +1827,7 @@
               "Instruction": "IL_001c: ldc.i4 10"
             },
             {
-              "Id": 155,
+              "Id": 157,
               "StartLine": 78,
               "EndLine": 78,
               "StartColumn": 13,
@@ -1816,7 +1838,7 @@
               "Instruction": "IL_0007: ldloc V_0"
             },
             {
-              "Id": 156,
+              "Id": 158,
               "StartLine": 79,
               "EndLine": 79,
               "StartColumn": 13,
@@ -1827,7 +1849,7 @@
               "Instruction": "IL_0014: ldloc V_0"
             },
             {
-              "Id": 157,
+              "Id": 159,
               "StartLine": 85,
               "EndLine": 85,
               "StartColumn": 13,
@@ -1838,7 +1860,7 @@
               "Instruction": "IL_0001: ldc.i4 0"
             },
             {
-              "Id": 158,
+              "Id": 160,
               "StartLine": 91,
               "EndLine": 92,
               "StartColumn": 13,
@@ -1849,7 +1871,7 @@
               "Instruction": "IL_0001: ldc.i4 0"
             },
             {
-              "Id": 159,
+              "Id": 161,
               "StartLine": 93,
               "EndLine": 93,
               "StartColumn": 13,
@@ -1860,7 +1882,7 @@
               "Instruction": "IL_0033: newobj System.Void System.Threading.Tasks.ParallelOptions::.ctor()"
             },
             {
-              "Id": 160,
+              "Id": 162,
               "StartLine": 99,
               "EndLine": 99,
               "StartColumn": 13,
@@ -1871,7 +1893,7 @@
               "Instruction": "IL_0001: call Sample.TryFinally.ClassWithMultipleConstructors Sample.TryFinally.ClassWithMultipleConstructors::Default()"
             },
             {
-              "Id": 161,
+              "Id": 163,
               "StartLine": 105,
               "EndLine": 105,
               "StartColumn": 13,
@@ -1882,7 +1904,7 @@
               "Instruction": "IL_0001: ldc.i4 15"
             },
             {
-              "Id": 162,
+              "Id": 164,
               "StartLine": 111,
               "EndLine": 111,
               "StartColumn": 13,
@@ -1893,7 +1915,7 @@
               "Instruction": "IL_0001: ldc.i4 12"
             },
             {
-              "Id": 163,
+              "Id": 165,
               "StartLine": 112,
               "EndLine": 112,
               "StartColumn": 13,
@@ -1904,7 +1926,7 @@
               "Instruction": "IL_0009: ldc.i4 180"
             },
             {
-              "Id": 164,
+              "Id": 166,
               "StartLine": 118,
               "EndLine": 118,
               "StartColumn": 13,
@@ -1915,7 +1937,7 @@
               "Instruction": "IL_0001: newobj System.Void Sample.ClassWithYield::.ctor()"
             },
             {
-              "Id": 165,
+              "Id": 167,
               "StartLine": 119,
               "EndLine": 119,
               "StartColumn": 13,
@@ -1926,7 +1948,7 @@
               "Instruction": "IL_0007: ldloc V_0"
             },
             {
-              "Id": 166,
+              "Id": 168,
               "StartLine": 125,
               "EndLine": 125,
               "StartColumn": 13,
@@ -1937,7 +1959,7 @@
               "Instruction": "IL_0001: newobj System.Void Sample.AnotherClass::.ctor()"
             },
             {
-              "Id": 167,
+              "Id": 169,
               "StartLine": 126,
               "EndLine": 126,
               "StartColumn": 13,
@@ -1948,40 +1970,51 @@
               "Instruction": "IL_0007: ldsfld System.Runtime.CompilerServices.CallSite`1<System.Action`4<System.Runtime.CompilerServices.CallSite,System.Type,System.Int32,System.Object>> Sample.Tests.XUnit.UnitTest1/<>o__13::<>p__0"
             },
             {
-              "Id": 168,
-              "StartLine": 79,
-              "EndLine": 79,
-              "StartColumn": 44,
-              "EndColumn": 76,
-              "Class": "Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0",
-              "Method": "<NunitTestAPartialClass>b__0",
-              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
-              "Instruction": "IL_0000: ldarg "
-            },
-            {
-              "Id": 169,
-              "StartLine": 79,
-              "EndLine": 79,
-              "StartColumn": 44,
-              "EndColumn": 76,
-              "Class": "Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0",
-              "Method": "<NunitTestAPartialClass>b__0",
-              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
-              "Instruction": "IL_0000: ldarg "
-            },
-            {
               "Id": 170,
-              "StartLine": 85,
-              "EndLine": 85,
-              "StartColumn": 62,
-              "EndColumn": 95,
-              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
-              "Method": "<XUnitTestAsync>b__7_0",
-              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__7_0(System.Int32)",
-              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+              "StartLine": 132,
+              "EndLine": 132,
+              "StartColumn": 13,
+              "EndColumn": 36,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitEnumParamWithDefault",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitEnumParamWithDefault()",
+              "Instruction": "IL_0001: ldarg "
             },
             {
               "Id": 171,
+              "StartLine": 133,
+              "EndLine": 133,
+              "StartColumn": 13,
+              "EndColumn": 28,
+              "Class": "Sample.Tests.XUnit.UnitTest1",
+              "Method": "NunitEnumParamWithDefault",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1::NunitEnumParamWithDefault()",
+              "Instruction": "IL_000e: ldarg "
+            },
+            {
+              "Id": 172,
+              "StartLine": 79,
+              "EndLine": 79,
+              "StartColumn": 44,
+              "EndColumn": 76,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 173,
+              "StartLine": 79,
+              "EndLine": 79,
+              "StartColumn": 44,
+              "EndColumn": 76,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0",
+              "Method": "<NunitTestAPartialClass>b__0",
+              "MethodFullName": "System.Void Sample.Tests.XUnit.UnitTest1/<>c__DisplayClass6_0::<NunitTestAPartialClass>b__0()",
+              "Instruction": "IL_0000: ldarg "
+            },
+            {
+              "Id": 174,
               "StartLine": 85,
               "EndLine": 85,
               "StartColumn": 62,
@@ -1992,7 +2025,18 @@
               "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
             },
             {
-              "Id": 172,
+              "Id": 175,
+              "StartLine": 85,
+              "EndLine": 85,
+              "StartColumn": 62,
+              "EndColumn": 95,
+              "Class": "Sample.Tests.XUnit.UnitTest1/<>c",
+              "Method": "<XUnitTestAsync>b__7_0",
+              "MethodFullName": "System.Threading.Tasks.Task Sample.Tests.XUnit.UnitTest1/<>c::<XUnitTestAsync>b__7_0(System.Int32)",
+              "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
+            },
+            {
+              "Id": 176,
               "StartLine": 91,
               "EndLine": 91,
               "StartColumn": 74,
@@ -2003,7 +2047,7 @@
               "Instruction": "IL_0000: newobj System.Void Sample.AnotherClass::.ctor()"
             },
             {
-              "Id": 173,
+              "Id": 177,
               "StartLine": 91,
               "EndLine": 91,
               "StartColumn": 74,

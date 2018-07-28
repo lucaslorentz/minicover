@@ -212,7 +212,7 @@ project.lock.json
 #####
 
 # Approval Test
-*.received*
+*.received.*
 
 coverage
 artifacts
