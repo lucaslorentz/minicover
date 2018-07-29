@@ -124,5 +124,20 @@ namespace Sample.Tests.NUnit
             var instance = new AnotherClass();
             Assert.AreEqual(1, instance.AMethodWithMultipleReturn(1));
         }
+
+        [Test]
+        public void NunitEnumParamWithDefault()
+        {
+            DefaultNullableParam();
+            DefaultParam();
+        }
+
+        public void DefaultNullableParam(DemoEnum? value = DemoEnum.A)
+        {
+        }
+
+        public void DefaultParam(DemoEnum value = DemoEnum.A)
+        {
+        }
     }
 }

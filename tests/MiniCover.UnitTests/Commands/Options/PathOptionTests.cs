@@ -29,7 +29,7 @@ namespace MiniCover.UnitTests.Commands.Options
             {
                 {
                     yield return new object[] { new CoverageFileOption(), "./coverage.json" };
-                    yield return new object[] { new CoverageHitsFileOption(), "./coverage-hits.txt" };
+                    yield return new object[] { new CoverageHitsFileOption(), "./coverage.hits" };
                 }
             }
         }
