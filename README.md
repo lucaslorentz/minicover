@@ -101,5 +101,5 @@ Add the following to your .gitignore file to ignore code coverage results:
 ```
 coverage-html
 coverage.json
-coverage-hits.txt
+coverage.hits
 ```
