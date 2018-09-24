@@ -1,12 +1,30 @@
 ﻿using MiniCover.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace MiniCover.Reports
 {
+
+    class CoverLine
+    {
+        public int InstructionId = -1;
+        public int InstructionLineCounts = int.MaxValue;
+        public int Hits;
+    }
+
     public abstract class BaseReport
     {
+        private void WriteWarning(string Warning)
+        {
+            ConsoleColor original = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Warning: ");
+            Console.WriteLine(Warning);
+            Console.ForegroundColor = original;
+        }
+
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
             var hits = Hits.TryReadFromFile(result.HitsFile);
@@ -22,6 +40,7 @@ namespace MiniCover.Reports
 
             foreach (var kvFile in files)
             {
+                /*
                 var lines = kvFile.Value.Instructions
                     .SelectMany(i => i.GetLines())
                     .Distinct()
@@ -33,8 +52,61 @@ namespace MiniCover.Reports
                     .Distinct()
                     .Count();
 
+                
+                */
+
+                var SourceFile  = System.IO.Path.Combine(result.SourcePath, kvFile.Key);
+                var SourceLines = File.ReadAllLines(SourceFile);
+                 
+                CoverLine[] covlines = new CoverLine[SourceLines.Length];
+
+                foreach (var instruction in kvFile.Value.Instructions)
+                {
+                    int InstructionLineCounts = instruction.EndLine - instruction.StartLine;
+                    for (int l = instruction.StartLine; l <= instruction.EndLine; l++)
+                    {
+
+                        CoverLine line = covlines[(l - 1)];
+
+                        if (null == line)
+                        {
+                            covlines[(l - 1)] = line = new CoverLine();
+
+                        }
+
+                        if (-1 != line.InstructionId)
+                        {
+                            WriteWarning($"Duplicated instruction {line.InstructionId} and {instruction.Id} both cover line {l}");
+                        }
+
+                        if (InstructionLineCounts < line.InstructionLineCounts)
+                        {
+                            line.InstructionId = instruction.Id;
+                            line.Hits = hits.GetInstructionHitCount(instruction.Id);
+                            line.InstructionLineCounts = InstructionLineCounts;
+                        }
+                    }
+
+                }
+                
+                int coveredLines = 0;
+                int lines = 0;
+                foreach (var l in covlines)
+                {
+                    
+                    string hit = (l == null || 0 > l.Hits) ? "null" : l.Hits.ToString();
+
+                    if ("null" != hit && 0 < l.Hits)
+                        coveredLines++;
+
+                    if (null != l)
+                        lines++;
+
+
+                }
+
                 totalLines += lines;
-                totalCoveredLines += coveredLines;
+                totalCoveredLines += coveredLines; 
 
                 var coveragePercentage = (float)coveredLines / lines;
                 var fileColor = coveragePercentage >= threshold ? ConsoleColor.Green : ConsoleColor.Red;
