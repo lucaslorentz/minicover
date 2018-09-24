@@ -132,7 +132,7 @@ namespace MiniCover.Reports.Coveralls
                 {
                     Name = fileName,
                     SourceDigest = ComputeSourceDigest(sourceFile),
-                    Coverage = Enumerable.Range(1, sourceLines.Length).Select(line =>
+                    Coverage = Enumerable.Range(0, (sourceLines.Length - 1)).Select(line =>
                     {
                         return (null != covlines[line])
                             ? covlines[line].Hits
