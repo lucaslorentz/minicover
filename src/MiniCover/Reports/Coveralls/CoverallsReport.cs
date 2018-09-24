@@ -117,10 +117,14 @@ namespace MiniCover.Reports.Coveralls
 
                 var sourceLines = File.ReadAllLines(sourceFile);
 
+                /*
                 var hitsPerLine = kvFile.Value.Instructions
                     .SelectMany(i => i.GetLines(), (instruction, line) => new { instruction, line })
                     .GroupBy(i => i.line)
                     .ToDictionary(g => g.Key, g => g.Sum(j => hits.GetInstructionHitCount(j.instruction.Id)));
+                */
+
+                CoverLine[] covlines = BaseReport.GetCovLines(hits, kvFile, sourceFile);
 
                 var fileName = Path.GetRelativePath(_rootFolder, sourceFile).Replace("\\", "/");
 
@@ -130,8 +134,8 @@ namespace MiniCover.Reports.Coveralls
                     SourceDigest = ComputeSourceDigest(sourceFile),
                     Coverage = Enumerable.Range(1, sourceLines.Length).Select(line =>
                     {
-                        return hitsPerLine.ContainsKey(line)
-                            ? hitsPerLine[line]
+                        return (null != covlines[line])
+                            ? covlines[line].Hits
                             : default(int?);
                     }).ToArray()
                 };

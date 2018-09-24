@@ -7,7 +7,7 @@ using System.Linq;
 namespace MiniCover.Reports
 {
 
-    class CoverLine
+    public class CoverLine
     {
         public int InstructionId = -1;
         public int InstructionLineCounts = int.MaxValue;
@@ -16,7 +16,7 @@ namespace MiniCover.Reports
 
     public abstract class BaseReport
     {
-        private void WriteWarning(string Warning)
+        public static void WriteWarning(string Warning)
         {
             ConsoleColor original = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -24,6 +24,45 @@ namespace MiniCover.Reports
             Console.WriteLine(Warning);
             Console.ForegroundColor = original;
         }
+
+        public static CoverLine[] GetCovLines(Hits hits, KeyValuePair<string, SourceFile> kvFile, string SourceFile)
+        {
+            var SourceLines = File.ReadAllLines(SourceFile);
+
+            CoverLine[] covlines = new CoverLine[SourceLines.Length];
+
+            foreach (var instruction in kvFile.Value.Instructions)
+            {
+                int InstructionLineCounts = instruction.EndLine - instruction.StartLine;
+                for (int l = instruction.StartLine; l <= instruction.EndLine; l++)
+                {
+
+                    CoverLine line = covlines[(l - 1)];
+
+                    if (null == line)
+                    {
+                        covlines[(l - 1)] = line = new CoverLine();
+
+                    }
+
+                    if (-1 != line.InstructionId)
+                    {
+                        WriteWarning($"Duplicated instruction {line.InstructionId} and {instruction.Id} both cover line {l}");
+                    }
+
+                    if (InstructionLineCounts < line.InstructionLineCounts)
+                    {
+                        line.InstructionId = instruction.Id;
+                        line.Hits = hits.GetInstructionHitCount(instruction.Id);
+                        line.InstructionLineCounts = InstructionLineCounts;
+                    }
+                }
+
+            }
+
+            return covlines;
+        }
+
 
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
@@ -55,45 +94,14 @@ namespace MiniCover.Reports
                 
                 */
 
-                var SourceFile  = System.IO.Path.Combine(result.SourcePath, kvFile.Key);
-                var SourceLines = File.ReadAllLines(SourceFile);
-                 
-                CoverLine[] covlines = new CoverLine[SourceLines.Length];
+                var SourceFile = System.IO.Path.Combine(result.SourcePath, kvFile.Key);
+                CoverLine[] covlines = GetCovLines(hits, kvFile, SourceFile);
 
-                foreach (var instruction in kvFile.Value.Instructions)
-                {
-                    int InstructionLineCounts = instruction.EndLine - instruction.StartLine;
-                    for (int l = instruction.StartLine; l <= instruction.EndLine; l++)
-                    {
-
-                        CoverLine line = covlines[(l - 1)];
-
-                        if (null == line)
-                        {
-                            covlines[(l - 1)] = line = new CoverLine();
-
-                        }
-
-                        if (-1 != line.InstructionId)
-                        {
-                            WriteWarning($"Duplicated instruction {line.InstructionId} and {instruction.Id} both cover line {l}");
-                        }
-
-                        if (InstructionLineCounts < line.InstructionLineCounts)
-                        {
-                            line.InstructionId = instruction.Id;
-                            line.Hits = hits.GetInstructionHitCount(instruction.Id);
-                            line.InstructionLineCounts = InstructionLineCounts;
-                        }
-                    }
-
-                }
-                
                 int coveredLines = 0;
                 int lines = 0;
                 foreach (var l in covlines)
                 {
-                    
+
                     string hit = (l == null || 0 > l.Hits) ? "null" : l.Hits.ToString();
 
                     if ("null" != hit && 0 < l.Hits)
@@ -106,7 +114,7 @@ namespace MiniCover.Reports
                 }
 
                 totalLines += lines;
-                totalCoveredLines += coveredLines; 
+                totalCoveredLines += coveredLines;
 
                 var coveragePercentage = (float)coveredLines / lines;
                 var fileColor = coveragePercentage >= threshold ? ConsoleColor.Green : ConsoleColor.Red;
@@ -125,6 +133,7 @@ namespace MiniCover.Reports
             return isHigherThanThreshold ? 0 : 1;
         }
 
+        
         protected abstract void SetFileColumnLength(int fileColumnsLength);
 
         protected abstract void WriteHeader();
