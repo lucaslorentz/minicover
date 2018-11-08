@@ -44,7 +44,7 @@ The **tools.csproj** will be similar to:
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-20180329054201" />
+    <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-*" />
   </ItemGroup>
 </Project>
 ```
@@ -75,7 +75,7 @@ cd tools
 dotnet minicover instrument --workdir ../ --assemblies test/**/bin/**/*.dll --sources src/**/*.cs 
 
 # Reset hits count in case minicover was run for this project
-dotnet minicover reset
+dotnet minicover reset --workdir ../
 
 cd ..
 
