@@ -64,7 +64,10 @@ https://www.myget.org/feed/minicover/package/nuget/MiniCover
 Pre-releases and releases nuget packages are pushed to:
 https://www.nuget.org/packages/MiniCover
 
-## Build script example with MiniCover
+## Build script examples with MiniCover
+
+### Bash
+
 ```shell
 dotnet restore
 dotnet build
@@ -93,6 +96,25 @@ dotnet minicover htmlreport --workdir ../ --threshold 90
 # This command returns failure if the coverage is lower than the threshold
 dotnet minicover report --workdir ../ --threshold 90
 
+cd ..
+```
+
+### PowerShell
+```powershell
+dotnet restore
+dotnet build
+cd tools
+dotnet restore
+dotnet minicover instrument --workdir ../ --assemblies test/**/bin/**/*.dll --sources src/**/*.cs
+dotnet minicover reset --workdir ../
+cd ..\test
+gci -Filter *.csproj -Recurse | %{
+    dotnet test $_.FullName
+}
+cd ..\tools
+dotnet minicover uninstrument --workdir ../
+dotnet minicover htmlreport --workdir ../ --threshold 90
+dotnet minicover report --workdir ../ --threshold 90
 cd ..
 ```
 
