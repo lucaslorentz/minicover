@@ -88,7 +88,7 @@ namespace MiniCover.Instrumentation
                 }
                 else
                 {
-                    Console.WriteLine($"DependencyContext.RuntimeLibraries. No information about assebmly {name.Name}!");
+                    Console.WriteLine($"DependencyContext.RuntimeLibraries. No information about assembly {name.Name}!");
                 }
             }
             else
