@@ -158,8 +158,15 @@ namespace MiniCover.Instrumentation
                 var exitMethodReference = assemblyDefinition.MainModule.ImportReference(exitMethodInfo);
 
                 var hitInstructionReference = assemblyDefinition.MainModule.ImportReference(hitInstructionMethodInfo);
-
-                var methods = assemblyDefinition.GetAllMethods();
+                
+                var methods = assemblyDefinition.GetAllMethods()
+                    .Where(m => 
+                        !(m.DeclaringType.CustomAttributes
+                            .Any(attribute => 
+                                attribute.AttributeType.FullName=="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute")
+                        ||m.DeclaringType.DeclaringType?.CustomAttributes?
+                            .Any(attribute => 
+                                attribute.AttributeType.FullName=="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute") == true));
 
                 var documentsGroups = methods
                     .SelectMany(m => m.DebugInformation.SequencePoints, (method, s) => new
