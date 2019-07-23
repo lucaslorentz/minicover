@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "instrument",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/MiniCover/bin/Debug/netcoreapp2.2/dotnet-minicover.dll",
+            "args": ["instrument", "--workdir", "/src/git/api-business-sip", 
+                "--assemblies", "tests/**/*Unit*/**/*.dll",
+                "--sources", "src/**/*.cs" ],
+            "cwd": "${workspaceFolder}/src/MiniCover",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "report",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/MiniCover/bin/Debug/netcoreapp2.2/dotnet-minicover.dll",
+            "args": ["report", 
+                "--workdir", "/src/git/api-business-sip"],
+            "cwd": "${workspaceFolder}/src/MiniCover",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ]
+}
