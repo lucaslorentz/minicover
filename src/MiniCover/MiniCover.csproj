@@ -2,8 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>dotnet-minicover</AssemblyName>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotnet-minicover</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,12 +31,12 @@
   <ItemGroup>
     <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj" PrivateAssets="All" />
   </ItemGroup>
-
+<!-- 
   <ItemGroup>
     <_PackageFiles Include="$(OutputPath)\MiniCover.HitServices.dll">
       <BuildAction>None</BuildAction>
-      <PackagePath>lib\netcoreapp2.0\</PackagePath>
+      <PackagePath>lib\netcoreapp2.1\</PackagePath>
     </_PackageFiles>
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>
