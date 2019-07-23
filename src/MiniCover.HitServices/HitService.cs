@@ -7,6 +7,8 @@ namespace MiniCover.HitServices
 {
     public static class HitService
     {
+        static ReaderWriterLockSlim rwl = new ReaderWriterLockSlim();
+
         public static MethodContext EnterMethod(string fileName)
         {
             return new MethodContext(fileName);
@@ -51,23 +53,25 @@ namespace MiniCover.HitServices
 
             private void Save()
             {
-                var fileStream = GetFileStream();
-                lock (fileStream)
+                rwl.EnterWriteLock();
+                try
                 {
-                    testMethod.Serialize(fileStream);
-                    fileStream.Flush();
+                    using(var fileStream = GetFileStream())
+                    {
+                        testMethod.Serialize(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                    }
+                }
+                finally
+                {
+                    rwl.ExitWriteLock();
                 }
             }
 
             private Stream GetFileStream()
             {
-                lock (filesStream)
-                {
-                    if (!filesStream.ContainsKey(filePath))
-                        filesStream[filePath] = File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.None);
-                }
-
-                return filesStream[filePath];
+                return File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             }
         }
     }
