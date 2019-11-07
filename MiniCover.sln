@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.HitServices", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.HitServices.UnitTests", "tests\MiniCover.HitServices.UnitTests\MiniCover.HitServices.UnitTests.csproj", "{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.ApprovalTests", "tests\MiniCover.ApprovalTests\MiniCover.ApprovalTests.csproj", "{EEC95524-170B-4C7D-B631-0B8BE7DEF5C3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,10 +35,6 @@ Global
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEC95524-170B-4C7D-B631-0B8BE7DEF5C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEC95524-170B-4C7D-B631-0B8BE7DEF5C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEC95524-170B-4C7D-B631-0B8BE7DEF5C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEC95524-170B-4C7D-B631-0B8BE7DEF5C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,7 +42,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7373D72F-D0A7-4D74-BA48-39E4CA7679DE} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
-		{EEC95524-170B-4C7D-B631-0B8BE7DEF5C3} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9809608-5E38-4E98-80B5-7CD7859FF4E8}

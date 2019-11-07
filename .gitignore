@@ -219,10 +219,7 @@ artifacts
 coverage-html
 coverage.json
 coverage.xml
-coverage.hits
+coverage-hits
 opencovercoverage.xml
 clover.xml
 coveralls.json
-
-
-

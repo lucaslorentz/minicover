@@ -5,7 +5,7 @@ namespace Sample.TryFinally
 {
     public class ClassWithTryFinallyInLambda
     {
-        public int Add2ToEachValueAndSumThemWithConsoleWrite(params int[] values)
+        public int Add2ToEachValueAndSumThem(params int[] values)
         {
             try
             {
@@ -17,16 +17,18 @@ namespace Sample.TryFinally
                     }
                     finally
                     {
-                        Console.WriteLine("end");
+                        SomeMethod();
                     }
                 }).Sum();
             }
             finally
             {
-                Console.WriteLine("end");
-                
+                SomeMethod();
             }
-            
+        }
+
+        public void SomeMethod() {
+
         }
     }
 }

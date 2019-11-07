@@ -1,7 +1,7 @@
-using Mono.Cecil.Cil;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using Mono.Cecil.Cil;
 
 namespace MiniCover.Extensions
 {

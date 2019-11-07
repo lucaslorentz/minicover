@@ -9,9 +9,9 @@ namespace MiniCover.Reports
 {
     public static class OpenCoverReport
     {
-        public static void Execute(InstrumentationResult result, string output, float threshold)
+        public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
         {
-            var hits = Hits.TryReadFromFile(result.HitsFile);
+            var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
             int fileIndex = 0;
             int sequencePointMegaCounter = 0;
@@ -60,7 +60,7 @@ namespace MiniCover.Reports
                     var hitInstructions = file.Value.Instructions.Where(h => hits.IsInstructionHit(h.Id)).ToArray();
 
                     return file.Value.Instructions
-                        .GroupBy(instruction => new { instruction.Class })
+                        .GroupBy(instruction => new { instruction.Method.Class })
                         .Select(classes =>
                     {
                         var classElement = new XElement(
@@ -73,12 +73,12 @@ namespace MiniCover.Reports
                         );
 
                         var methodsList = new XElement("Methods", classes
-                            .GroupBy(instruction => new { instruction.Method, instruction.MethodFullName })
+                            .GroupBy(instruction => instruction.Method)
                             .Select(method =>
                             {
                                 var nameElement = new XElement(
                                     XName.Get("Name"),
-                                    new XText(method.Key.MethodFullName)
+                                    new XText(method.Key.FullName)
                                 );
 
                                 var fileRefElement = new XElement(
@@ -109,7 +109,7 @@ namespace MiniCover.Reports
                                 var methodElement = new XElement(
                                     XName.Get("Method"),
                                     new XAttribute(XName.Get("visited"), method.Any(p => hitInstructions.Any(hit => hit == p))),
-                                    new XAttribute(XName.Get("isConstructor"), method.Key.Method == ".ctor")
+                                    new XAttribute(XName.Get("isConstructor"), method.Key.Name == ".ctor")
                                 );
 
                                 methodElement.Add(nameElement);
@@ -138,10 +138,8 @@ namespace MiniCover.Reports
 
             document.Add(coverageElement);
 
-            File.WriteAllText(output, document.ToString());
-            
-            
-            
+            output.Directory.Create();
+            File.WriteAllText(output.FullName, document.ToString());
         }
     }
 }

@@ -66,7 +66,7 @@ namespace MiniCover.Reports.Coveralls
 
         public virtual async Task<int> Execute(InstrumentationResult result)
         {
-            var hits = Hits.TryReadFromFile(result.HitsFile);
+            var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
             var files = result.GetSourceFiles();
 

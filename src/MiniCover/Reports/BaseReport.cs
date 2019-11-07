@@ -9,7 +9,7 @@ namespace MiniCover.Reports
     {
         public virtual int Execute(InstrumentationResult result, float threshold)
         {
-            var hits = Hits.TryReadFromFile(result.HitsFile);
+            var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
             var files = result.GetSourceFiles();
 
@@ -59,7 +59,7 @@ namespace MiniCover.Reports
 
         protected abstract void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color);
 
-        protected abstract void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, Hits hits);
+        protected abstract void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HitsInfo hits);
 
         protected abstract void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color);
     }

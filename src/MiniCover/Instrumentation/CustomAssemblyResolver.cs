@@ -1,32 +1,36 @@
-﻿using Microsoft.Extensions.DependencyModel;
-using MiniCover.Utils;
-using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.Logging;
+using MiniCover.Utils;
+using Mono.Cecil;
 
 namespace MiniCover.Instrumentation
 {
     public class CustomAssemblyResolver : DefaultAssemblyResolver
     {
-        private DependencyContext _dependencyContext;
+        private readonly DependencyContext _dependencyContext;
+        private readonly ILogger _logger;
 
-        public CustomAssemblyResolver(string assemblyDirectory)
+        public CustomAssemblyResolver(DirectoryInfo assemblyDirectory, ILogger logger)
         {
+            _logger = logger;
+
             RemoveSearchDirectory(".");
             RemoveSearchDirectory("bin");
 
-            AddSearchDirectory(assemblyDirectory);
+            AddSearchDirectory(assemblyDirectory.FullName);
 
             _dependencyContext = DepsJsonUtils.LoadDependencyContext(assemblyDirectory);
 
-            var runtimeConfigPath = Directory.GetFiles(assemblyDirectory, "*.runtimeconfig.dev.json", SearchOption.TopDirectoryOnly)
+            var runtimeConfigPath = assemblyDirectory.GetFiles("*.runtimeconfig.dev.json", SearchOption.TopDirectoryOnly)
                 .FirstOrDefault();
 
             if (runtimeConfigPath != null)
             {
-                var runtimeConfigContent = File.ReadAllText(runtimeConfigPath);
+                var runtimeConfigContent = File.ReadAllText(runtimeConfigPath.FullName);
                 foreach (var path in DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
                 {
                     AddSearchDirectory(path);
@@ -68,7 +72,7 @@ namespace MiniCover.Instrumentation
 
                                 file = Path.Combine(file, Path.Combine(runtimeAssemblyPath.Split("/")));
 
-                                Console.WriteLine($"Try to load file {file}");
+                                _logger.LogTrace("Trying to load file {file}", file);
 
                                 if (File.Exists(file))
                                 {
@@ -76,9 +80,9 @@ namespace MiniCover.Instrumentation
                                     {
                                         return GetAssembly(file, parameters);
                                     }
-                                    catch (BadImageFormatException)
+                                    catch (BadImageFormatException ex)
                                     {
-                                        Console.WriteLine($"BadImageFormatException!");
+                                        _logger.LogError(ex, "Faile to read assembly {file}", file);
                                         continue;
                                     }
                                 }
@@ -88,15 +92,16 @@ namespace MiniCover.Instrumentation
                 }
                 else
                 {
-                    Console.WriteLine($"DependencyContext.RuntimeLibraries. No information about assebmly {name.Name}!");
+                    _logger.LogWarning("DependencyContext.RuntimeLibraries. No information about assebmly {name}", name.Name);
                 }
             }
             else
             {
-                Console.WriteLine("Dependency context is null!");
+                _logger.LogWarning("Dependency context is null");
             }
 
-            Console.WriteLine("base SearchDirectory");
+            _logger.LogTrace("Fallback to DefaultAssemblyResolver");
+
             return base.SearchDirectory(name, directories, parameters);
         }
     }

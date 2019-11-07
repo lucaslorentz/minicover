@@ -1,19 +1,23 @@
-﻿using Mono.Cecil;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Mono.Cecil;
 
 namespace MiniCover.Extensions
 {
     public static class AssemblyDefinitionExtensions
     {
-        public static IEnumerable<MethodDefinition> GetAllMethods(this AssemblyDefinition assemblyDefinition)
+        public static IList<string> GetAllDocuments(this AssemblyDefinition assemblyDefinition)
         {
-            foreach (var type in assemblyDefinition.MainModule.GetTypes())
-            {
-                foreach (var method in type.GetAllMethods())
-                {
-                    yield return method;
-                }
-            }
+            return assemblyDefinition
+                .MainModule.GetTypes()
+                .SelectMany(t => t.GetAllDocuments())
+                .Distinct()
+                .ToArray();
+        }
+
+        public static bool IsExcludedFromCodeCoverage(this AssemblyDefinition assemblyDefinition)
+        {
+            return assemblyDefinition.HasExcludeFromCodeCoverageAttribute();
         }
     }
 }

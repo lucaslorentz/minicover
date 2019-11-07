@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiniCover.Model;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Linq;
+using MiniCover.Model;
 
 namespace MiniCover.Reports
 {
@@ -13,7 +13,8 @@ namespace MiniCover.Reports
     {
         private const string BgColorGreen = "background-color: #D2EACE;";
         private const string BgColorRed = "background-color: #EACECC;";
-        private const string BgColorBlue = "background-color: #EEF4ED;";
+        private const string BgColorNeutral = "background-color: #EEF4ED;";
+        private const string CursorPointer = "cursor: pointer;";
         private readonly string _output;
         private readonly StringBuilder _htmlReport;
 
@@ -42,7 +43,7 @@ namespace MiniCover.Reports
             _htmlReport.AppendLine("</tr>");
         }
 
-        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, Hits hits)
+        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HitsInfo hitsInfo)
         {
             foreach (var kvFile in files)
             {
@@ -55,13 +56,18 @@ namespace MiniCover.Reports
                 using (var htmlWriter = (TextWriter)File.CreateText(fileName))
                 {
                     htmlWriter.WriteLine("<html>");
+                    htmlWriter.WriteLine("<style>");
+                    htmlWriter.WriteLine("details summary::-webkit-details-marker {");
+                    htmlWriter.WriteLine("display: none;");
+                    htmlWriter.WriteLine("}");
+                    htmlWriter.WriteLine("</style>");
                     htmlWriter.WriteLine("<body style=\"font-family: monospace;\">");
 
                     var uncoveredLineNumbers = new HashSet<int>();
                     var coveredLineNumbers = new HashSet<int>();
                     foreach (var i in kvFile.Value.Instructions)
                     {
-                        if (hits.IsInstructionHit(i.Id))
+                        if (hitsInfo.IsInstructionHit(i.Id))
                         {
                             coveredLineNumbers.UnionWith(i.GetLines());
                         }
@@ -79,6 +85,7 @@ namespace MiniCover.Reports
                         if (coveredLineNumbers.Contains(l))
                         {
                             style += BgColorGreen;
+                            style += CursorPointer;
                         }
                         else if (uncoveredLineNumbers.Contains(l))
                         {
@@ -86,31 +93,47 @@ namespace MiniCover.Reports
                         }
                         else
                         {
-                            style += BgColorBlue;
+                            style += BgColorNeutral;
                         }
 
-                        var instructions = kvFile.Value.Instructions.Where(i => i.GetLines().Contains(l)).ToArray();
+                        var instructions = kvFile.Value.Instructions
+                            .Where(i => i.GetLines().Contains(l))
+                            .ToArray();
 
-                        var counter = instructions.Sum(a => hits.GetInstructionHitCount(a.Id));
+                        var counter = instructions.Sum(a => hitsInfo.GetInstructionHitCount(a.Id));
 
-                        var testMethods = instructions
-                            .SelectMany(i => hits.GetInstructionTestMethods(i.Id))
+                        var codeContent = !string.IsNullOrEmpty(line)
+                            ? WebUtility.HtmlEncode(line)
+                            : "&nbsp;";
+
+                        var contexts = instructions
+                            .SelectMany(i => hitsInfo.GetInstructionHitContexts(i.Id))
                             .Distinct()
                             .ToArray();
 
-                        var testNames = string.Join(", ", testMethods.Select(m => $"{m.ClassName}.{m.MethodName} ({m.Counter})"));
+                        var hitCountHtml = coveredLineNumbers.Contains(l) || uncoveredLineNumbers.Contains(l)
+                            ? $"<span style=\"display: inline-block; width: 30px; font-size: 10px;\">{counter}x</span>"
+                            : "<span style=\"display: inline-block; width: 30px; font-size: 10px;\"></span>";
 
-                        var testNamesIcon = testMethods.Length > 0
-                            ? $"<span style=\"cursor: pointer; margin-right: 5px;\" title=\"Covered by tests: {testNames} for {counter}\">&#9432;</span>"
-                            : $"<span style=\"margin-right: 5px;\">&nbsp;</span>";
-
-                        if (!string.IsNullOrEmpty(line))
+                        if (coveredLineNumbers.Contains(l))
                         {
-                            htmlWriter.WriteLine($"<div style=\"{style}\" title=\"{testNames}\">{testNamesIcon}{WebUtility.HtmlEncode(line)}</div>");
+                            htmlWriter.WriteLine($"<details>");
+                            htmlWriter.WriteLine($"<summary style=\"{style}\">{hitCountHtml}{codeContent}</summary>");
+
+                            htmlWriter.WriteLine("<ul>");
+                            foreach (var context in contexts)
+                            {
+                                var count = instructions.Sum(i => context.GetHitCount(i.Id));
+                                var description = $"{context.ClassName}.{context.MethodName}";
+                                htmlWriter.WriteLine($"<li>{WebUtility.HtmlEncode(description)}: {count}x</li>");
+                            }
+                            htmlWriter.WriteLine("</ul>");
+
+                            htmlWriter.WriteLine($"</details>");
                         }
                         else
                         {
-                            htmlWriter.WriteLine($"<div style=\"{style}\" title=\"{testNames}\">{testNamesIcon}&nbsp;</div>");
+                            htmlWriter.WriteLine($"<div style=\"{style}\">{hitCountHtml}{codeContent}</div>");
                         }
                     }
 

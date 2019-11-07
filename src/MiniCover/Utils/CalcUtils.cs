@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.Linq;
 using MiniCover.Model;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace MiniCover.Utils
 {
@@ -9,7 +7,7 @@ namespace MiniCover.Utils
     {
         public static int IsHigherThanThreshold(InstrumentationResult result, float threshold) {
             
-            var hits = Hits.TryReadFromFile(result.HitsFile);
+            var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
             var files = result.GetSourceFiles();
             
             var totalLines = 0;

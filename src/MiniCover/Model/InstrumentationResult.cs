@@ -10,7 +10,7 @@ namespace MiniCover.Model
         public string SourcePath { get; set; }
 
         [JsonProperty(Order = -2)]
-        public string HitsFile { get; set; }
+        public string HitsPath { get; set; }
 
         public HashSet<string> ExtraAssemblies = new HashSet<string>();
 

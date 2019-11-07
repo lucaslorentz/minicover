@@ -1,26 +1,26 @@
-﻿using Microsoft.Extensions.DependencyModel;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.DependencyModel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Utils
 {
     public class DepsJsonUtils
     {
-        public static void PatchDepsJson(string depsJsonFile, string hitServicesVersion)
+        public static void PatchDepsJson(FileInfo depsJsonFile, string hitServicesVersion)
         {
-            var content = File.ReadAllText(depsJsonFile);
+            var content = File.ReadAllText(depsJsonFile.FullName);
             var newContent = PatchDepsJsonContent(content, hitServicesVersion);
-            File.WriteAllText(depsJsonFile, newContent);
+            File.WriteAllText(depsJsonFile.FullName, newContent);
         }
 
-        public static void UnpatchDepsJson(string depsJsonFile)
+        public static void UnpatchDepsJson(FileInfo depsJsonFile)
         {
-            var content = File.ReadAllText(depsJsonFile);
+            var content = File.ReadAllText(depsJsonFile.FullName);
             var newContent = UnpatchDepsJsonContent(content);
-            File.WriteAllText(depsJsonFile, newContent);
+            File.WriteAllText(depsJsonFile.FullName, newContent);
         }
 
         public static string PatchDepsJsonContent(string content, string hitServicesVersion)
@@ -89,14 +89,14 @@ namespace MiniCover.Utils
             return JsonConvert.SerializeObject(json, Formatting.Indented);
         }
 
-        public static DependencyContext LoadDependencyContext(string assemblyDirectory)
+        public static DependencyContext LoadDependencyContext(DirectoryInfo assemblyDirectory)
         {
-            var depsJsonPath = Directory.GetFiles(assemblyDirectory, "*.deps.json", SearchOption.TopDirectoryOnly)
+            var depsJsonPath = assemblyDirectory.GetFiles("*.deps.json", SearchOption.TopDirectoryOnly)
                 .FirstOrDefault();
 
             if (depsJsonPath != null)
             {
-                using (var depsJsonStream = File.OpenRead(depsJsonPath))
+                using (var depsJsonStream = depsJsonPath.OpenRead())
                 {
                     using (var reader = new DependencyContextJsonReader())
                     {

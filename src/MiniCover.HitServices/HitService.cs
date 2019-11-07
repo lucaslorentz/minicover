@@ -1,73 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 
 namespace MiniCover.HitServices
 {
     public static class HitService
     {
-        public static MethodContext EnterMethod(string fileName)
+        public static MethodContext EnterMethod(
+            string hitsPath,
+            string assemblyName,
+            string className,
+            string methodName)
         {
-            return new MethodContext(fileName);
+            return new MethodContext(hitsPath, assemblyName, className, methodName);
         }
 
-        public class MethodContext
+        public class MethodContext : IDisposable
         {
-            private readonly string filePath;
-            private static readonly AsyncLocal<HitTestMethod> TestMethodCache = new AsyncLocal<HitTestMethod>();
-            private static Dictionary<string, Stream> filesStream = new Dictionary<string, Stream>();
+            private readonly string _hitsPath;
+            private readonly HitContext _hitContext;
+            private readonly bool _saveHitContext;
 
-            private readonly HitTestMethod testMethod;
-            private readonly bool clearTestMethodCache;
-
-            public MethodContext(string filePath)
+            public MethodContext(
+                string hitsPath,
+                string assemblyName,
+                string className,
+                string methodName)
             {
-                this.filePath = filePath;
-                if (TestMethodCache.Value == null)
-                {
-                    var currentUri = new Uri(Directory.GetCurrentDirectory());
-                    TestMethodCache.Value = HitTestMethod.From(TestMethodUtils.GetTestMethod(), currentUri);
-                    clearTestMethodCache = true;
-                }
+                _hitsPath = hitsPath;
 
-                testMethod = TestMethodCache.Value;
+                if (HitContext.Current == null)
+                {
+                    _hitContext = new HitContext(assemblyName, className, methodName);
+                    HitContext.Current = _hitContext;
+                    _saveHitContext = true;
+                }
+                else
+                {
+                    _hitContext = HitContext.Current;
+                }
             }
 
             public void HitInstruction(int id)
             {
-                testMethod.HasHit(id);
-
+                _hitContext.RecordHit(id);
             }
 
-            public void Exit()
+            public void Dispose()
             {
-                if (clearTestMethodCache)
+                if (_saveHitContext)
                 {
-                    Save();
-                    TestMethodCache.Value = null;
+                    Directory.CreateDirectory(_hitsPath);
+                    var filePath = Path.Combine(_hitsPath, $"{Guid.NewGuid()}.hits");
+                    using (var fileStream = File.Open(filePath, FileMode.CreateNew))
+                    {
+                        _hitContext.Serialize(fileStream);
+                        fileStream.Flush();
+                    }
+                    HitContext.Current = null;
                 }
-            }
-
-            private void Save()
-            {
-                var fileStream = GetFileStream();
-                lock (fileStream)
-                {
-                    testMethod.Serialize(fileStream);
-                    fileStream.Flush();
-                }
-            }
-
-            private Stream GetFileStream()
-            {
-                lock (filesStream)
-                {
-                    if (!filesStream.ContainsKey(filePath))
-                        filesStream[filePath] = File.Open(this.filePath, FileMode.Append, FileAccess.Write, FileShare.None);
-                }
-
-                return filesStream[filePath];
             }
         }
     }

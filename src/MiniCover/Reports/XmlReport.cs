@@ -8,9 +8,9 @@ namespace MiniCover.Reports
 {
     public static class XmlReport
     {
-        public static void Execute(InstrumentationResult result, string output, float threshold)
+        public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
         {
-            var hits = Hits.TryReadFromFile(result.HitsFile);
+            var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
             var data = new XProcessingInstruction("xml-stylesheet", "type='text/xsl' href='coverage.xsl'");
 
@@ -37,16 +37,16 @@ namespace MiniCover.Reports
                 var methods = assembly.SourceFiles.Select(file =>
                 {
                     return file.Value.Instructions
-                        .GroupBy(instruction => new { instruction.Class, instruction.Method, instruction.MethodFullName })
+                        .GroupBy(instruction => instruction.Method)
                         .Select(instruction =>
                     {
                         var method = new XElement(
                             XName.Get("method"),
-                            new XAttribute(XName.Get("name"), instruction.Key.Method),
+                            new XAttribute(XName.Get("name"), instruction.Key.Name),
                             new XAttribute(XName.Get("class"), instruction.Key.Class),
                             new XAttribute(XName.Get("excluded"), "false"),
                             new XAttribute(XName.Get("instrumented"), "true"),
-                            new XAttribute(XName.Get("fullname"), instruction.Key.MethodFullName)
+                            new XAttribute(XName.Get("fullname"), instruction.Key.FullName)
                         );
 
                         var methodPoints = instruction.Select(methodPoint =>
@@ -82,7 +82,8 @@ namespace MiniCover.Reports
 
             document.Add(coverageElement);
 
-            File.WriteAllText(output, document.ToString());
+            output.Directory.Create();
+            File.WriteAllText(output.FullName, document.ToString());
         }
     }
 }

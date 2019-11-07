@@ -1,6 +1,6 @@
-﻿using MiniCover.Model;
+﻿using System.IO;
+using MiniCover.Model;
 using MiniCover.Utils;
-using System.IO;
 
 namespace MiniCover.Instrumentation
 {
@@ -24,8 +24,8 @@ namespace MiniCover.Instrumentation
                         File.Delete(assemblyLocation.BackupPdbFile);
                     }
 
-                    var assemblyDirectory = Path.GetDirectoryName(assemblyLocation.File);
-                    foreach (var depsJsonFile in Directory.GetFiles(assemblyDirectory, "*.deps.json"))
+                    var assemblyDirectory = new FileInfo(assemblyLocation.File).Directory;
+                    foreach (var depsJsonFile in assemblyDirectory.GetFiles("*.deps.json"))
                     {
                         DepsJsonUtils.UnpatchDepsJson(depsJsonFile);
                     }

@@ -10,9 +10,9 @@ namespace MiniCover.Reports.Clover
 {
     public static class CloverReport
     {
-        public static void Execute(InstrumentationResult result, string output, float threshold)
+        public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
         {
-            var hits = Hits.TryReadFromFile(result.HitsFile);
+            var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
             var document = new XDocument(
                 new XDeclaration("1.0", "utf-8", null),
@@ -24,21 +24,16 @@ namespace MiniCover.Reports.Clover
                 Indent = true
             };
 
-            var path = Path.GetDirectoryName(output);
+            output.Directory.Create();
 
-            if(!string.IsNullOrEmpty(path))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(output));
-            }
-
-            using (StreamWriter sw = File.CreateText(output))
-            using (XmlWriter writer = XmlWriter.Create(sw, xmlWriterSettings))
+            using (var sw = output.CreateText())
+            using (var writer = XmlWriter.Create(sw, xmlWriterSettings))
             {
                 document.WriteTo(writer);
             }
         }
 
-        private static XElement CreateCoverageElement(InstrumentationResult result, Hits hits)
+        private static XElement CreateCoverageElement(InstrumentationResult result, HitsInfo hits)
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
@@ -50,7 +45,7 @@ namespace MiniCover.Reports.Clover
             );
         }
 
-        private static XElement CreateProjectElement(InstrumentationResult result, long timestamp, Hits hits)
+        private static XElement CreateProjectElement(InstrumentationResult result, long timestamp, HitsInfo hits)
         {
             return new XElement(
                 XName.Get("project"),
@@ -61,7 +56,7 @@ namespace MiniCover.Reports.Clover
             );
         }
 
-        private static IEnumerable<XElement> CreatePackagesElement(InstrumentationResult result, Hits hits)
+        private static IEnumerable<XElement> CreatePackagesElement(InstrumentationResult result, HitsInfo hits)
         {
             return result.Assemblies.Select(assembly => new XElement(
                 XName.Get("package"),
@@ -71,7 +66,7 @@ namespace MiniCover.Reports.Clover
             ));
         }
 
-        private static IEnumerable<XElement> CreateFilesElement(InstrumentedAssembly assembly, Hits hits)
+        private static IEnumerable<XElement> CreateFilesElement(InstrumentedAssembly assembly, HitsInfo hits)
         {
             return assembly.SourceFiles.Select(file => new XElement(
                 XName.Get("file"),
@@ -83,10 +78,10 @@ namespace MiniCover.Reports.Clover
             ));
         }
 
-        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedInstruction> instructions, Hits hits)
+        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hits)
         {
             return instructions
-                .GroupBy(instruction => instruction.Class)
+                .GroupBy(instruction => instruction.Method.Class)
                 .Select(classes => new XElement(
                     XName.Get("class"),
                     new XAttribute(XName.Get("name"), classes.Key),
@@ -94,7 +89,7 @@ namespace MiniCover.Reports.Clover
                 ));
         }
 
-        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, Hits hits)
+        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hits)
         {
             return instructions
                 .SelectMany(t => t.GetLines(), (i, l) => new { instructionId = i.Id, line = l })
@@ -120,20 +115,20 @@ namespace MiniCover.Reports.Clover
                 new XAttribute(XName.Get("coveredelements"), counter.CoveredElements)
             );
 
-            if(counter.Lines > 0)
+            if (counter.Lines > 0)
             {
                 element.Add(new XAttribute(XName.Get("loc"), counter.Lines));
                 element.Add(new XAttribute(XName.Get("ncloc"), counter.Lines));
             }
-            if(counter.Classes > 0)
+            if (counter.Classes > 0)
             {
                 element.Add(new XAttribute(XName.Get("classes"), counter.Classes));
             }
-            if(counter.Files > 0)
+            if (counter.Files > 0)
             {
                 element.Add(new XAttribute(XName.Get("files"), counter.Files));
             }
-            if(counter.Packages > 0)
+            if (counter.Packages > 0)
             {
                 element.Add(new XAttribute(XName.Get("packages"), counter.Packages));
             }
@@ -141,7 +136,7 @@ namespace MiniCover.Reports.Clover
             return element;
         }
 
-        private static CloverCounter CountProjectMetrics(InstrumentationResult result, Hits hits)
+        private static CloverCounter CountProjectMetrics(InstrumentationResult result, HitsInfo hits)
         {
             return result.Assemblies
                 .Select(t => CountPackageMetrics(t, hits))
@@ -150,10 +145,10 @@ namespace MiniCover.Reports.Clover
                     counter.Add(next);
                     counter.Packages += 1;
                     return counter;
-                });;
+                }); ;
         }
 
-        private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, Hits hits)
+        private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, HitsInfo hits)
         {
             return assembly.SourceFiles
                 .Select(t => CountFileMetrics(t.Value, hits))
@@ -165,15 +160,15 @@ namespace MiniCover.Reports.Clover
                 });
         }
 
-        private static CloverCounter CountFileMetrics(SourceFile file, Hits hits)
+        private static CloverCounter CountFileMetrics(SourceFile file, HitsInfo hits)
         {
             var counter = CountMetrics(file.Instructions, hits);
             counter.Lines = file.Instructions.Max(instruction => instruction.EndLine);
-            counter.Classes = file.Instructions.GroupBy(t => t.Class).Count();
+            counter.Classes = file.Instructions.GroupBy(t => t.Method.Class).Count();
             return counter;
         }
 
-        private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, Hits hits)
+        private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hits)
         {
             var localInstructions = instructions.ToArray();
             var coveredInstructions = localInstructions
@@ -184,10 +179,10 @@ namespace MiniCover.Reports.Clover
                 Statements = localInstructions.Length,
                 CoveredStatements = coveredInstructions.Length,
                 Methods = localInstructions
-                    .GroupBy(instruction => instruction.MethodFullName)
+                    .GroupBy(instruction => instruction.Method.FullName)
                     .Count(),
                 CoveredMethods = coveredInstructions
-                    .GroupBy(instruction => instruction.MethodFullName)
+                    .GroupBy(instruction => instruction.Method.FullName)
                     .Count()
             };
         }

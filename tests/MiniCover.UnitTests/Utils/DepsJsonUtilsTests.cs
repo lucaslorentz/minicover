@@ -1,5 +1,5 @@
-﻿using MiniCover.Utils;
-using Shouldly;
+﻿using FluentAssertions;
+using MiniCover.Utils;
 using Xunit;
 
 namespace MiniCover.UnitTests.Utils
@@ -12,7 +12,7 @@ namespace MiniCover.UnitTests.Utils
             var originalContent = GetOriginalDepsJsonContent();
             var expectedResult = GetPatchedDepsJsonContent();
             var result = DepsJsonUtils.PatchDepsJsonContent(originalContent, "1.0.0");
-            NormalizeLineEnding(result).ShouldBe(NormalizeLineEnding(expectedResult));
+            NormalizeLineEnding(result).Should().Be(NormalizeLineEnding(expectedResult));
         }
 
         [Fact]
@@ -21,21 +21,21 @@ namespace MiniCover.UnitTests.Utils
             var patchedContent = GetPatchedDepsJsonContent();
             var expectedResult = GetOriginalDepsJsonContent();
             var result = DepsJsonUtils.UnpatchDepsJsonContent(patchedContent);
-            NormalizeLineEnding(result).ShouldBe(NormalizeLineEnding(expectedResult));
+            NormalizeLineEnding(result).Should().Be(NormalizeLineEnding(expectedResult));
         }
 
         [Fact]
         public void GetAdditionalPaths_EmptyRuntimeConfigContext_NoError()
         {
             var result = DepsJsonUtils.GetAdditionalPaths(string.Empty);
-            result.ShouldBeEmpty();
+            result.Should().BeEmpty();
         }
 
         [Fact]
         public void GetAdditionalPaths_EmptyObject_NoError()
         {
             var result = DepsJsonUtils.GetAdditionalPaths(@"{}");
-            result.ShouldBeEmpty();
+            result.Should().BeEmpty();
         }
 
         [Fact]
@@ -52,10 +52,10 @@ namespace MiniCover.UnitTests.Utils
 }";
 
             var result = DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent);
-            result.ShouldNotBeEmpty();
-            result.Count.ShouldBe(2);
-            result.ShouldContain("/api/.nuget/packages");
-            result.ShouldContain("/usr/share/dotnet/sdk/NuGetFallbackFolder");
+            result.Should().NotBeEmpty();
+            result.Count.Should().Be(2);
+            result.Should().Contain("/api/.nuget/packages");
+            result.Should().Contain("/usr/share/dotnet/sdk/NuGetFallbackFolder");
         }
 
         public string NormalizeLineEnding(string text)

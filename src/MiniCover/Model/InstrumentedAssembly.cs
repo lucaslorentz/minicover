@@ -14,14 +14,24 @@ namespace MiniCover.Model
         [JsonProperty(Order = -2)]
         public string Name { get; }
 
-        public SortedDictionary<string, SourceFile> SourceFiles = new SortedDictionary<string, SourceFile>();
+        public HashSet<InstrumentedMethod> Methods = new HashSet<InstrumentedMethod>();
         public List<AssemblyLocation> Locations = new List<AssemblyLocation>();
+        public SortedDictionary<string, SourceFile> SourceFiles = new SortedDictionary<string, SourceFile>();
 
         [JsonIgnore]
         public string TempAssemblyFile { get; set; }
 
         [JsonIgnore]
         public string TempPdbFile { get; set; }
+
+        public InstrumentedMethod AddMethod(InstrumentedMethod method)
+        {
+            if (Methods.TryGetValue(method, out var existingValue))
+                return existingValue;
+
+            Methods.Add(method);
+            return method;
+        }
 
         public void AddInstruction(string file, InstrumentedInstruction instruction)
         {
