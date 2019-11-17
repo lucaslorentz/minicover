@@ -15,11 +15,23 @@ or
 dotnet tool install minicover
 ```
 
-## Nuget packages
-Continuous integration nuget packages are pushed to:
-https://www.myget.org/feed/minicover/package/nuget/MiniCover
+## Supported .NET core sdks
+- 2.1 (Global tool)
+- 2.2 (Global tool)
+- 3.0 (Global tool or local tool)
 
-Pre-releases and releases nuget packages are pushed to:
+## Command line instructions
+For global tools execute:
+```
+minicover --help
+```
+For local tools execute:
+```
+dotnet minicover --help
+```
+
+## Nuget packages
+Nuget packages are available at:
 https://www.nuget.org/packages/MiniCover
 
 ## Build script example with MiniCover
@@ -27,8 +39,8 @@ https://www.nuget.org/packages/MiniCover
 dotnet restore
 dotnet build
 
-# Instrument assemblies inside 'test' folder to detect hits for source files inside 'src' folder
-dotnet minicover instrument --assemblies test/**/bin/**/*.dll --sources src/**/*.cs 
+# Instrument assemblies 'tests/**/bin/**.dll' to track hits for source files 'src/**/*.cs' and recognize test methods from 'tests/**/*.cs'
+dotnet minicover instrument
 
 # Reset hits count in case minicover was run for this project
 dotnet minicover reset
