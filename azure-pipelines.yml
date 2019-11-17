@@ -51,7 +51,7 @@ jobs:
     - Build_MacOS
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: 'ubuntu-latest'
   steps:
   - bash: |
       export Version=${TagName:1}
