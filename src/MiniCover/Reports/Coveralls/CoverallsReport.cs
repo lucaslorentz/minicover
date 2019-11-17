@@ -139,7 +139,9 @@ namespace MiniCover.Reports.Coveralls
                 coverallsJob.SourceFiles.Add(coverallsSourceFileModel);
             }
 
-            var coverallsJson = JsonConvert.SerializeObject(coverallsJob);
+            var coverallsJson = JsonConvert.SerializeObject(coverallsJob, Formatting.None, new JsonSerializerSettings {
+                NullValueHandling = NullValueHandling.Ignore
+            });
 
             if (!string.IsNullOrWhiteSpace(_output))
             {

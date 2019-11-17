@@ -72,7 +72,7 @@ namespace MiniCover.Instrumentation
             }, true);
 
             ilProcessor.InsertBefore(ilProcessor.Body.Instructions[0], new[] {
-                ilProcessor.Create(OpCodes.Ldstr, context.HitsPath.FullName),
+                ilProcessor.Create(OpCodes.Ldstr, context.HitsPath),
                 ilProcessor.Create(OpCodes.Ldstr, originalMethod.DeclaringType.Module.Assembly.Name.Name),
                 ilProcessor.Create(OpCodes.Ldstr, originalMethod.DeclaringType.FullName),
                 ilProcessor.Create(OpCodes.Ldstr, originalMethod.Name),

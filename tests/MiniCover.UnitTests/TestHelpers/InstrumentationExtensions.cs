@@ -13,7 +13,7 @@ using Mono.Cecil;
 
 namespace MiniCover.UnitTests.TestHelpers
 {
-    public static class Extensions
+    public static class InstrumentationExtensions
     {
         public static AssemblyDefinition ToDefinition(this Assembly assembly)
         {
@@ -85,7 +85,7 @@ namespace MiniCover.UnitTests.TestHelpers
         {
             return new InstrumentationContext
             {
-                HitsPath = new DirectoryInfo("/tmp"),
+                HitsPath = "/tmp",
                 Workdir = new DirectoryInfo("/tmp"),
                 Sources = documents.Select(d => new FileInfo(d)).ToArray(),
                 Tests = new FileInfo[0]

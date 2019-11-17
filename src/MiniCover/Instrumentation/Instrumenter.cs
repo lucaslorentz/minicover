@@ -32,7 +32,7 @@ namespace MiniCover.Instrumentation
             var result = new InstrumentationResult
             {
                 SourcePath = context.Workdir.FullName,
-                HitsPath = context.HitsPath.FullName
+                HitsPath = context.HitsPath
             };
 
             var assemblyGroups = context.Assemblies

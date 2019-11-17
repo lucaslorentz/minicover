@@ -21,44 +21,15 @@ echo "# Start Report"
 ./minicover.sh report --threshold 0
 echo "# End Report"
 
-if [ -n "${TRAVIS_JOB_ID}" ]; then
+if [ -n "${BUILD_BUILDID}" ] && [ -n "${COVERALLS_REPO_TOKEN}" ]; then
 	echo "# Start Coveralls Report"
 	./minicover.sh coverallsreport \
-		\
-		--output "coveralls.json" \
-		--service-name "travis-ci" \
-		--service-job-id "$TRAVIS_JOB_ID"
+		--service-name "azure-devops" \
+		--repo-token "$COVERALLS_REPO_TOKEN" \
+		--commit "$BUILD_SOURCEVERSION" \
+		--commit-message "$BUILD_SOURCEVERSIONMESSAGE" \
+		--branch "$BUILD_SOURCEBRANCHNAME" \
+		--remote "origin" \
+		--remote-url "https://github.com/lucaslorentz/minicover.git"
 	echo "# End Coveralls Report"
 fi
-
-echo "# Testing sample project"
-rm -rd ~/.nuget/packages/minicover/1.0.0 || true
-dotnet pack -c Release --output $PWD/sample/nupkgs
-cd sample
-rm -rf ./coverage
-dotnet build
-dotnet tool restore -v q
-dotnet minicover reset
-echo "# Start Instrument"
-dotnet minicover instrument
-echo "# End Instrument"
-dotnet test --no-build
-echo "# Start Uninstrument"
-dotnet minicover uninstrument
-echo "# End Uninstrument"
-echo "# Start Report"
-dotnet minicover report --threshold 60
-echo "# End Report"
-echo "# Start HtmlReport"
-dotnet minicover htmlreport --threshold 60
-echo "# End HtmlReport"
-echo "# Start XmlReport"
-dotnet minicover xmlreport --threshold 60
-echo "# End XmlReport"
-echo "# Start OpenCoverReport"
-dotnet minicover opencoverreport --threshold 60
-echo "# End OpenCoverReport"
-echo "# Start CloverReport"
-dotnet minicover cloverreport --threshold 60
-echo "# End CloverReport"
-cd ..

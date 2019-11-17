@@ -39,14 +39,14 @@ namespace MiniCover.UnitTests.Instrumentation
                 typeDefinition = methodDefinition?.DeclaringType;
                 instrumentedAssembly = methodDefinition.Instrument();
                 var il = new ILFormatter(false).FormatMethodBody(methodDefinition);
-                il.Should().Be(ExpectedIL);
+                il.NormalizeLineEndings().Should().Be(ExpectedIL.NormalizeLineEndings());
             }
             else
             {
                 typeDefinition = _typeToInstrument.ToDefinition();
                 instrumentedAssembly = typeDefinition.Instrument();
                 var il = new ILFormatter(false).FormatType(typeDefinition);
-                il.Should().Be(ExpectedIL);
+                il.NormalizeLineEndings().Should().Be(ExpectedIL.NormalizeLineEndings());
             }
 
             var instrumentedInstructions = instrumentedAssembly.SourceFiles

@@ -89,7 +89,7 @@ namespace MiniCover.Commands
             var instrumentationContext = new InstrumentationContext
             {
                 Assemblies = assemblies,
-                HitsPath = _hitsDirectoryOption.Value,
+                HitsPath = _hitsDirectoryOption.Value.FullName,
                 Sources = sourceFiles,
                 Tests = testFiles,
                 Workdir = _workingDirectoryOption.Value.AddEndingDirectorySeparator()

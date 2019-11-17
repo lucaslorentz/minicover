@@ -9,7 +9,7 @@ namespace MiniCover.Instrumentation
         public virtual IList<FileInfo> Assemblies { get; set; }
         public virtual IList<FileInfo> Sources { get; set; }
         public virtual IList<FileInfo> Tests { get; set; }
-        public virtual DirectoryInfo HitsPath { get; set; }
+        public virtual string HitsPath { get; set; }
         public virtual DirectoryInfo Workdir { get; set; }
         public virtual int InstructionId { get; set; }
 

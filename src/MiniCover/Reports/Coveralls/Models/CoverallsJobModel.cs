@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace MiniCover.Reports.Coveralls.Models
 {
-    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     class CoverallsJobModel
     {
         [JsonProperty("service_job_id")]

@@ -8,16 +8,38 @@ jobs:
 
 - job: Build_Windows
   pool:
-    vmImage: 'win1803'
+    vmImage: 'windows-latest'
   steps:
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
+  - bash: |
+      ./build.sh
+    displayName: 'Build'
+    env:
+      COVERALLS_REPO_TOKEN: '$(COVERALLS_REPO_TOKEN)'
+  - bash: |
+      ./build-sample.sh
+    displayName: 'Build Sample'
+
+- job: Build_Linux
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
   - bash: |
       ./build.sh
     displayName: 'Build'
 
-- job: Build_Linux
+- job: Build_MacOS
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: 'macOS-latest'
   steps:
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
   - bash: |
       ./build.sh
     displayName: 'Build'
@@ -26,6 +48,7 @@ jobs:
   dependsOn:
     - Build_Windows
     - Build_Linux
+    - Build_MacOS
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
   pool:
     vmImage: 'Ubuntu 16.04'

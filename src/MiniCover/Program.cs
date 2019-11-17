@@ -56,9 +56,14 @@ namespace MiniCover
             {
                 return commandLineApplication.Execute(args);
             }
-            catch (ValidationException validationException)
+            catch (CommandParsingException ex)
             {
-                output.WriteLine(validationException.Message, LogLevel.Error);
+                output.WriteLine(ex.Message, LogLevel.Error);
+                return 1;
+            }
+            catch (ValidationException ex)
+            {
+                output.WriteLine(ex.Message, LogLevel.Error);
                 return 1;
             }
         }
