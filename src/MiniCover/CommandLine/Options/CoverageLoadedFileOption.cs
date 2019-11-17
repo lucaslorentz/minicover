@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using MiniCover.Exceptions;
 using MiniCover.Model;
 using Newtonsoft.Json;
 
@@ -13,7 +14,7 @@ namespace MiniCover.CommandLine.Options
             var fileInfo = base.PrepareValue(value);
 
             if (!fileInfo.Exists)
-                throw new FileNotFoundException($"Coverage file does not exist '{fileInfo.FullName}'");
+                throw new ValidationException($"Coverage file does not exist '{fileInfo.FullName}'");
 
             var coverageFileString = File.ReadAllText(fileInfo.FullName);
             Result = JsonConvert.DeserializeObject<InstrumentationResult>(coverageFileString);
