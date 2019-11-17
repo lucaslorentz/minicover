@@ -1,0 +1,41 @@
+trigger:
+  branches:
+    include:
+      - '*'
+      - refs/tags/*
+
+jobs:
+
+- job: Build_Windows
+  pool:
+    vmImage: 'win1803'
+  steps:
+  - bash: |
+      ./build.sh
+    displayName: 'Build'
+
+- job: Build_Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - bash: |
+      ./build.sh
+    displayName: 'Build'
+
+- job: Push_Package
+  dependsOn:
+    - Build_Windows
+    - Build_Linux
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - bash: |
+      export Version=${TagName:1}
+      dotnet pack -c Release
+      dotnet nuget push nupkg/*.nupkg -k $NUGET_KEY -s https://api.nuget.org/v3/index.json
+    env:
+      TagName: '$(Build.SourceBranchName)'
+      NUGET_KEY: '$(NUGET_KEY)'
+    displayName: 'Release'
+    

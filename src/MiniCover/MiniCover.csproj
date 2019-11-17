@@ -5,6 +5,7 @@
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>minicover</ToolCommandName>
+    <PackageOutputPath>../../nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
