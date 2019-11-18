@@ -19,11 +19,6 @@ namespace MiniCover.Instrumentation
         private readonly ILogger<AssemblyInstrumenter> _logger;
         private readonly ILogger<CustomAssemblyResolver> _assemblyResolverLogger;
 
-        private readonly string[] _loadedAssemblyFiles = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => !a.IsDynamic)
-            .Select(a => a.Location)
-            .ToArray();
-
         public AssemblyInstrumenter(
             TypeInstrumenter typeInstrumenter,
             ILogger<AssemblyInstrumenter> logger,
@@ -48,12 +43,6 @@ namespace MiniCover.Instrumentation
                     return null;
                 }
 
-                if (_loadedAssemblyFiles.Contains(assemblyFile.FullName))
-                {
-                    _logger.LogInformation("Can't instrument loaded assembly");
-                    return null;
-                }
-
                 var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger);
 
                 _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
@@ -67,7 +56,23 @@ namespace MiniCover.Instrumentation
                     }
 
                     var assemblyDocuments = assemblyDefinition.GetAllDocuments();
-                    if (!assemblyDocuments.Any(d => context.IsSource(d) || context.IsTest(d)))
+
+                    var changedDocuments = assemblyDocuments.Where(d => d.FileHasChanged()).ToArray();
+                    if (changedDocuments.Any())
+                    {
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            var changedFiles = changedDocuments.Select(d => d.Url).Distinct().ToArray();
+                            _logger.LogDebug("Source files has changed: {changedFiles}", new object[] { changedFiles });
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Source files has changed");
+                        }
+                        return null;
+                    }
+
+                    if (!assemblyDocuments.Any(d => context.IsSource(d.Url) || context.IsTest(d.Url)))
                     {
                         _logger.LogInformation("No link to source files or test files");
                         return null;

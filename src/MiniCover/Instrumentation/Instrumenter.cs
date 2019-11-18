@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,11 @@ namespace MiniCover.Instrumentation
 
         private readonly ILogger<Instrumenter> _logger;
         private readonly AssemblyInstrumenter _assemblyInstrumenter;
+
+        private readonly string[] _loadedAssemblyFiles = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => !a.IsDynamic)
+            .Select(a => a.Location)
+            .ToArray();
 
         public Instrumenter(
             ILogger<Instrumenter> logger,
@@ -75,9 +81,15 @@ namespace MiniCover.Instrumentation
 
             if (instrumentedAssembly == null)
                 return;
-
+            
             foreach (var assemblyFile in groupFiles)
             {
+                if (_loadedAssemblyFiles.Contains(assemblyFile.FullName))
+                {
+                    _logger.LogInformation("Skipping loaded assembly {assemblyFile}", assemblyFile.FullName);
+                    continue;
+                }
+
                 var pdbFile = FileUtils.GetPdbFile(assemblyFile);
                 var assemblyBackupFile = FileUtils.GetBackupFile(assemblyFile);
                 var pdbBackupFile = FileUtils.GetBackupFile(pdbFile);
@@ -95,11 +107,8 @@ namespace MiniCover.Instrumentation
 
                 var hitServicesPath = Path.GetFileName(hitServicesAssembly.Location);
                 var newHitServicesPath = Path.Combine(assemblyDirectory.FullName, hitServicesPath);
-                if (!File.Exists(newHitServicesPath))
-                {
-                    File.Copy(hitServicesAssembly.Location, newHitServicesPath, true);
-                    result.AddExtraAssembly(newHitServicesPath);
-                }
+                File.Copy(hitServicesAssembly.Location, newHitServicesPath, true);
+                result.AddExtraAssembly(newHitServicesPath);
 
                 instrumentedAssembly.AddLocation(
                     assemblyFile.FullName,

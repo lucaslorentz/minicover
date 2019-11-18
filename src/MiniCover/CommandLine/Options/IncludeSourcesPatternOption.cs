@@ -4,9 +4,9 @@ namespace MiniCover.CommandLine.Options
 {
     class IncludeSourcesPatternOption : FilesPatternOption
     {
-        private const string _defaultValue = "src/**/*.cs";
+        private static readonly string[] _defaultValue = new string[] { "src/**/*.cs" };
         private const string _template = "--sources";
-        private static readonly string _description = $"Pattern to include source files [default: {_defaultValue}]";
+        private static readonly string _description = $"Pattern to include source files [default: {string.Join(" ", _defaultValue)}]";
 
         public IncludeSourcesPatternOption()
             : base(_template, _description)
@@ -15,7 +15,7 @@ namespace MiniCover.CommandLine.Options
 
         protected override IList<string> GetDefaultValue()
         {
-            return new[] { _defaultValue };
+            return _defaultValue;
         }
     }
 }

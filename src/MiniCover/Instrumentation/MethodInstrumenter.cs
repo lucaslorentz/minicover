@@ -108,14 +108,6 @@ namespace MiniCover.Instrumentation
 
             foreach (var sequencePoint in methodDefinition.DebugInformation.SequencePoints)
             {
-                var document = sequencePoint.Document;
-
-                if (document.FileHasChanged())
-                {
-                    _logger.LogInformation("Ignoring modified file {file}", document.Url);
-                    continue;
-                }
-
                 if (sequencePoint.IsHidden)
                     continue;
 

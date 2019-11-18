@@ -27,7 +27,7 @@ namespace MiniCover.Infrastructure.Console
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            return _output.MinimumLevel <= logLevel;
         }
 
         public void Log<TState>(

@@ -7,11 +7,12 @@ namespace MiniCover.Extensions
 {
     public static class TypeDefinitionExtensions
     {
-        public static IEnumerable<string> GetAllDocuments(this TypeDefinition typeDefinition)
+        public static IList<Document> GetAllDocuments(this TypeDefinition typeDefinition)
         {
             return typeDefinition.GetAllMethods()
                 .SelectMany(m => m.GetAllDocuments())
-                .Distinct();
+                .Distinct()
+                .ToArray();
         }
 
         public static IEnumerable<MethodDefinition> GetAllMethods(this TypeDefinition typeDefinition)

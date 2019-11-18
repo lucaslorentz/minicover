@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace MiniCover.Extensions
 {
     public static class MethodDefinitionExtensions
     {
-        public static IList<string> GetAllDocuments(this MethodDefinition methodDefinition)
+        public static IList<Document> GetAllDocuments(this MethodDefinition methodDefinition)
         {
             return methodDefinition.DebugInformation.SequencePoints
-                .Select(c => c.Document.Url)
+                .Select(c => c.Document)
                 .Distinct()
                 .ToArray();
         }

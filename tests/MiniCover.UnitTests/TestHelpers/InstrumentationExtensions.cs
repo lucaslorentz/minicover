@@ -37,8 +37,8 @@ namespace MiniCover.UnitTests.TestHelpers
 
         public static InstrumentedAssembly Instrument(this TypeDefinition typeDefinition)
         {
-            var documents = typeDefinition.GetAllDocuments();
-            var instrumentationContext = CreateInstrumentationContext(documents);
+            var documentsUrls = typeDefinition.GetAllDocuments().Select(d => d.Url).Distinct().ToArray();
+            var instrumentationContext = CreateInstrumentationContext(documentsUrls);
             var instrumentedAssembly = new InstrumentedAssembly(typeDefinition.Module.Assembly.Name.Name);
             var methodInstrumenter = CreateMethodInstrumenter();
             var typeInstrumenter = new TypeInstrumenter(methodInstrumenter);
@@ -48,8 +48,8 @@ namespace MiniCover.UnitTests.TestHelpers
 
         public static InstrumentedAssembly Instrument(this MethodDefinition methodDefinition)
         {
-            var documents = methodDefinition.GetAllDocuments();
-            var instrumentationContext = CreateInstrumentationContext(documents);
+            var documentsUrls = methodDefinition.GetAllDocuments().Select(d => d.Url).Distinct().ToArray();
+            var instrumentationContext = CreateInstrumentationContext(documentsUrls);
             var instrumentedAssembly = new InstrumentedAssembly(methodDefinition.Module.Assembly.Name.Name);
             var methodInstrumenter = CreateMethodInstrumenter();
             methodInstrumenter.InstrumentMethod(instrumentationContext, true, methodDefinition, instrumentedAssembly);

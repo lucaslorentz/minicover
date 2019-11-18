@@ -19,9 +19,12 @@ namespace MiniCover.Instrumentation
             TypeDefinition typeDefinition,
             InstrumentedAssembly instrumentedAssembly)
         {
-            var typeDocuments = typeDefinition.GetAllDocuments();
+            var typeDocumentsUrls = typeDefinition.GetAllDocuments()
+                .Select(d => d.Url)
+                .Distinct()
+                .ToArray();
 
-            if (!typeDocuments.Any(d => context.IsSource(d) || context.IsTest(d)))
+            if (!typeDocumentsUrls.Any(d => context.IsSource(d) || context.IsTest(d)))
             {
                 return;
             }
@@ -32,8 +35,8 @@ namespace MiniCover.Instrumentation
             {
                 var methodDocuments = methodDefinition.GetAllDocuments();
 
-                var isSource = methodDocuments.Any(d => context.IsSource(d));
-                var isTest = methodDocuments.Any(d => context.IsTest(d));
+                var isSource = methodDocuments.Any(d => context.IsSource(d.Url));
+                var isTest = methodDocuments.Any(d => context.IsTest(d.Url));
 
                 if (!isSource && !isTest)
                     continue;

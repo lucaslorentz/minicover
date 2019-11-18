@@ -4,8 +4,9 @@ namespace MiniCover.CommandLine.Options
 {
     class ExcludeTestsPatternOption : FilesPatternOption
     {
+        private static readonly string[] _defaultValue = new string[] { "**/bin/**/*.cs", "**/obj/**/*.cs" };
         private const string _template = "--exclude-tests";
-        private const string _description = "Pattern to exclude source files";
+        private static readonly string _description = $"Pattern to exclude source files [default: {string.Join(" ", _defaultValue)}]";
 
         public ExcludeTestsPatternOption() 
             : base(_template, _description)
@@ -14,7 +15,7 @@ namespace MiniCover.CommandLine.Options
 
         protected override IList<string> GetDefaultValue()
         {
-            return new string[0];
+            return _defaultValue;
         }
     }
 }

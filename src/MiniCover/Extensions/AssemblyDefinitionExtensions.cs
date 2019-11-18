@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace MiniCover.Extensions
 {
     public static class AssemblyDefinitionExtensions
     {
-        public static IList<string> GetAllDocuments(this AssemblyDefinition assemblyDefinition)
+        public static IList<Document> GetAllDocuments(this AssemblyDefinition assemblyDefinition)
         {
             return assemblyDefinition
                 .MainModule.GetTypes()
