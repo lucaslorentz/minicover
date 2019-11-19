@@ -57,7 +57,7 @@ dotnet minicover uninstrument
 
 Use this command to revert the instrumentation based on **coverage.json** file.
 
-**Make sure you call uninstrument before publishing or packing your assemblies.** You don't want to slow down your deployed application with coverage.
+**Make sure you call uninstrument before publishing or packing your application.**
 
 ### Reset
 ```
