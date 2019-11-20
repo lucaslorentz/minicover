@@ -93,7 +93,7 @@ The command exits with failure if the coverage doesn't meet a specific threshold
 
 Use `--help` for more information.
 
-## Build script example with MiniCover as global tool
+## Build script example
 ```shell
 dotnet restore
 dotnet build
