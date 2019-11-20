@@ -36,7 +36,7 @@ namespace MiniCover.Reports
         {
             var indexRelativeFileName = GetIndexRelativeHtmlFileName(kvFile.Key);
             _htmlReport.AppendLine("<tr>");
-            _htmlReport.AppendLine($"<td><a href=\"{indexRelativeFileName}\">{indexRelativeFileName}</a></td>");
+            _htmlReport.AppendLine($"<td><a href=\"{indexRelativeFileName}\">{kvFile.Key}</a></td>");
             _htmlReport.AppendLine($"<td>{lines}</td>");
             _htmlReport.AppendLine($"<td>{coveredLines}</td>");
             _htmlReport.AppendLine($"<td style=\"{GetBgColor(color)}\">{coveragePercentage:P}</td>");
