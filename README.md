@@ -23,11 +23,19 @@ dotnet tool install minicover
 ## Commands
 This is a simplified documentation of MiniCover commands and options.
 
-Use `--help` for more information.
+Use `--help` for more information:
+```
+minicover --help
+```
+
+**When installed as local tool, MiniCover commands must be prefixed with `dotnet`.** Example:
+```
+dotnet minicover --help
+```
 
 ### Instrument
 ```
-dotnet minicover instrument
+minicover instrument
 ```
 
 Use this command to instrument assemblies to record code coverage.
@@ -52,7 +60,7 @@ This command also generates a **coverage.json** file with information about the 
 
 ### Uninstrument
 ```
-dotnet minicover uninstrument
+minicover uninstrument
 ````
 
 Use this command to revert the instrumentation based on **coverage.json** file.
@@ -61,14 +69,14 @@ Use this command to revert the instrumentation based on **coverage.json** file.
 
 ### Reset
 ```
-dotnet minicover reset
+minicover reset
 ````
 
 Use this command to reset the recorded coverage so far.
 
 ### Report
 ```
-dotnet minicover report
+minicover report
 ````
 
 Use this command to print a coverage report in the console.
@@ -85,27 +93,27 @@ The command exits with failure if the coverage doesn't meet a specific threshold
 
 Use `--help` for more information.
 
-## Build script example with MiniCover
+## Build script example with MiniCover as global tool
 ```shell
 dotnet restore
 dotnet build
 
 # Instrument
-dotnet minicover instrument
+minicover instrument
 
 # Reset hits
-dotnet minicover reset
+minicover reset
 
 dotnet test --no-build
 
 # Uninstrument
-dotnet minicover uninstrument
+minicover uninstrument
 
 # Create html reports inside folder coverage-html
-dotnet minicover htmlreport --threshold 90
+minicover htmlreport --threshold 90
 
 # Console report
-dotnet minicover report --threshold 90
+minicover report --threshold 90
 ```
 
 ## Ignore coverage files
