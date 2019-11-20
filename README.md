@@ -11,11 +11,11 @@ Code Coverage Tool for .NET Core
 - 3.0 (Global tool or local tool)
 
 ## Installation
-MiniCover can be installed as a global or local .NET Tool.
+Global tool:
 ```
 dotnet tool install --global minicover
 ```
-or
+Local tool:
 ```
 dotnet tool install minicover
 ```
