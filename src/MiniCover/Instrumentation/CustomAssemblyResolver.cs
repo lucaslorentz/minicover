@@ -18,14 +18,15 @@ namespace MiniCover.Instrumentation
         {
             _logger = logger;
 
-            RemoveSearchDirectory(".");
-            RemoveSearchDirectory("bin");
+            foreach (var searchDirectory in GetSearchDirectories())
+                RemoveSearchDirectory(searchDirectory);
 
             AddSearchDirectory(assemblyDirectory.FullName);
 
             _dependencyContext = DepsJsonUtils.LoadDependencyContext(assemblyDirectory);
 
             var runtimeConfigPath = assemblyDirectory.GetFiles("*.runtimeconfig.dev.json", SearchOption.TopDirectoryOnly)
+                .Concat(assemblyDirectory.GetFiles("*.runtimeconfig.json", SearchOption.TopDirectoryOnly))
                 .FirstOrDefault();
 
             if (runtimeConfigPath != null)
@@ -52,17 +53,23 @@ namespace MiniCover.Instrumentation
         {
             if (_dependencyContext != null)
             {
-                var library = _dependencyContext.RuntimeLibraries.FirstOrDefault(c =>
-                {
-                    return c.Name == name.Name;
-                });
-
-                if (library != null)
+                foreach (var library in _dependencyContext.RuntimeLibraries)
                 {
                     foreach (var runtimeAssemblyGroup in library.RuntimeAssemblyGroups)
                     {
-                        foreach (var runtimeAssemblyPath in runtimeAssemblyGroup.AssetPaths)
+                        foreach (var runtimeFile in runtimeAssemblyGroup.RuntimeFiles)
                         {
+                            var runtimeAssemblyName = Path.GetFileNameWithoutExtension(runtimeFile.Path);
+
+                            if (!runtimeAssemblyName.Equals(name.Name, StringComparison.InvariantCultureIgnoreCase))
+                                continue;
+
+                            if (runtimeFile.AssemblyVersion != null
+                                && runtimeFile.AssemblyVersion != name.Version.ToString()
+                                && runtimeFile.FileVersion != null
+                                && runtimeFile.FileVersion != name.Version.ToString())
+                                continue;
+
                             foreach (var directory in directories)
                             {
                                 var file = directory;
@@ -70,7 +77,7 @@ namespace MiniCover.Instrumentation
                                 if (!string.IsNullOrEmpty(library.Path))
                                     file = Path.Combine(file, Path.Combine(library.Path.Split("/")));
 
-                                file = Path.Combine(file, Path.Combine(runtimeAssemblyPath.Split("/")));
+                                file = Path.Combine(file, Path.Combine(runtimeFile.Path.Split("/")));
 
                                 _logger.LogTrace("Trying to load file {file}", file);
 
@@ -90,14 +97,10 @@ namespace MiniCover.Instrumentation
                         }
                     }
                 }
-                else
-                {
-                    _logger.LogWarning("DependencyContext.RuntimeLibraries. No information about assebmly {name}", name.Name);
-                }
             }
             else
             {
-                _logger.LogWarning("Dependency context is null");
+                _logger.LogTrace("Dependency context is null");
             }
 
             _logger.LogTrace("Fallback to DefaultAssemblyResolver");
