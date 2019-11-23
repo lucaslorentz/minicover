@@ -20,6 +20,9 @@
   <ItemGroup>
     <Folder Include="TestHelpers\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Reports\Sample\SomeClass.cs" />
+  </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);Resources\**\*</DefaultItemExcludes>
   </PropertyGroup>

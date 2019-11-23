@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MiniCover.Model
@@ -14,5 +15,10 @@ namespace MiniCover.Model
         }
 
         public List<InstrumentedInstruction> Instructions = new List<InstrumentedInstruction>();
+
+        internal object SelectMany(Func<object, object> p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

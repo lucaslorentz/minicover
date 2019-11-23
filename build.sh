@@ -8,14 +8,20 @@ rm -r coverage || true
 dotnet build
 
 echo "# Start Instrument"
-./minicover.sh instrument --tests ""
+./minicover.sh instrument --assemblies "**/netcoreapp3.0/**/*.dll" --tests ""
 echo "# End Instrument"
+
+./minicover.sh reset
 
 dotnet test --no-build
 
 echo "# Start Uninstrument"
 ./minicover.sh uninstrument
 echo "# End Uninstrument"
+
+echo "# Start CoberturaReport"
+./minicover.sh coberturareport --threshold 0
+echo "# End CoberturaReport"
 
 echo "# Start Report"
 ./minicover.sh report --threshold 0

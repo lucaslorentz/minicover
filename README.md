@@ -86,6 +86,7 @@ The command exits with failure if the coverage doesn't meet a specific threshold
 ### More commands
 
 - **cloverreport**: Write an Clover-formatted XML report to file
+- **coberturareport**: Write a cobertura XML report to file
 - **coverallsreport**: Prepare and/or submit coveralls reports
 - **htmlreport**: Write html report to folder
 - **opencoverreport**: Write an OpenCover-formatted XML report to file

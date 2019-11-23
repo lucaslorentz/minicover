@@ -31,4 +31,7 @@ echo "# End OpenCoverReport"
 echo "# Start CloverReport"
 dotnet minicover cloverreport --threshold 60
 echo "# End CloverReport"
+echo "# Start CoberturaReport"
+dotnet minicover coberturareport --threshold 60
+echo "# End CoberturaReport"
 cd ..

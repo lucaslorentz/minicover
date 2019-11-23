@@ -21,6 +21,11 @@ jobs:
   - bash: |
       ./build-sample.sh
     displayName: 'Build Sample'
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(Build.SourcesDirectory)/cobertura.xml'
 
 - job: Build_Linux
   pool:

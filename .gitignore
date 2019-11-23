@@ -223,3 +223,4 @@ coverage-hits
 opencovercoverage.xml
 clover.xml
 coveralls.json
+cobertura.xml

@@ -1,4 +1,5 @@
-﻿using MiniCover.Model;
+﻿using MiniCover.Extensions;
+using MiniCover.Model;
 using MiniCover.Reports.Coveralls.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -118,9 +119,8 @@ namespace MiniCover.Reports.Coveralls
                 var sourceLines = File.ReadAllLines(sourceFile);
 
                 var hitsPerLine = kvFile.Value.Instructions
-                    .SelectMany(i => i.GetLines(), (instruction, line) => new { instruction, line })
-                    .GroupBy(i => i.line)
-                    .ToDictionary(g => g.Key, g => g.Sum(j => hits.GetInstructionHitCount(j.instruction.Id)));
+                    .GroupByMany(i => i.GetLines())
+                    .ToDictionary(g => g.Key, g => g.Sum(i => hits.GetInstructionHitCount(i.Id)));
 
                 var fileName = Path.GetRelativePath(_rootFolder, sourceFile).Replace("\\", "/");
 

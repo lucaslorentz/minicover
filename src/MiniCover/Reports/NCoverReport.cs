@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace MiniCover.Reports
 {
-    public static class XmlReport
+    public static class NCoverReport
     {
         public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
         {
