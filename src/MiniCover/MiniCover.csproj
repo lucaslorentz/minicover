@@ -13,7 +13,7 @@
     <Title>MiniCover</Title>
     <Authors>Lucas Lorentz</Authors>
     <AssemblyTitle>MiniCover</AssemblyTitle>
-    <Description>Minimalist Code Coverage Tool for .NET Core</Description>
+    <Description>Cross platform code coverage tool for .NET Core</Description>
     <PackageProjectUrl>https://github.com/lucaslorentz/minicover</PackageProjectUrl>
     <PackageTags>coverage,cover,minicover</PackageTags>
   </PropertyGroup>
