@@ -62,6 +62,9 @@ namespace MiniCover.Instrumentation
             if (FileUtils.IsBackupFile(assemblyFile))
                 return false;
 
+            if (assemblyFile.Name == "MiniCover.HitServices.dll")
+                return false;
+
             if (!FileUtils.GetPdbFile(assemblyFile).Exists)
                 return false;
 
@@ -75,7 +78,7 @@ namespace MiniCover.Instrumentation
         {
             var firstAssemblyFile = groupFiles.First();
 
-            var instrumentedAssembly = _assemblyInstrumenter.InstrumentAssembly(
+            var instrumentedAssembly = _assemblyInstrumenter.InstrumentAssemblyFile(
                 context,
                 firstAssemblyFile);
 

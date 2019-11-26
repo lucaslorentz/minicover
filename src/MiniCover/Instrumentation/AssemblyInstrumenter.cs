@@ -29,7 +29,7 @@ namespace MiniCover.Instrumentation
             _assemblyResolverLogger = assemblyResolverLogger;
         }
 
-        public InstrumentedAssembly InstrumentAssembly(
+        public InstrumentedAssembly InstrumentAssemblyFile(
             InstrumentationContext context,
             FileInfo assemblyFile)
         {
@@ -37,74 +37,83 @@ namespace MiniCover.Instrumentation
 
             using (_logger.BeginScope("Checking assembly file {assembly}", assemblyFile.FullName, LogLevel.Information))
             {
-                if (assemblyFile.Name == "MiniCover.HitServices.dll")
-                {
-                    _logger.LogInformation("Skipping HitServices");
-                    return null;
-                }
-
                 var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger);
 
                 _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
 
-                using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
+                try
                 {
-                    if (assemblyDefinition.CustomAttributes.Any(a => a.AttributeType.Name == "InstrumentedAttribute"))
+                    using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
                     {
-                        _logger.LogInformation("Already instrumented");
-                        return null;
+                        return InstrumentAssemblyDefinition(context, assemblyDefinition);
                     }
-
-                    var assemblyDocuments = assemblyDefinition.GetAllDocuments();
-
-                    var changedDocuments = assemblyDocuments.Where(d => d.FileHasChanged()).ToArray();
-                    if (changedDocuments.Any())
-                    {
-                        if (_logger.IsEnabled(LogLevel.Debug))
-                        {
-                            var changedFiles = changedDocuments.Select(d => d.Url).Distinct().ToArray();
-                            _logger.LogDebug("Source files has changed: {changedFiles}", new object[] { changedFiles });
-                        }
-                        else
-                        {
-                            _logger.LogInformation("Source files has changed");
-                        }
-                        return null;
-                    }
-
-                    if (!assemblyDocuments.Any(d => context.IsSource(d.Url) || context.IsTest(d.Url)))
-                    {
-                        _logger.LogInformation("No link to source files or test files");
-                        return null;
-                    }
-
-                    _logger.LogInformation("Instrumenting");
-
-                    var instrumentedAssembly = new InstrumentedAssembly(assemblyDefinition.Name.Name);
-                    var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
-                    assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedAttributeReference));
-
-                    foreach (var type in assemblyDefinition.MainModule.GetTypes())
-                    {
-                        _typeInstrumenter.InstrumentType(
-                            context,
-                            type,
-                            instrumentedAssembly);
-                    }
-
-                    var miniCoverTempPath = GetMiniCoverTempPath();
-
-                    var instrumentedAssemblyFile = new FileInfo(Path.Combine(miniCoverTempPath, $"{Guid.NewGuid()}.dll"));
-                    var instrumentedPdbFile = FileUtils.GetPdbFile(instrumentedAssemblyFile);
-
-                    assemblyDefinition.Write(instrumentedAssemblyFile.FullName, new WriterParameters { WriteSymbols = true });
-
-                    instrumentedAssembly.TempAssemblyFile = instrumentedAssemblyFile.FullName;
-                    instrumentedAssembly.TempPdbFile = instrumentedPdbFile.FullName;
-
-                    return instrumentedAssembly;
+                }
+                catch (BadImageFormatException)
+                {
+                    _logger.LogInformation("Invalid assembly format");
+                    return null;
                 }
             }
+        }
+
+        private InstrumentedAssembly InstrumentAssemblyDefinition(
+            InstrumentationContext context,
+            AssemblyDefinition assemblyDefinition)
+        {
+            if (assemblyDefinition.CustomAttributes.Any(a => a.AttributeType.Name == "InstrumentedAttribute"))
+            {
+                _logger.LogInformation("Already instrumented");
+                return null;
+            }
+
+            var assemblyDocuments = assemblyDefinition.GetAllDocuments();
+
+            var changedDocuments = assemblyDocuments.Where(d => d.FileHasChanged()).ToArray();
+            if (changedDocuments.Any())
+            {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    var changedFiles = changedDocuments.Select(d => d.Url).Distinct().ToArray();
+                    _logger.LogDebug("Source files has changed: {changedFiles}", new object[] { changedFiles });
+                }
+                else
+                {
+                    _logger.LogInformation("Source files has changed");
+                }
+                return null;
+            }
+
+            if (!assemblyDocuments.Any(d => context.IsSource(d.Url) || context.IsTest(d.Url)))
+            {
+                _logger.LogInformation("No link to source files or test files");
+                return null;
+            }
+
+            _logger.LogInformation("Instrumenting");
+
+            var instrumentedAssembly = new InstrumentedAssembly(assemblyDefinition.Name.Name);
+            var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
+            assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedAttributeReference));
+
+            foreach (var type in assemblyDefinition.MainModule.GetTypes())
+            {
+                _typeInstrumenter.InstrumentType(
+                    context,
+                    type,
+                    instrumentedAssembly);
+            }
+
+            var miniCoverTempPath = GetMiniCoverTempPath();
+
+            var instrumentedAssemblyFile = new FileInfo(Path.Combine(miniCoverTempPath, $"{Guid.NewGuid()}.dll"));
+            var instrumentedPdbFile = FileUtils.GetPdbFile(instrumentedAssemblyFile);
+
+            assemblyDefinition.Write(instrumentedAssemblyFile.FullName, new WriterParameters { WriteSymbols = true });
+
+            instrumentedAssembly.TempAssemblyFile = instrumentedAssemblyFile.FullName;
+            instrumentedAssembly.TempPdbFile = instrumentedPdbFile.FullName;
+
+            return instrumentedAssembly;
         }
 
         private static string GetMiniCoverTempPath()
