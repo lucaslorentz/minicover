@@ -65,9 +65,9 @@ namespace MiniCover.Reports
 
                     var uncoveredLineNumbers = new HashSet<int>();
                     var coveredLineNumbers = new HashSet<int>();
-                    foreach (var i in kvFile.Value.Instructions)
+                    foreach (var i in kvFile.Value.Sequences)
                     {
-                        if (hitsInfo.IsInstructionHit(i.Id))
+                        if (hitsInfo.WasHit(i.HitId))
                         {
                             coveredLineNumbers.UnionWith(i.GetLines());
                         }
@@ -96,18 +96,18 @@ namespace MiniCover.Reports
                             style += BgColorNeutral;
                         }
 
-                        var instructions = kvFile.Value.Instructions
+                        var instructions = kvFile.Value.Sequences
                             .Where(i => i.GetLines().Contains(l))
                             .ToArray();
 
-                        var counter = instructions.Sum(a => hitsInfo.GetInstructionHitCount(a.Id));
+                        var counter = instructions.Sum(a => hitsInfo.GetHitCount(a.HitId));
 
                         var codeContent = !string.IsNullOrEmpty(line)
                             ? WebUtility.HtmlEncode(line)
                             : "&nbsp;";
 
                         var contexts = instructions
-                            .SelectMany(i => hitsInfo.GetInstructionHitContexts(i.Id))
+                            .SelectMany(i => hitsInfo.GetHitContexts(i.HitId))
                             .Distinct()
                             .ToArray();
 
@@ -123,7 +123,7 @@ namespace MiniCover.Reports
                             htmlWriter.WriteLine("<ul>");
                             foreach (var context in contexts)
                             {
-                                var count = instructions.Sum(i => context.GetHitCount(i.Id));
+                                var count = instructions.Sum(i => context.GetHitCount(i.HitId));
                                 var description = $"{context.ClassName}.{context.MethodName}";
                                 htmlWriter.WriteLine($"<li>{WebUtility.HtmlEncode(description)}: {count}x</li>");
                             }

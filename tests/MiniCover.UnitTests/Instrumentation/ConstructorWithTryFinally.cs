@@ -5,7 +5,7 @@ using FluentAssertions;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class ConstructorWithExistingTryFinally : BaseInstrumentationTest
+    public class ConstructorWithExistingTryFinally : BaseTest
     {
         public class Class
         {
@@ -55,7 +55,7 @@ IL_001a: nop
 {
     IL_001b: ldloc.0
     IL_001c: ldc.i4.1
-    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_0022: ldarg.0 // this
     IL_0023: call System.Void System.Object::.ctor()
     IL_0028: nop
@@ -67,13 +67,13 @@ IL_001a: nop
             IL_002a: nop
             IL_002b: ldloc.0
             IL_002c: ldc.i4.2
-            IL_002d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+            IL_002d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
             IL_0032: ldarg.0 // this
             IL_0033: ldc.i4.1
             IL_0034: stfld System.Boolean MiniCover.UnitTests.Instrumentation.ConstructorWithExistingTryFinally/Class::TryWasCalled
             IL_0039: ldloc.0
             IL_003a: ldc.i4.3
-            IL_003b: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+            IL_003b: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
             IL_0040: ldstr ""Test""
             IL_0045: newobj System.Void System.Exception::.ctor(System.String)
             IL_004a: throw
@@ -82,12 +82,12 @@ IL_001a: nop
         {
             IL_004b: ldloc.0
             IL_004c: ldc.i4.4
-            IL_004d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+            IL_004d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
             IL_0052: pop
             IL_0053: nop
             IL_0054: ldloc.0
             IL_0055: ldc.i4.5
-            IL_0056: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+            IL_0056: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
             IL_005b: ldarg.0 // this
             IL_005c: ldc.i4.1
             IL_005d: stfld System.Boolean MiniCover.UnitTests.Instrumentation.ConstructorWithExistingTryFinally/Class::CatchWasCalled
@@ -101,7 +101,7 @@ IL_001a: nop
         IL_0067: nop
         IL_0068: ldloc.0
         IL_0069: ldc.i4.6
-        IL_006a: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+        IL_006a: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
         IL_006f: ldarg.0 // this
         IL_0070: ldc.i4.1
         IL_0071: stfld System.Boolean MiniCover.UnitTests.Instrumentation.ConstructorWithExistingTryFinally/Class::FinallyWasCalled

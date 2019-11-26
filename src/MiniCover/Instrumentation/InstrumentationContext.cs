@@ -11,7 +11,7 @@ namespace MiniCover.Instrumentation
         public virtual IList<FileInfo> Tests { get; set; }
         public virtual string HitsPath { get; set; }
         public virtual DirectoryInfo Workdir { get; set; }
-        public virtual int InstructionId { get; set; }
+        public virtual int UniqueId { get; set; }
 
         public virtual bool IsSource(string file)
         {

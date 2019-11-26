@@ -57,9 +57,9 @@ namespace MiniCover.Reports
 
                 var classesElement = new XElement("Classes", assembly.SourceFiles.Select(file =>
                 {
-                    var hitInstructions = file.Value.Instructions.Where(h => hits.IsInstructionHit(h.Id)).ToArray();
+                    var hitInstructions = file.Value.Sequences.Where(h => hits.WasHit(h.HitId)).ToArray();
 
-                    return file.Value.Instructions
+                    return file.Value.Sequences
                         .GroupBy(instruction => new { instruction.Method.Class })
                         .Select(classes =>
                     {

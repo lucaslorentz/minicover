@@ -4,7 +4,7 @@ using FluentAssertions;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class ConstructorGenericCallThis : BaseInstrumentationTest
+    public class ConstructorGenericCallThis : BaseTest
     {
         public class Class<T>
         {
@@ -46,7 +46,7 @@ IL_001a: nop
 {
     IL_001b: ldloc.0
     IL_001c: ldc.i4.1
-    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_0022: ldarg.0 // this
     IL_0023: ldarg.1
     IL_0024: ldc.i4.1

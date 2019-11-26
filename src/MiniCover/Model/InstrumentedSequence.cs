@@ -3,15 +3,18 @@ using Newtonsoft.Json;
 
 namespace MiniCover.Model
 {
-    public class InstrumentedInstruction
+    public class InstrumentedSequence
     {
-        public int Id { get; set; }
+        public int HitId { get; set; }
         public int StartLine { get; set; }
         public int EndLine { get; set; }
         public int StartColumn { get; set; }
         public int EndColumn { get; set; }
-        public string Instruction { get; set; }
         public InstrumentedMethod Method { get; set; }
+        public InstrumentedCondition[] Conditions { get; set; } = new InstrumentedCondition[0];
+
+        [JsonIgnore]
+        public string Instruction { get; set; }
 
         [JsonIgnore]
         public string Code { get; set; }

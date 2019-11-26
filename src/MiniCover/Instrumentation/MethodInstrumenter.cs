@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using MiniCover.Extensions;
 using MiniCover.HitServices;
 using MiniCover.Infrastructure.FileSystem;
+using MiniCover.Instrumentation.Branches;
+using MiniCover.Instrumentation.Patterns;
 using MiniCover.Model;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -18,7 +20,9 @@ namespace MiniCover.Instrumentation
     {
         private static readonly Type hitServiceType = typeof(HitService);
         private static readonly Type methodContextType = typeof(HitService.MethodContext);
-        private static readonly MethodInfo hitInstructionMethodInfo = methodContextType.GetMethod("HitInstruction");
+        private static readonly MethodInfo hitMethodInfo = methodContextType.GetMethod(nameof(HitService.MethodContext.Hit));
+        private static readonly MethodInfo enterMethodInfo = hitServiceType.GetMethod(nameof(HitService.EnterMethod));
+        private static readonly MethodInfo disposeMethodInfo = methodContextType.GetMethod(nameof(IDisposable.Dispose));
 
         private readonly ILogger<MethodInstrumenter> _logger;
         private readonly IFileReader _fileReader;
@@ -37,7 +41,7 @@ namespace MiniCover.Instrumentation
             MethodDefinition methodDefinition,
             InstrumentedAssembly instrumentedAssembly)
         {
-            var originalMethod = ResolveOriginalMethod(methodDefinition);
+            var originalMethod = methodDefinition.ResolveOriginalMethod();
 
             var instrumentedMethod = instrumentedAssembly.AddMethod(new InstrumentedMethod
             {
@@ -46,12 +50,11 @@ namespace MiniCover.Instrumentation
                 FullName = originalMethod.FullName,
             });
 
-            var enterMethodInfo = hitServiceType.GetMethod("EnterMethod");
-            var disposeMethodInfo = methodContextType.GetMethod("Dispose");
-
             var methodContextClassReference = methodDefinition.Module.GetOrImportReference(methodContextType);
             var enterMethodReference = methodDefinition.Module.GetOrImportReference(enterMethodInfo);
             var disposeMethodReference = methodDefinition.Module.GetOrImportReference(disposeMethodInfo);
+
+            var sequencePointsInstructions = methodDefinition.MapSequencePointsToInstructions().ToArray();
 
             var ilProcessor = methodDefinition.Body.GetILProcessor();
             ilProcessor.Body.InitLocals = true;
@@ -61,8 +64,6 @@ namespace MiniCover.Instrumentation
             ilProcessor.Body.Variables.Add(methodContextVariable);
 
             ilProcessor.RemoveTailInstructions();
-
-            var instructions = ilProcessor.Body.Instructions.ToDictionary(i => i.Offset);
 
             var endFinally = ilProcessor.EncapsulateWithTryFinally();
 
@@ -86,7 +87,7 @@ namespace MiniCover.Instrumentation
                     context,
                     methodDefinition,
                     instrumentedAssembly,
-                    instructions,
+                    sequencePointsInstructions,
                     ilProcessor,
                     methodContextVariable,
                     instrumentedMethod);
@@ -99,17 +100,38 @@ namespace MiniCover.Instrumentation
             InstrumentationContext context,
             MethodDefinition methodDefinition,
             InstrumentedAssembly instrumentedAssembly,
-            Dictionary<int, Instruction> instructionsByOffset,
+            IList<(SequencePoint sequencePoint, Instruction instruction)> sequencePointsInstructions,
             ILProcessor ilProcessor,
             VariableDefinition methodContextVariable,
             InstrumentedMethod instrumentedMethod)
         {
-            var hitInstructionReference = methodDefinition.Module.GetOrImportReference(hitInstructionMethodInfo);
+            var hitMethodReference = methodDefinition.Module.GetOrImportReference(hitMethodInfo);
 
-            foreach (var sequencePoint in methodDefinition.DebugInformation.SequencePoints)
+            var excludedInstructions = GetExclusions(ilProcessor.Body.Instructions)
+                .Distinct()
+                .ToHashSet();
+
+            var userSequencePointsInstructions = sequencePointsInstructions
+                .Where(x => !x.sequencePoint.IsHidden && !excludedInstructions.Contains(x.instruction))
+                .ToArray();
+
+            var userInstructions = userSequencePointsInstructions
+                .Select(x => x.instruction)
+                .ToHashSet();
+
+            var sequencePointByInstruction = userSequencePointsInstructions
+                .ToDictionary(x => x.instruction, x => x.sequencePoint);
+
+            var branchesBySequencePoint = BranchCollector.Collect(methodDefinition.Body.Instructions[0], userInstructions)
+                .ToLookup(b => sequencePointByInstruction[b.PivotInstruction]);
+
+            var sequencePointsGroups = userSequencePointsInstructions
+                .GroupBy(j => j.sequencePoint);
+
+            foreach (var sequencePointGroup in sequencePointsGroups)
             {
-                if (sequencePoint.IsHidden)
-                    continue;
+                var sequencePoint = sequencePointGroup.Key;
+                var instructions = sequencePointGroup.Select(x => x.instruction);
 
                 var documentUrl = sequencePoint.Document.Url;
 
@@ -124,14 +146,14 @@ namespace MiniCover.Instrumentation
                 if (code == null || code == "{" || code == "}")
                     continue;
 
-                var instruction = instructionsByOffset[sequencePoint.Offset];
+                var firstInstruction = instructions.First();
 
                 // if the previous instruction is a Prefix instruction then this instruction MUST go with it.
                 // we cannot put an instruction between the two.
-                if (instruction.Previous != null && instruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
+                if (firstInstruction.Previous != null && firstInstruction.Previous.OpCode.OpCodeType == OpCodeType.Prefix)
                     continue;
 
-                if (!ilProcessor.Body.Instructions.Contains(instruction))
+                if (!ilProcessor.Body.Instructions.Contains(firstInstruction))
                 {
                     var methodFullName = $"{methodDefinition.DeclaringType.FullName}.{methodDefinition.Name}";
                     _logger.LogWarning("Skipping instruction because it was removed from method {method}", methodFullName);
@@ -140,27 +162,82 @@ namespace MiniCover.Instrumentation
 
                 var sourceRelativePath = GetSourceRelativePath(context, documentUrl);
 
-                var instructionId = ++context.InstructionId;
+                var instructionId = InstrumentInstruction(
+                    firstInstruction,
+                    ilProcessor,
+                    methodContextVariable,
+                    hitMethodReference,
+                    context);
 
-                instrumentedAssembly.AddInstruction(sourceRelativePath, new InstrumentedInstruction
+                var instrumentedConditions = new List<InstrumentedCondition>();
+
+                foreach (var branch in branchesBySequencePoint[sequencePoint])
                 {
-                    Id = instructionId,
+                    var instrumentedBranches = new List<InstrumentedBranch>();
+
+                    foreach (var targetInstruction in branch.Targets)
+                    {
+                        var branchId = InstrumentInstruction(
+                            targetInstruction,
+                            ilProcessor,
+                            methodContextVariable,
+                            hitMethodReference,
+                            context
+                        );
+
+                        instrumentedBranches.Add(new InstrumentedBranch
+                        {
+                            HitId = branchId,
+                            External = !instructions.Contains(targetInstruction),
+                            Instruction = targetInstruction.ToString()
+                        });
+                    }
+
+                    instrumentedConditions.Add(new InstrumentedCondition
+                    {
+                        Branches = instrumentedBranches.ToArray(),
+                        Instruction = branch.PivotInstruction.ToString()
+                    });
+                }
+
+                instrumentedAssembly.AddSequence(sourceRelativePath, new InstrumentedSequence
+                {
+                    HitId = instructionId,
                     StartLine = sequencePoint.StartLine,
                     EndLine = sequencePoint.EndLine,
                     StartColumn = sequencePoint.StartColumn,
                     EndColumn = sequencePoint.EndColumn,
-                    Instruction = instruction.ToString(),
+                    Instruction = firstInstruction.ToString(),
                     Method = instrumentedMethod,
-                    Code = code
+                    Code = code,
+                    Conditions = instrumentedConditions.ToArray()
                 });
+            }
+        }
 
+        private static int InstrumentInstruction(
+            Instruction instruction,
+            ILProcessor ilProcessor,
+            VariableDefinition methodContextVariable,
+            MethodReference hitMethodReference,
+            InstrumentationContext context)
+        {
+            return instruction.GetOrAddExtension("Id", () =>
+            {
+                var id = ++context.UniqueId;
                 ilProcessor.InsertBefore(instruction, new[]
                 {
                     ilProcessor.Create(OpCodes.Ldloc, methodContextVariable),
-                    ilProcessor.Create(OpCodes.Ldc_I4, instructionId),
-                    ilProcessor.Create(OpCodes.Callvirt, hitInstructionReference)
+                    ilProcessor.Create(OpCodes.Ldc_I4, id),
+                    ilProcessor.Create(OpCodes.Callvirt, hitMethodReference)
                 }, true);
-            }
+                return id;
+            });
+        }
+
+        private IEnumerable<Instruction> GetExclusions(IList<Instruction> instructions)
+        {
+            return LambdaInitPattern.FindInstructions(instructions);
         }
 
         private static string GetSourceRelativePath(InstrumentationContext context, string path)
@@ -174,35 +251,6 @@ namespace MiniCover.Instrumentation
                         .Replace('/', Path.DirectorySeparatorChar)
                 );
             return relativePath;
-        }
-
-        private MethodDefinition ResolveOriginalMethod(MethodDefinition methodDefinition)
-        {
-            var originalMethodName = ExtractOriginalMethodName(methodDefinition.Name)
-                ?? ExtractOriginalMethodName(methodDefinition.DeclaringType.Name);
-
-            if (!string.IsNullOrEmpty(originalMethodName)
-                && methodDefinition.DeclaringType.IsCompilerGenerated())
-            {
-                var originalMethod = methodDefinition.DeclaringType.DeclaringType.Methods
-                    .FirstOrDefault(m => m.Name == originalMethodName);
-
-                if (originalMethod != null)
-                    return originalMethod;
-            }
-
-            return methodDefinition;
-        }
-
-        private string ExtractOriginalMethodName(string name)
-        {
-            var lessThanIndex = name.IndexOf("<");
-            var greaterThanIndex = name.IndexOf(">");
-
-            if (lessThanIndex == -1 || greaterThanIndex == -1 || lessThanIndex + 1 == greaterThanIndex)
-                return null;
-
-            return name.Substring(lessThanIndex + 1, greaterThanIndex - lessThanIndex - 1);
         }
     }
 }

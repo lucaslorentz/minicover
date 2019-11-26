@@ -36,7 +36,7 @@ namespace MiniCover.Reports
 
                 var methods = assembly.SourceFiles.Select(file =>
                 {
-                    return file.Value.Instructions
+                    return file.Value.Sequences
                         .GroupBy(instruction => instruction.Method)
                         .Select(instruction =>
                     {
@@ -51,7 +51,7 @@ namespace MiniCover.Reports
 
                         var methodPoints = instruction.Select(methodPoint =>
                         {
-                            var counter = hits.GetInstructionHitCount(methodPoint.Id);
+                            var counter = hits.GetHitCount(methodPoint.HitId);
 
                             var point = new XElement(
                                 XName.Get("seqpnt"),

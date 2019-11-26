@@ -73,12 +73,12 @@ namespace MiniCover.Reports.Clover
                 new XAttribute(XName.Get("name"), Path.GetFileName(file.Key)),
                 new XAttribute(XName.Get("path"), file.Key),
                 CreateMetricsElement(CountFileMetrics(file.Value, hits)),
-                CreateClassesElement(file.Value.Instructions, hits),
-                CreateLinesElement(file.Value.Instructions, hits)
+                CreateClassesElement(file.Value.Sequences, hits),
+                CreateLinesElement(file.Value.Sequences, hits)
             ));
         }
 
-        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hits)
+        private static IEnumerable<XElement> CreateClassesElement(IEnumerable<InstrumentedSequence> instructions, HitsInfo hits)
         {
             return instructions
                 .GroupBy(instruction => instruction.Method.Class)
@@ -89,14 +89,14 @@ namespace MiniCover.Reports.Clover
                 ));
         }
 
-        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hits)
+        private static IEnumerable<XElement> CreateLinesElement(IEnumerable<InstrumentedSequence> instructions, HitsInfo hits)
         {
             return instructions
-                .SelectMany(t => t.GetLines(), (i, l) => new { instructionId = i.Id, line = l })
+                .SelectMany(t => t.GetLines(), (i, l) => new { instructionId = i.HitId, line = l })
                 .Select(instruction => new XElement(
                     XName.Get("line"),
                     new XAttribute(XName.Get("num"), instruction.line),
-                    new XAttribute(XName.Get("count"), hits.GetInstructionHitCount(instruction.instructionId)),
+                    new XAttribute(XName.Get("count"), hits.GetHitCount(instruction.instructionId)),
                     new XAttribute(XName.Get("type"), "stmt")
                 ));
         }
@@ -162,17 +162,17 @@ namespace MiniCover.Reports.Clover
 
         private static CloverCounter CountFileMetrics(SourceFile file, HitsInfo hits)
         {
-            var counter = CountMetrics(file.Instructions, hits);
-            counter.Lines = file.Instructions.Max(instruction => instruction.EndLine);
-            counter.Classes = file.Instructions.GroupBy(t => t.Method.Class).Count();
+            var counter = CountMetrics(file.Sequences, hits);
+            counter.Lines = file.Sequences.Max(instruction => instruction.EndLine);
+            counter.Classes = file.Sequences.GroupBy(t => t.Method.Class).Count();
             return counter;
         }
 
-        private static CloverCounter CountMetrics(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hits)
+        private static CloverCounter CountMetrics(IEnumerable<InstrumentedSequence> instructions, HitsInfo hits)
         {
             var localInstructions = instructions.ToArray();
             var coveredInstructions = localInstructions
-                .Where(instruction => hits.IsInstructionHit(instruction.Id)).ToArray();
+                .Where(instruction => hits.WasHit(instruction.HitId)).ToArray();
 
             return new CloverCounter
             {

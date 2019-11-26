@@ -58,9 +58,9 @@ namespace MiniCover.UnitTests.HitServices
             
             var hits = new HitsInfo(contexts);
 
-            hits.GetInstructionHitCount(17).Should().Be(5000000);
-            hits.GetInstructionHitContexts(17).Count().Should().Be(2);
-            hits.GetInstructionHitContexts(17).First().GetHitCount(17).Should().Be(2500000);
+            hits.GetHitCount(17).Should().Be(5000000);
+            hits.GetHitContexts(17).Count().Should().Be(2);
+            hits.GetHitContexts(17).First().GetHitCount(17).Should().Be(2500000);
         }
 
         [Fact]
@@ -87,9 +87,9 @@ namespace MiniCover.UnitTests.HitServices
             };
 
             var hits = new HitsInfo(contexts);
-            hits.GetInstructionHitCount(8).Should().Be(2);
-            hits.GetInstructionHitContexts(8).Should().HaveCount(1);
-            hits.GetInstructionHitContexts(8).First().GetHitCount(8).Should().Be(2);
+            hits.GetHitCount(8).Should().Be(2);
+            hits.GetHitContexts(8).Should().HaveCount(1);
+            hits.GetHitContexts(8).First().GetHitCount(8).Should().Be(2);
         }
     }
 }
