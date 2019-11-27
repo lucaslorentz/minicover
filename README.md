@@ -51,9 +51,11 @@ It is based on the following main options:
 |**assemblies**|assemblies considered for instrumentation|glob|`**/*.dll`|
 |**exclude-assemblies**|Exceptions to assemblies option|glob|`**/obj/**/*.dll`|
 
-Note 1: *Assemblies not related to sources or tests are automatically ignored.*  
-Note 2: *[Supported syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.filesystemglobbing.matcher?view=dotnet-plat-ext-3.0#remarks) for glob values.*  
-Note 3: *You can repeat glob options to represent multiple values. Example: `--sources "a/**/*.cs" --sources "b/**/*.cs"`*
+*Note 1: Assemblies not related to sources or tests are automatically ignored.*
+
+*Note 2: [Supported syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.filesystemglobbing.matcher?view=dotnet-plat-ext-3.0#remarks) for glob values.*
+
+*Note 3: You can repeat glob options to represent multiple values. Example: `--sources "a/**/*.cs" --sources "b/**/*.cs"`*
 
 This command also generates a **coverage.json** file with information about the instrumented code.   
 
