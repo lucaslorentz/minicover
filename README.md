@@ -41,22 +41,19 @@ minicover instrument
 Use this command to instrument assemblies to record code coverage.
 
 It is based on the following main options:
-- **sources**: source files to track coverage
-- **tests**: test files used to recognize test methods
-- **assemblies**: assemblies considered for instrumentation. Assemblies not related to sources or tests are automatically ignored.
+|option|description|type|default|
+|-|-|-|-|
+|**--sources**|source files to track coverage|glob|`src/**/*.cs`|
+|**--exclude-sources**|exceptions to source option|glob|`**/bin/**/*.cs` and `**/obj/**/*.cs`|
+|**--tests**|test files used to recognize test methods|glob|`tests/**/*.cs` and `test/**/*.cs`|
+|**--exclude-tests**|exceptions to tests option|glob|`**/bin/**/*.cs` and `**/obj/**/*.cs`|
+|**--assemblies**|assemblies considered for instrumentation. Assemblies not related to sources or tests are automatically ignored.|glob|`**/*.dll`|
+|**--exclude-assemblies**|Exceptions to assemblies option|glob|`**/obj/**/*.dll`|
 
-You probabbly don't need to set those options because Minicover defaults covers a lot of cases:
-- assemblies
-  - include: `**/*.dll`
-  - exclude: `**/obj/**/*.dll`
-- sources
-  - include: `src/**/*.cs`
-  - exclude: `**/bin/**/*.cs` and `**/obj/**/*.cs`
-- tests
-  - include: `tests/**/*.cs` and `test/**/*.cs`
-  - excludes: `**/bin/**/*.cs` and `**/obj/**/*.cs`
+Note 1: *[Supported syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.filesystemglobbing.matcher?view=dotnet-plat-ext-3.0#remarks) for glob values.*  
+Note 2: *You can repeat glob options to represent multiple values. Example: `--sources "a/**/*.cs" --sources "b/**/*.cs"`*
 
-This command also generates a **coverage.json** file with information about the instrumented code.
+This command also generates a **coverage.json** file with information about the instrumented code.   
 
 ### Uninstrument
 ```
