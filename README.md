@@ -41,6 +41,7 @@ minicover instrument
 Use this command to instrument assemblies to record code coverage.
 
 It is based on the following main options:
+
 |option|description|type|default|
 |-|-|-|-|
 |**--sources**|source files to track coverage|glob|`src/**/*.cs`|
