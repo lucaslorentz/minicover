@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace MiniCover.HitServices
@@ -16,6 +17,8 @@ namespace MiniCover.HitServices
 
         public class MethodContext : IDisposable
         {
+            private static ConcurrentDictionary<string, Stream> _filesStream = new ConcurrentDictionary<string, Stream>();
+
             private readonly string _hitsPath;
             private readonly HitContext _hitContext;
             private readonly bool _saveHitContext;
@@ -49,15 +52,21 @@ namespace MiniCover.HitServices
             {
                 if (_saveHitContext)
                 {
-                    Directory.CreateDirectory(_hitsPath);
-                    var filePath = Path.Combine(_hitsPath, $"{Guid.NewGuid()}.hits");
-                    using (var fileStream = File.Open(filePath, FileMode.CreateNew))
+                    var fileStream = _filesStream.GetOrAdd(_hitsPath, CreateOutputFile);
+                    lock (fileStream)
                     {
                         _hitContext.Serialize(fileStream);
                         fileStream.Flush();
                     }
                     HitContext.Current = null;
                 }
+            }
+
+            private static FileStream CreateOutputFile(string hitsPath)
+            {
+                Directory.CreateDirectory(hitsPath);
+                var filePath = Path.Combine(hitsPath, $"{Guid.NewGuid()}.hits");
+                return File.Open(filePath, FileMode.CreateNew);
             }
         }
     }
