@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -35,24 +36,21 @@ namespace MiniCover.Instrumentation
         {
             var assemblyDirectory = assemblyFile.Directory;
 
-            using (_logger.BeginScope("Checking assembly file {assembly}", assemblyFile.FullName, LogLevel.Information))
+            var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger);
+
+            _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
+
+            try
             {
-                var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger);
-
-                _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
-
-                try
+                using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
                 {
-                    using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
-                    {
-                        return InstrumentAssemblyDefinition(context, assemblyDefinition);
-                    }
+                    return InstrumentAssemblyDefinition(context, assemblyDefinition);
                 }
-                catch (BadImageFormatException)
-                {
-                    _logger.LogInformation("Invalid assembly format");
-                    return null;
-                }
+            }
+            catch (BadImageFormatException)
+            {
+                _logger.LogInformation("Invalid assembly format");
+                return null;
             }
         }
 

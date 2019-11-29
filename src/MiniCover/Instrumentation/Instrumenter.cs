@@ -74,63 +74,64 @@ namespace MiniCover.Instrumentation
         private void VisitAssemblyGroup(
             InstrumentationContext context,
             InstrumentationResult result,
-            IEnumerable<FileInfo> groupFiles)
+            IEnumerable<FileInfo> assemblyFiles)
         {
-            var firstAssemblyFile = groupFiles.First();
-
-            var instrumentedAssembly = _assemblyInstrumenter.InstrumentAssemblyFile(
-                context,
-                firstAssemblyFile);
-
-            if (instrumentedAssembly == null)
-                return;
-            
-            foreach (var assemblyFile in groupFiles)
+            using (_logger.BeginScope("Checking assembly files {assemblies}", assemblyFiles.Select(f => f.FullName), LogLevel.Information))
             {
-                if (_loadedAssemblyFiles.Contains(assemblyFile.FullName))
+                var instrumentedAssembly = _assemblyInstrumenter.InstrumentAssemblyFile(
+                    context,
+                    assemblyFiles.First());
+
+                if (instrumentedAssembly == null)
+                    return;
+
+                foreach (var assemblyFile in assemblyFiles)
                 {
-                    _logger.LogInformation("Skipping loaded assembly {assemblyFile}", assemblyFile.FullName);
-                    continue;
+                    if (_loadedAssemblyFiles.Contains(assemblyFile.FullName))
+                    {
+                        _logger.LogInformation("Skipping loaded assembly {assemblyFile}", assemblyFile.FullName);
+                        continue;
+                    }
+
+                    var pdbFile = FileUtils.GetPdbFile(assemblyFile);
+                    var assemblyBackupFile = FileUtils.GetBackupFile(assemblyFile);
+                    var pdbBackupFile = FileUtils.GetBackupFile(pdbFile);
+
+                    //Backup
+                    File.Copy(assemblyFile.FullName, assemblyBackupFile.FullName, true);
+                    File.Copy(pdbFile.FullName, pdbBackupFile.FullName, true);
+
+                    //Override assembly
+                    File.Copy(instrumentedAssembly.TempAssemblyFile, assemblyFile.FullName, true);
+                    File.Copy(instrumentedAssembly.TempPdbFile, pdbFile.FullName, true);
+
+                    //Copy instrumentation dependencies
+                    var assemblyDirectory = assemblyFile.Directory;
+
+                    var hitServicesPath = Path.GetFileName(hitServicesAssembly.Location);
+                    var newHitServicesPath = Path.Combine(assemblyDirectory.FullName, hitServicesPath);
+                    File.Copy(hitServicesAssembly.Location, newHitServicesPath, true);
+                    result.AddExtraAssembly(newHitServicesPath);
+
+                    instrumentedAssembly.AddLocation(
+                        assemblyFile.FullName,
+                        assemblyBackupFile.FullName,
+                        pdbFile.FullName,
+                        pdbBackupFile.FullName
+                    );
+
+                    var hitServicesAssemblyVersion = FileVersionInfo.GetVersionInfo(hitServicesAssembly.Location);
+                    foreach (var depsJsonFile in assemblyDirectory.GetFiles("*.deps.json"))
+                    {
+                        DepsJsonUtils.PatchDepsJson(depsJsonFile, hitServicesAssemblyVersion.ProductVersion);
+                    }
                 }
 
-                var pdbFile = FileUtils.GetPdbFile(assemblyFile);
-                var assemblyBackupFile = FileUtils.GetBackupFile(assemblyFile);
-                var pdbBackupFile = FileUtils.GetBackupFile(pdbFile);
+                result.AddInstrumentedAssembly(instrumentedAssembly);
 
-                //Backup
-                File.Copy(assemblyFile.FullName, assemblyBackupFile.FullName, true);
-                File.Copy(pdbFile.FullName, pdbBackupFile.FullName, true);
-
-                //Override assembly
-                File.Copy(instrumentedAssembly.TempAssemblyFile, assemblyFile.FullName, true);
-                File.Copy(instrumentedAssembly.TempPdbFile, pdbFile.FullName, true);
-
-                //Copy instrumentation dependencies
-                var assemblyDirectory = assemblyFile.Directory;
-
-                var hitServicesPath = Path.GetFileName(hitServicesAssembly.Location);
-                var newHitServicesPath = Path.Combine(assemblyDirectory.FullName, hitServicesPath);
-                File.Copy(hitServicesAssembly.Location, newHitServicesPath, true);
-                result.AddExtraAssembly(newHitServicesPath);
-
-                instrumentedAssembly.AddLocation(
-                    assemblyFile.FullName,
-                    assemblyBackupFile.FullName,
-                    pdbFile.FullName,
-                    pdbBackupFile.FullName
-                );
-
-                var hitServicesAssemblyVersion = FileVersionInfo.GetVersionInfo(hitServicesAssembly.Location);
-                foreach (var depsJsonFile in assemblyDirectory.GetFiles("*.deps.json"))
-                {
-                    DepsJsonUtils.PatchDepsJson(depsJsonFile, hitServicesAssemblyVersion.ProductVersion);
-                }
+                File.Delete(instrumentedAssembly.TempAssemblyFile);
+                File.Delete(instrumentedAssembly.TempPdbFile);
             }
-
-            result.AddInstrumentedAssembly(instrumentedAssembly);
-
-            File.Delete(instrumentedAssembly.TempAssemblyFile);
-            File.Delete(instrumentedAssembly.TempPdbFile);
         }
     }
 }
