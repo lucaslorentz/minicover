@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace MiniCover.Model
@@ -10,15 +9,10 @@ namespace MiniCover.Model
         {
             return new SourceFile
             {
-                Instructions = sources.SelectMany(s => s.Instructions).ToList()
+                Sequences = sources.SelectMany(s => s.Sequences).ToList()
             };
         }
 
-        public List<InstrumentedInstruction> Instructions = new List<InstrumentedInstruction>();
-
-        internal object SelectMany(Func<object, object> p)
-        {
-            throw new NotImplementedException();
-        }
+        public List<InstrumentedSequence> Sequences = new List<InstrumentedSequence>();
     }
 }

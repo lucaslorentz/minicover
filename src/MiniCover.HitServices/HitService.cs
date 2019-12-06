@@ -43,7 +43,7 @@ namespace MiniCover.HitServices
                 }
             }
 
-            public void HitInstruction(int id)
+            public void Hit(int id)
             {
                 _hitContext.RecordHit(id);
             }

@@ -5,7 +5,7 @@ using MiniCover.Model;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class MethodExcludedFromCodeCoverage : BaseInstrumentationTest
+    public class ExcludedFromCodeCoverageMethod : BaseTest
     {
         public class Class
         {
@@ -16,7 +16,7 @@ namespace MiniCover.UnitTests.Instrumentation
             }
         }
 
-        public MethodExcludedFromCodeCoverage() : base(typeof(Class).GetMethod(nameof(Class.Method)))
+        public ExcludedFromCodeCoverageMethod() : base(typeof(Class).GetMethod(nameof(Class.Method)))
         {
         }
 
@@ -28,7 +28,7 @@ namespace MiniCover.UnitTests.Instrumentation
         public override string ExpectedIL => @".locals init (System.Int32 V_0, MiniCover.HitServices.HitService/MethodContext V_1, System.Int32 V_2)
 IL_0000: ldstr ""/tmp""
 IL_0005: ldstr ""MiniCover.UnitTests""
-IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.MethodExcludedFromCodeCoverage/Class""
+IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.ExcludedFromCodeCoverageMethod/Class""
 IL_000f: ldstr ""Method""
 IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
 IL_0019: stloc.1
@@ -58,6 +58,6 @@ IL_002f: ret
 
         public override IDictionary<int, int> ExpectedHits => new Dictionary<int, int>();
 
-        public override InstrumentedInstruction[] ExpectedInstructions => new InstrumentedInstruction[0];
+        public override InstrumentedSequence[] ExpectedInstructions => new InstrumentedSequence[0];
     }
 }

@@ -22,13 +22,13 @@ namespace MiniCover.Reports
 
             foreach (var kvFile in files)
             {
-                var lines = kvFile.Value.Instructions
+                var lines = kvFile.Value.Sequences
                     .SelectMany(i => i.GetLines())
                     .Distinct()
                     .Count();
 
-                var coveredLines = kvFile.Value.Instructions
-                    .Where(h => hits.IsInstructionHit(h.Id))
+                var coveredLines = kvFile.Value.Sequences
+                    .Where(h => hits.WasHit(h.HitId))
                     .SelectMany(i => i.GetLines())
                     .Distinct()
                     .Count();

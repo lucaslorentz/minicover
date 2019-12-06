@@ -5,7 +5,7 @@ using MiniCover.Model;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class EnumerableMethod : BaseInstrumentationTest
+    public class EnumerableMethod : BaseTest
     {
         public class Class
         {
@@ -97,21 +97,21 @@ namespace MiniCover.UnitTests.Instrumentation
                 IL_002f: br.s IL_0070
                 IL_0031: ldc.i4.0
                 IL_0032: stloc.s V_4
-                IL_0034: leave IL_00b4
+                IL_0034: leave IL_00bb
                 IL_0039: ldarg.0 // this
                 IL_003a: ldc.i4.m1
                 IL_003b: stfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<>1__state
                 IL_0040: nop
                 IL_0041: ldloc.3
                 IL_0042: ldc.i4.1
-                IL_0043: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                IL_0043: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                 IL_0048: ldarg.0 // this
                 IL_0049: ldc.i4.0
                 IL_004a: stfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<i>5__1
                 IL_004f: br.s IL_008e
                 IL_0051: ldloc.3
                 IL_0052: ldc.i4.2
-                IL_0053: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                IL_0053: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                 IL_0058: ldarg.0 // this
                 IL_0059: ldarg.0 // this
                 IL_005a: ldfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<i>5__1
@@ -121,13 +121,13 @@ namespace MiniCover.UnitTests.Instrumentation
                 IL_0066: stfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<>1__state
                 IL_006b: ldc.i4.1
                 IL_006c: stloc.s V_4
-                IL_006e: leave.s IL_00b4
+                IL_006e: leave.s IL_00bb
                 IL_0070: ldarg.0 // this
                 IL_0071: ldc.i4.m1
                 IL_0072: stfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<>1__state
                 IL_0077: ldloc.3
                 IL_0078: ldc.i4.3
-                IL_0079: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                IL_0079: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                 IL_007e: ldarg.0 // this
                 IL_007f: ldfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<i>5__1
                 IL_0084: stloc.1
@@ -138,7 +138,7 @@ namespace MiniCover.UnitTests.Instrumentation
                 IL_0089: stfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<i>5__1
                 IL_008e: ldloc.3
                 IL_008f: ldc.i4.4
-                IL_0090: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                IL_0090: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                 IL_0095: ldarg.0 // this
                 IL_0096: ldfld System.Int32 MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<i>5__1
                 IL_009b: ldarg.0 // this
@@ -147,19 +147,22 @@ namespace MiniCover.UnitTests.Instrumentation
                 IL_00a3: stloc.2
                 IL_00a4: ldloc.2
                 IL_00a5: brtrue.s IL_0051
-                IL_00a7: ldc.i4.0
-                IL_00a8: stloc.s V_4
-                IL_00aa: leave.s IL_00b4
+                IL_00a7: ldloc.3
+                IL_00a8: ldc.i4.5
+                IL_00a9: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+                IL_00ae: ldc.i4.0
+                IL_00af: stloc.s V_4
+                IL_00b1: leave.s IL_00bb
             }
             finally
             {
-                IL_00ac: nop
-                IL_00ad: ldloc.3
-                IL_00ae: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
-                IL_00b3: endfinally
+                IL_00b3: nop
+                IL_00b4: ldloc.3
+                IL_00b5: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+                IL_00ba: endfinally
             }
-            IL_00b4: ldloc.s V_4
-            IL_00b6: ret
+            IL_00bb: ldloc.s V_4
+            IL_00bd: ret
         }
         .method System.Int32 System.Collections.Generic.IEnumerator<System.Int32>.get_Current
         {
@@ -229,17 +232,18 @@ namespace MiniCover.UnitTests.Instrumentation
             [1] = 1,
             [2] = 10,
             [3] = 10,
-            [4] = 11
+            [4] = 11,
+            [5] = 1
         };
 
-        public override InstrumentedInstruction[] ExpectedInstructions => new InstrumentedInstruction[]
+        public override InstrumentedSequence[] ExpectedInstructions => new InstrumentedSequence[]
         {
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "var i = 0",
                 EndColumn = 31,
                 EndLine = 14,
-                Id = 1,
+                HitId = 1,
                 Instruction = "IL_0020: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class",
@@ -249,12 +253,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 22,
                 StartLine = 14,
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "yield return i;",
                 EndColumn = 36,
                 EndLine = 15,
-                Id = 2,
+                HitId = 2,
                 Instruction = "IL_0029: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class",
@@ -264,12 +268,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 21,
                 StartLine = 15,
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "i++",
                 EndColumn = 45,
                 EndLine = 14,
-                Id = 3,
+                HitId = 3,
                 Instruction = "IL_0045: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class",
@@ -279,12 +283,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 42,
                 StartLine = 14,
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "i < max",
                 EndColumn = 40,
                 EndLine = 14,
-                Id = 4,
+                HitId = 4,
                 Instruction = "IL_0055: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.EnumerableMethod/Class",
@@ -293,6 +297,25 @@ namespace MiniCover.UnitTests.Instrumentation
                 },
                 StartColumn = 33,
                 StartLine = 14,
+                Conditions = new InstrumentedCondition[] {
+                    new InstrumentedCondition {
+                        Instruction = "IL_0063: stloc V_2",
+                        Branches = new InstrumentedBranch[]
+                        {
+                            new InstrumentedBranch{
+                                HitId = 5,
+                                External = true,
+                                Instruction = "IL_0067: ldc.i4 0"
+                            },
+                            new InstrumentedBranch
+                            {
+                                HitId = 2,
+                                External = true,
+                                Instruction = "IL_0029: ldarg "
+                            }
+                        }
+                    }
+                }
             }
         };
     }

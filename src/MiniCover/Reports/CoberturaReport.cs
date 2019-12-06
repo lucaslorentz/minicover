@@ -39,28 +39,46 @@ namespace MiniCover.Reports
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var linesValid = result.GetSourceFiles()
-                .SelectMany(kvFile => kvFile.Value.Instructions)
+            var allLines = result.GetSourceFiles()
+                .SelectMany(kvFile => kvFile.Value.Sequences)
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
             var coveredLines = result.GetSourceFiles()
-                .SelectMany(kvFile => kvFile.Value.Instructions)
-                .Where(h => hitsInfo.IsInstructionHit(h.Id))
+                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .Where(h => hitsInfo.WasHit(h.HitId))
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
-            var linesRate = linesValid == 0 ? 0d : (double)coveredLines / (double)linesValid;
+            var allBranches = result.GetSourceFiles()
+                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Count();
+
+            var coveredBranches = result.GetSourceFiles()
+                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Where(b => hitsInfo.WasHit(b.HitId))
+                .Count();
+
+            var lineRate = allLines == 0 ? 1d : (double)coveredLines / (double)allLines;
+            var branchRate = allBranches == 0 ? 1d : (double)coveredBranches / (double)allBranches;
 
             return new XElement(
                 XName.Get("coverage"),
-                new XAttribute(XName.Get("lines-valid"), linesValid),
+                new XAttribute(XName.Get("lines-valid"), allLines),
                 new XAttribute(XName.Get("lines-covered"), coveredLines),
-                new XAttribute(XName.Get("line-rate"), linesRate),
+                new XAttribute(XName.Get("line-rate"), lineRate),
+                new XAttribute(XName.Get("branches-valid"), allBranches),
+                new XAttribute(XName.Get("branches-covered"), coveredBranches),
+                new XAttribute(XName.Get("branch-rate"), branchRate),
+                new XAttribute(XName.Get("complexity"), 0),
                 new XAttribute(XName.Get("timestamp"), timestamp),
-                new XAttribute(XName.Get("version"), "1.0"),
+                new XAttribute(XName.Get("version"), "1.0.0"),
                 CrateSourcesElement(result, hitsInfo),
                 CratePackagesElement(result, hitsInfo)
             );
@@ -88,25 +106,41 @@ namespace MiniCover.Reports
 
         private static XElement CreatePackageElement(InstrumentedAssembly assembly, HitsInfo hitsInfo)
         {
-            var linesValid = assembly.SourceFiles
-                .SelectMany(kvFile => kvFile.Value.Instructions)
+            var allLines = assembly.SourceFiles
+                .SelectMany(kvFile => kvFile.Value.Sequences)
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
             var coveredLines = assembly.SourceFiles
-                .SelectMany(kvFile => kvFile.Value.Instructions)
-                .Where(h => hitsInfo.IsInstructionHit(h.Id))
+                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .Where(h => hitsInfo.WasHit(h.HitId))
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
-            var linesRate = linesValid == 0 ? 0d : (double)coveredLines / (double)linesValid;
+            var allBranches = assembly.SourceFiles
+                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Count();
+
+            var coveredBranches = assembly.SourceFiles
+                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Where(b => hitsInfo.WasHit(b.HitId))
+                .Count();
+
+            var lineRate = allLines == 0 ? 1d : (double)coveredLines / (double)allLines;
+            var branchRate = allBranches == 0 ? 1d : (double)coveredBranches / (double)allBranches;
 
             return new XElement(
                 XName.Get("package"),
                 new XAttribute(XName.Get("name"), assembly.Name),
-                new XAttribute(XName.Get("line-rate"), linesRate),
+                new XAttribute(XName.Get("line-rate"), lineRate),
+                new XAttribute(XName.Get("branch-rate"), branchRate),
+                new XAttribute(XName.Get("complexity"), 0),
                 CreateClassesElement(assembly, hitsInfo)
             );
         }
@@ -122,27 +156,41 @@ namespace MiniCover.Reports
 
         private static XElement CreateClassElement(string fileName, SourceFile sourceFile, HitsInfo hitsInfo)
         {
-            var linesValid = sourceFile.Instructions
+            var allLines = sourceFile.Sequences
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
-            var coveredLines = sourceFile.Instructions
-                .Where(h => hitsInfo.IsInstructionHit(h.Id))
+            var coveredLines = sourceFile.Sequences
+                .Where(h => hitsInfo.WasHit(h.HitId))
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
-            var linesRate = (double)coveredLines / (double)linesValid;
+            var allBranches = sourceFile.Sequences
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Count();
+
+            var coveredBranches = sourceFile.Sequences
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Where(b => hitsInfo.WasHit(b.HitId))
+                .Count();
+
+            var lineRate = allLines == 0 ? 1d : (double)coveredLines / (double)allLines;
+            var branchRate = allBranches == 0 ? 1d : (double)coveredBranches / (double)allBranches;
 
             return new XElement(
 
                 XName.Get("class"),
                 new XAttribute(XName.Get("name"), fileName),
                 new XAttribute(XName.Get("filename"), fileName),
-                new XAttribute(XName.Get("line-rate"), linesRate),
+                new XAttribute(XName.Get("line-rate"), lineRate),
+                new XAttribute(XName.Get("branch-rate"), branchRate),
+                new XAttribute(XName.Get("complexity"), 0),
                 CreateMethodsElement(sourceFile, hitsInfo),
-                CreateLinesElement(sourceFile.Instructions, hitsInfo)
+                CreateLinesElement(sourceFile.Sequences, hitsInfo)
             );
         }
 
@@ -150,15 +198,38 @@ namespace MiniCover.Reports
         {
             return new XElement(
                 XName.Get("methods"),
-                sourceFile.Instructions
+                sourceFile.Sequences
                     .GroupBy(i => i.Method)
                     .Select(g => CreateMethodElement(g.Key, g, hitsInfo))
             );
         }
 
-        private static XElement CreateMethodElement(InstrumentedMethod method, IEnumerable<InstrumentedInstruction> instructions, HitsInfo hitsInfo)
+        private static XElement CreateMethodElement(InstrumentedMethod method, IEnumerable<InstrumentedSequence> instructions, HitsInfo hitsInfo)
         {
-            var hits = instructions.Sum(i => hitsInfo.GetInstructionHitCount(i.Id));
+            var allLines = instructions
+                .SelectMany(i => i.GetLines())
+                .Distinct()
+                .Count();
+
+            var coveredLines = instructions
+                .Where(h => hitsInfo.WasHit(h.HitId))
+                .SelectMany(i => i.GetLines())
+                .Distinct()
+                .Count();
+
+            var allBranches = instructions
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Count();
+
+            var coveredBranches = instructions
+                .SelectMany(i => i.Conditions)
+                .SelectMany(c => c.Branches)
+                .Where(b => hitsInfo.WasHit(b.HitId))
+                .Count();
+
+            var lineRate = allLines == 0 ? 1d : (double)coveredLines / (double)allLines;
+            var branchRate = allBranches == 0 ? 1d : (double)coveredBranches / (double)allBranches;
 
             var openParametersIndex = method.FullName.IndexOf("(");
             var signature = method.FullName.Substring(openParametersIndex);
@@ -167,12 +238,14 @@ namespace MiniCover.Reports
                 XName.Get("method"),
                 new XAttribute(XName.Get("name"), method.Name),
                 new XAttribute(XName.Get("signature"), signature),
-                new XAttribute(XName.Get("hits"), hits),
+                new XAttribute(XName.Get("line-rate"), lineRate),
+                new XAttribute(XName.Get("branch-rate"), branchRate),
+                new XAttribute(XName.Get("complexity"), 0),
                 CreateLinesElement(instructions, hitsInfo)
             );
         }
 
-        private static XElement CreateLinesElement(IEnumerable<InstrumentedInstruction> instructions, HitsInfo hitsInfo)
+        private static XElement CreateLinesElement(IEnumerable<InstrumentedSequence> instructions, HitsInfo hitsInfo)
         {
             return new XElement(
                 XName.Get("lines"),
@@ -183,14 +256,60 @@ namespace MiniCover.Reports
             );
         }
 
-        private static object CreateLineElement(int line, IEnumerable<InstrumentedInstruction> instructions, HitsInfo hitsInfo)
+        private static XElement CreateLineElement(int line, IEnumerable<InstrumentedSequence> instructions, HitsInfo hitsInfo)
         {
-            var hits = instructions.Sum(i => hitsInfo.GetInstructionHitCount(i.Id));
+            var conditions = instructions
+                .SelectMany(i => i.Conditions)
+                .ToArray();
+
+            var allBranches = conditions
+                .SelectMany(c => c.Branches)
+                .Count();
+
+            var coveredBranches = conditions
+                .SelectMany(c => c.Branches)
+                .Where(b => hitsInfo.WasHit(b.HitId))
+                .Count();
+
+            var hits = instructions.Sum(i => hitsInfo.GetHitCount(i.HitId));
+
+            var conditionCoverage = allBranches == 0 ? 0 : coveredBranches * 100 / allBranches;
 
             return new XElement(
                 XName.Get("line"),
                 new XAttribute(XName.Get("number"), line),
-                new XAttribute(XName.Get("hits"), hits)
+                new XAttribute(XName.Get("hits"), hits),
+                new XAttribute(XName.Get("branch"), allBranches > 0 ? "true" : "false"),
+                new XAttribute(XName.Get("condition-coverage"), $"{conditionCoverage}% ({coveredBranches}/{allBranches})"),
+                allBranches > 0
+                    ? CreateConditionsElements(conditions, hitsInfo)
+                    : null
+            );
+        }
+
+        private static XElement CreateConditionsElements(IEnumerable<InstrumentedCondition> conditions, HitsInfo hitsInfo)
+        {
+            return new XElement(
+                XName.Get("conditions"),
+                conditions.Select((b, i) => CreateConditionElement(b, i, hitsInfo))
+            );
+        }
+
+        private static XElement CreateConditionElement(InstrumentedCondition condition, int index, HitsInfo hitsInfo)
+        {
+            var allBranches = condition.Branches;
+
+            var coveredBranches = allBranches
+                .Where(b => hitsInfo.WasHit(b.HitId))
+                .Count();
+
+            var coverage = allBranches.Length == 0 ? 0 : coveredBranches * 100 / allBranches.Length;
+
+            return new XElement(
+                XName.Get("condition"),
+                new XAttribute(XName.Get("number"), index),
+                new XAttribute(XName.Get("type"), "jump"),
+                new XAttribute(XName.Get("coverage"), $"{coverage}%")
             );
         }
     }

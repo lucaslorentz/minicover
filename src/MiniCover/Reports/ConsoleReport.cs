@@ -1,6 +1,6 @@
-﻿using MiniCover.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using MiniCover.Model;
 
 namespace MiniCover.Reports
 {

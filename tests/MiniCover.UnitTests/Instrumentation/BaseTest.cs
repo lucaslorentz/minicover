@@ -12,17 +12,17 @@ using Xunit;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public abstract class BaseInstrumentationTest
+    public abstract class BaseTest
     {
         private Type _typeToInstrument;
         private MethodBase _methodToInstrument;
 
-        public BaseInstrumentationTest(Type typeToInstrument)
+        public BaseTest(Type typeToInstrument)
         {
             _typeToInstrument = typeToInstrument;
         }
 
-        public BaseInstrumentationTest(MethodBase methodToInstrument)
+        public BaseTest(MethodBase methodToInstrument)
         {
             _methodToInstrument = methodToInstrument;
         }
@@ -32,29 +32,35 @@ namespace MiniCover.UnitTests.Instrumentation
         {
             InstrumentedAssembly instrumentedAssembly;
             TypeDefinition typeDefinition;
+            string il;
 
             if (_methodToInstrument != null)
             {
                 var methodDefinition = _methodToInstrument.ToDefinition();
                 typeDefinition = methodDefinition?.DeclaringType;
                 instrumentedAssembly = methodDefinition.Instrument();
-                var il = new ILFormatter(false).FormatMethodBody(methodDefinition);
-                il.NormalizeLineEndings().Should().Be(ExpectedIL.NormalizeLineEndings());
+                il = new ILFormatter(false).FormatMethodBody(methodDefinition);
             }
             else
             {
                 typeDefinition = _typeToInstrument.ToDefinition();
                 instrumentedAssembly = typeDefinition.Instrument();
-                var il = new ILFormatter(false).FormatType(typeDefinition);
+                il = new ILFormatter(false).FormatType(typeDefinition);
+            }
+
+            if (ExpectedIL != null)
+            {
                 il.NormalizeLineEndings().Should().Be(ExpectedIL.NormalizeLineEndings());
             }
 
             var instrumentedInstructions = instrumentedAssembly.SourceFiles
-                .SelectMany(kv => kv.Value.Instructions)
+                .SelectMany(kv => kv.Value.Sequences)
                 .ToArray();
 
             if (ExpectedInstructions != null)
-                instrumentedInstructions.Should().BeEquivalentTo(ExpectedInstructions);
+                instrumentedInstructions.Should().BeEquivalentTo(ExpectedInstructions, config => config
+                .Using<string>(strCtx => strCtx.Subject?.NormalizeLineEndings().Should().Be(strCtx.Expectation?.NormalizeLineEndings()))
+                .WhenTypeIs<string>());
 
             var instrumentedType = typeDefinition.Load();
 
@@ -64,13 +70,17 @@ namespace MiniCover.UnitTests.Instrumentation
             HitContext.Current = new HitContext("Assembly", "Class", "Method");
             var instrumentedTest = Activator.CreateInstance(instrumentedTestType);
             functionalTestMethod.Invoke(instrumentedTest, new object[0]);
-            HitContext.Current.Hits.Should().BeEquivalentTo(ExpectedHits);
+
+            if (ExpectedHits != null)
+            {
+                HitContext.Current.Hits.Should().BeEquivalentTo(ExpectedHits);
+            }
         }
 
-        public abstract string ExpectedIL { get; }
-        public abstract IDictionary<int, int> ExpectedHits { get; }
-        public virtual InstrumentedInstruction[] ExpectedInstructions => null;
+        public virtual string ExpectedIL => null;
+        public virtual IDictionary<int, int> ExpectedHits => null;
+        public virtual InstrumentedSequence[] ExpectedInstructions => null;
 
-        public abstract void FunctionalTest();
+        public virtual void FunctionalTest() { }
     }
 }

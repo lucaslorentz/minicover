@@ -5,7 +5,7 @@ using MiniCover.Model;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class AsyncMethod : BaseInstrumentationTest
+    public class AsyncMethod : BaseTest
     {
         public class Class
         {
@@ -103,13 +103,13 @@ namespace MiniCover.UnitTests.Instrumentation
                     IL_0035: nop
                     IL_0036: ldloc.s V_7
                     IL_0038: ldc.i4.1
-                    IL_0039: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                    IL_0039: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                     IL_003e: ldarg.0 // this
                     IL_003f: ldc.i4.0
                     IL_0040: stfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<x>5__1
                     IL_0045: ldloc.s V_7
                     IL_0047: ldc.i4.2
-                    IL_0048: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                    IL_0048: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                     IL_004d: ldc.i4.5
                     IL_004e: call System.Threading.Tasks.Task System.Threading.Tasks.Task::Delay(System.Int32)
                     IL_0053: callvirt System.Runtime.CompilerServices.TaskAwaiter System.Threading.Tasks.Task::GetAwaiter()
@@ -150,7 +150,7 @@ namespace MiniCover.UnitTests.Instrumentation
                     IL_00ac: nop
                     IL_00ad: ldloc.s V_7
                     IL_00af: ldc.i4.3
-                    IL_00b0: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                    IL_00b0: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                     IL_00b5: ldarg.0 // this
                     IL_00b6: ldfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<x>5__1
                     IL_00bb: stloc.s V_4
@@ -161,7 +161,7 @@ namespace MiniCover.UnitTests.Instrumentation
                     IL_00c2: stfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<x>5__1
                     IL_00c7: ldloc.s V_7
                     IL_00c9: ldc.i4.4
-                    IL_00ca: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                    IL_00ca: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                     IL_00cf: ldc.i4.5
                     IL_00d0: call System.Threading.Tasks.Task System.Threading.Tasks.Task::Delay(System.Int32)
                     IL_00d5: callvirt System.Runtime.CompilerServices.TaskAwaiter System.Threading.Tasks.Task::GetAwaiter()
@@ -202,7 +202,7 @@ namespace MiniCover.UnitTests.Instrumentation
                     IL_0131: nop
                     IL_0132: ldloc.s V_7
                     IL_0134: ldc.i4.5
-                    IL_0135: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                    IL_0135: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                     IL_013a: ldarg.0 // this
                     IL_013b: ldfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<x>5__1
                     IL_0140: stloc.s V_4
@@ -213,7 +213,7 @@ namespace MiniCover.UnitTests.Instrumentation
                     IL_0147: stfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<x>5__1
                     IL_014c: ldloc.s V_7
                     IL_014e: ldc.i4.6
-                    IL_014f: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                    IL_014f: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                     IL_0154: ldarg.0 // this
                     IL_0155: ldfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<x>5__1
                     IL_015a: stloc.1
@@ -270,14 +270,14 @@ namespace MiniCover.UnitTests.Instrumentation
             [6] = 1
         };
 
-        public override InstrumentedInstruction[] ExpectedInstructions => new InstrumentedInstruction[]
+        public override InstrumentedSequence[] ExpectedInstructions => new InstrumentedSequence[]
         {
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "var x = 0;",
                 EndColumn = 27,
                 EndLine = 14,
-                Id = 1,
+                HitId = 1,
                 Instruction = "IL_001a: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.AsyncMethod/Class",
@@ -287,12 +287,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 17,
                 StartLine = 14
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "await Task.Delay(5);",
                 EndColumn = 37,
                 EndLine = 15,
-                Id = 2,
+                HitId = 2,
                 Instruction = "IL_0021: ldc.i4 5",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.AsyncMethod/Class",
@@ -302,12 +302,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 17,
                 StartLine = 15
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "x++;",
                 EndColumn = 21,
                 EndLine = 16,
-                Id = 3,
+                HitId = 3,
                 Instruction = "IL_0081: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.AsyncMethod/Class",
@@ -317,12 +317,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 17,
                 StartLine = 16
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "await Task.Delay(5);",
                 EndColumn = 37,
                 EndLine = 17,
-                Id = 4,
+                HitId = 4,
                 Instruction = "IL_0093: ldc.i4 5",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.AsyncMethod/Class",
@@ -332,12 +332,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 17,
                 StartLine = 17,
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "x++;",
                 EndColumn = 21,
                 EndLine = 18,
-                Id = 5,
+                HitId = 5,
                 Instruction = "IL_00f3: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.AsyncMethod/Class",
@@ -347,12 +347,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 17,
                 StartLine = 18
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "return x;",
                 EndColumn = 26,
                 EndLine = 19,
-                Id = 6,
+                HitId = 6,
                 Instruction = "IL_0105: ldarg ",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.AsyncMethod/Class",

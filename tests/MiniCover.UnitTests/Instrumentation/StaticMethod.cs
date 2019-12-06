@@ -5,7 +5,7 @@ using Xunit;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class StaticMethod : BaseInstrumentationTest
+    public class StaticMethod : BaseTest
     {
         public static class Class
         {
@@ -37,7 +37,7 @@ IL_001a: nop
     IL_001b: nop
     IL_001c: ldloc.1
     IL_001d: ldc.i4.1
-    IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+    IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_0023: ldarg.0 // this
     IL_0024: ldc.i4.2
     IL_0025: mul

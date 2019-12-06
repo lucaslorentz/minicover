@@ -4,14 +4,14 @@ using FluentAssertions;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class FieldInitializedOutsideCtor : BaseInstrumentationTest
+    public class FieldInitialization : BaseTest
     {
         public class Class
         {
             public readonly int Value = 5;
         }
 
-        public FieldInitializedOutsideCtor() : base(typeof(Class).GetConstructors().First())
+        public FieldInitialization() : base(typeof(Class).GetConstructors().First())
         {
         }
 
@@ -24,7 +24,7 @@ namespace MiniCover.UnitTests.Instrumentation
         public override string ExpectedIL => @".locals init (MiniCover.HitServices.HitService/MethodContext V_0)
 IL_0000: ldstr ""/tmp""
 IL_0005: ldstr ""MiniCover.UnitTests""
-IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.FieldInitializedOutsideCtor/Class""
+IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.FieldInitialization/Class""
 IL_000f: ldstr "".ctor""
 IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
 IL_0019: stloc.0
@@ -33,10 +33,10 @@ IL_001a: nop
 {
     IL_001b: ldloc.0
     IL_001c: ldc.i4.1
-    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_0022: ldarg.0 // this
     IL_0023: ldc.i4.5
-    IL_0024: stfld System.Int32 MiniCover.UnitTests.Instrumentation.FieldInitializedOutsideCtor/Class::Value
+    IL_0024: stfld System.Int32 MiniCover.UnitTests.Instrumentation.FieldInitialization/Class::Value
     IL_0029: ldarg.0 // this
     IL_002a: call System.Void System.Object::.ctor()
     IL_002f: nop

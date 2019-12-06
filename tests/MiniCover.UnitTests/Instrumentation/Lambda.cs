@@ -5,7 +5,7 @@ using MiniCover.Model;
 
 namespace MiniCover.UnitTests.Instrumentation
 {
-    public class Lambda : BaseInstrumentationTest
+    public class Lambda : BaseTest
     {
         public class Class
         {
@@ -41,7 +41,7 @@ namespace MiniCover.UnitTests.Instrumentation
             IL_001b: nop
             IL_001c: ldloc.1
             IL_001d: ldc.i4.1
-            IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+            IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
             IL_0023: ldarg.1
             IL_0024: ldsfld System.Func`2<System.Int32,System.Int32> MiniCover.UnitTests.Instrumentation.Lambda/Class/<>c::<>9__0_0
             IL_0029: dup
@@ -109,7 +109,7 @@ namespace MiniCover.UnitTests.Instrumentation
             {
                 IL_001b: ldloc.0
                 IL_001c: ldc.i4.2
-                IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::HitInstruction(System.Int32)
+                IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
                 IL_0022: ldarg.1
                 IL_0023: ldc.i4.2
                 IL_0024: mul
@@ -136,13 +136,13 @@ namespace MiniCover.UnitTests.Instrumentation
             [2] = 3
         };
 
-        public override InstrumentedInstruction[] ExpectedInstructions => new InstrumentedInstruction[] {
-            new InstrumentedInstruction
+        public override InstrumentedSequence[] ExpectedInstructions => new InstrumentedSequence[] {
+            new InstrumentedSequence
             {
                 Code = "return values.Select(a => a * 2).Sum();",
                 EndColumn = 56,
                 EndLine = 14,
-                Id = 1,
+                HitId = 1,
                 Instruction = "IL_0001: ldarg values",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.Lambda/Class",
@@ -152,12 +152,12 @@ namespace MiniCover.UnitTests.Instrumentation
                 StartColumn = 17,
                 StartLine = 14,
             },
-            new InstrumentedInstruction
+            new InstrumentedSequence
             {
                 Code = "a * 2",
                 EndColumn = 48,
                 EndLine = 14,
-                Id = 2,
+                HitId = 2,
                 Instruction = "IL_0000: ldarg a",
                 Method = new InstrumentedMethod {
                     Class = "MiniCover.UnitTests.Instrumentation.Lambda/Class",

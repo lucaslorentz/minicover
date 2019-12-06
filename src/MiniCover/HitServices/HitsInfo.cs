@@ -7,40 +7,40 @@ namespace MiniCover
 {
     public class HitsInfo
     {
-        private readonly Dictionary<int, InstructionValues> _valuesPerInstruction;
+        private readonly Dictionary<int, HitValues> _valuesById;
 
         public HitsInfo(IEnumerable<HitContext> contexts)
         {
-            _valuesPerInstruction = HitContext.MergeDuplicates(contexts)
-                .SelectMany(c => c.Hits.Keys, (context, instructionId) => new {
+            _valuesById = HitContext.MergeDuplicates(contexts)
+                .SelectMany(c => c.Hits.Keys, (context, id) => new {
                     context,
-                    instructionId,
-                    hitCount = context.GetHitCount(instructionId)
+                    id,
+                    hitCount = context.GetHitCount(id)
                 })
-                .GroupBy(g => g.instructionId)
-                .ToDictionary(g => g.Key, g => new InstructionValues
+                .GroupBy(g => g.id)
+                .ToDictionary(g => g.Key, g => new HitValues
                 {
                     HitCount = g.Sum(d => d.hitCount),
                     Contexts = g.Select(d => d.context).ToArray()
                 });
         }
 
-        public bool IsInstructionHit(int id)
+        public bool WasHit(int id)
         {
-            return _valuesPerInstruction.ContainsKey(id);
+            return _valuesById.ContainsKey(id);
         }
 
-        public int GetInstructionHitCount(int instructionId)
+        public int GetHitCount(int id)
         {
-            if (!_valuesPerInstruction.TryGetValue(instructionId, out var values))
+            if (!_valuesById.TryGetValue(id, out var values))
                 return 0;
 
             return values.HitCount;
         }
 
-        public IEnumerable<HitContext> GetInstructionHitContexts(int instructionId)
+        public IEnumerable<HitContext> GetHitContexts(int id)
         {
-            if (!_valuesPerInstruction.TryGetValue(instructionId, out var values))
+            if (!_valuesById.TryGetValue(id, out var values))
                 return Enumerable.Empty<HitContext>();
 
             return values.Contexts;
@@ -61,7 +61,7 @@ namespace MiniCover
             return new HitsInfo(contexts);
         }
 
-        class InstructionValues
+        class HitValues
         {
             public int HitCount { get; set; }
             public HitContext[] Contexts { get; set; }

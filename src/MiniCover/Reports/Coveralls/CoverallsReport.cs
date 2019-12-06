@@ -118,9 +118,9 @@ namespace MiniCover.Reports.Coveralls
 
                 var sourceLines = File.ReadAllLines(sourceFile);
 
-                var hitsPerLine = kvFile.Value.Instructions
+                var hitsPerLine = kvFile.Value.Sequences
                     .GroupByMany(i => i.GetLines())
-                    .ToDictionary(g => g.Key, g => g.Sum(i => hits.GetInstructionHitCount(i.Id)));
+                    .ToDictionary(g => g.Key, g => g.Sum(i => hits.GetHitCount(i.HitId)));
 
                 var fileName = Path.GetRelativePath(_rootFolder, sourceFile).Replace("\\", "/");
 

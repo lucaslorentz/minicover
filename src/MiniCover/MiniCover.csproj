@@ -44,6 +44,8 @@
     <Folder Include="Infrastructure\IO\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Infrastructure\FileSystem\" />
+    <Folder Include="Instrumentation\Patterns\" />
+    <Folder Include="Instrumentation\Branches\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Infrastructure\Verbosity.cs" />

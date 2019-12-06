@@ -33,14 +33,14 @@ namespace MiniCover.Model
             return method;
         }
 
-        public void AddInstruction(string file, InstrumentedInstruction instruction)
+        public void AddSequence(string file, InstrumentedSequence instruction)
         {
             if (!SourceFiles.ContainsKey(file))
             {
                 SourceFiles[file] = new SourceFile();
             }
 
-            SourceFiles[file].Instructions.Add(instruction);
+            SourceFiles[file].Sequences.Add(instruction);
         }
 
         public void AddLocation(string file, string backupFile, string pdbFile, string backupPdbFile)
