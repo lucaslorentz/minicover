@@ -58,6 +58,9 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
   - bash: |
       export Version=${TagName:1}
       dotnet pack -c Release
