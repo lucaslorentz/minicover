@@ -46,7 +46,7 @@ IL_001a: nop
     IL_0025: rem
     IL_0026: brtrue.s IL_0037
     IL_0028: ldloc.2
-    IL_0029: ldc.i4.4
+    IL_0029: ldc.i4.2
     IL_002a: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_002f: ldarg.1
     IL_0030: ldc.i4.3
@@ -55,20 +55,20 @@ IL_001a: nop
     IL_0033: ceq
     IL_0035: br.s IL_003f
     IL_0037: ldloc.2
-    IL_0038: ldc.i4.5
+    IL_0038: ldc.i4.3
     IL_0039: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_003e: ldc.i4.0
     IL_003f: stloc.0
     IL_0040: ldloc.0
     IL_0041: brfalse.s IL_004e
     IL_0043: ldloc.2
-    IL_0044: ldc.i4.2
+    IL_0044: ldc.i4.4
     IL_0045: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_004a: ldc.i4.1
     IL_004b: stloc.1
     IL_004c: br.s IL_0059
     IL_004e: ldloc.2
-    IL_004f: ldc.i4.3
+    IL_004f: ldc.i4.5
     IL_0050: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
     IL_0055: ldc.i4.0
     IL_0056: stloc.1
@@ -91,9 +91,9 @@ IL_0066: ret
         public override IDictionary<int, int> ExpectedHits => new Dictionary<int, int>
         {
             [1] = 2,
-            [4] = 1,
-            [3] = 2,
-            [5] = 1
+            [2] = 1,
+            [3] = 1,
+            [5] = 2
         };
 
         public override InstrumentedSequence[] ExpectedInstructions => new InstrumentedSequence[]
@@ -104,39 +104,39 @@ IL_0066: ret
                 Conditions = new InstrumentedCondition[] {
                     new InstrumentedCondition
                     {
-                        Instruction = "IL_000f: stloc V_0",
-                        Branches = new InstrumentedBranch[]
-                        {
-                            new InstrumentedBranch
-                            {
-                                External = true,
-                                HitId = 2,
-                                Instruction = "IL_0013: ldc.i4 1"
-                            },
-                            new InstrumentedBranch
-                            {
-                                External = true,
-                                HitId = 3,
-                                Instruction = "IL_0017: ldc.i4 0"
-                            }
-                        }
-                    },
-                    new InstrumentedCondition
-                    {
                         Instruction = "IL_0004: brtrue IL_0000",
                         Branches = new InstrumentedBranch[]
                         {
                             new InstrumentedBranch
                             {
                                 External = false,
-                                HitId = 4,
+                                HitId = 2,
                                 Instruction = "IL_0006: ldarg x"
                             },
                             new InstrumentedBranch
                             {
                                 External = false,
-                                HitId = 5,
+                                HitId = 3,
                                 Instruction = "IL_000e: ldc.i4 0"
+                            }
+                        }
+                    },
+                    new InstrumentedCondition
+                    {
+                        Instruction = "IL_000f: stloc V_0",
+                        Branches = new InstrumentedBranch[]
+                        {
+                            new InstrumentedBranch
+                            {
+                                External = true,
+                                HitId = 4,
+                                Instruction = "IL_0013: ldc.i4 1"
+                            },
+                            new InstrumentedBranch
+                            {
+                                External = true,
+                                HitId = 5,
+                                Instruction = "IL_0017: ldc.i4 0"
                             }
                         }
                     }
@@ -159,7 +159,7 @@ IL_0066: ret
                 Code = "return true;",
                 EndColumn = 33,
                 EndLine = 14,
-                HitId = 2,
+                HitId = 4,
                 Instruction = "IL_0013: ldc.i4 1",
                 Method = new InstrumentedMethod
                 {
@@ -175,7 +175,7 @@ IL_0066: ret
                 Code = "return false;",
                 EndColumn = 30,
                 EndLine = 16,
-                HitId = 3,
+                HitId = 5,
                 Instruction = "IL_0017: ldc.i4 0",
                 Method = new InstrumentedMethod
                 {

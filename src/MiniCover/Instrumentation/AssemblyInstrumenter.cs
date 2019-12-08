@@ -66,6 +66,12 @@ namespace MiniCover.Instrumentation
 
             var assemblyDocuments = assemblyDefinition.GetAllDocuments();
 
+            if (!assemblyDocuments.Any(d => context.IsSource(d.Url) || context.IsTest(d.Url)))
+            {
+                _logger.LogInformation("No link to source files or test files");
+                return null;
+            }
+
             var changedDocuments = assemblyDocuments.Where(d => d.FileHasChanged()).ToArray();
             if (changedDocuments.Any())
             {
@@ -78,12 +84,6 @@ namespace MiniCover.Instrumentation
                 {
                     _logger.LogInformation("Source files has changed");
                 }
-                return null;
-            }
-
-            if (!assemblyDocuments.Any(d => context.IsSource(d.Url) || context.IsTest(d.Url)))
-            {
-                _logger.LogInformation("No link to source files or test files");
                 return null;
             }
 

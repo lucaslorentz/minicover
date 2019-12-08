@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using MiniCover.Extensions;
 using MiniCover.HitServices;
 using MiniCover.Infrastructure.FileSystem;
-using MiniCover.Instrumentation.Branches;
 using MiniCover.Instrumentation.Patterns;
 using MiniCover.Model;
 using Mono.Cecil;
@@ -122,8 +121,11 @@ namespace MiniCover.Instrumentation
             var sequencePointByInstruction = userSequencePointsInstructions
                 .ToDictionary(x => x.instruction, x => x.sequencePoint);
 
-            var branchesBySequencePoint = BranchCollector.Collect(methodDefinition.Body.Instructions[0], userInstructions)
-                .ToLookup(b => sequencePointByInstruction[b.PivotInstruction]);
+            var branchesBySequencePoint = methodDefinition.Body.Instructions[0]
+                .ToGraph()
+                .Filter(userInstructions)
+                .GetBranches()
+                .ToLookup(b => sequencePointByInstruction[b.Instruction]);
 
             var sequencePointsGroups = userSequencePointsInstructions
                 .GroupBy(j => j.sequencePoint);
@@ -175,10 +177,10 @@ namespace MiniCover.Instrumentation
                 {
                     var instrumentedBranches = new List<InstrumentedBranch>();
 
-                    foreach (var targetInstruction in branch.Targets)
+                    foreach (var child in branch.Children)
                     {
                         var branchId = InstrumentInstruction(
-                            targetInstruction,
+                            child.Instruction,
                             ilProcessor,
                             methodContextVariable,
                             hitMethodReference,
@@ -188,15 +190,15 @@ namespace MiniCover.Instrumentation
                         instrumentedBranches.Add(new InstrumentedBranch
                         {
                             HitId = branchId,
-                            External = !instructions.Contains(targetInstruction),
-                            Instruction = targetInstruction.ToString()
+                            External = !instructions.Contains(child.Instruction),
+                            Instruction = child.Instruction.ToString()
                         });
                     }
 
                     instrumentedConditions.Add(new InstrumentedCondition
                     {
                         Branches = instrumentedBranches.ToArray(),
-                        Instruction = branch.PivotInstruction.ToString()
+                        Instruction = branch.Instruction.ToString()
                     });
                 }
 
