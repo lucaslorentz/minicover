@@ -1,43 +1,42 @@
 ﻿using System.Collections.Generic;
 using MiniCover.Model;
-using Mono.Cecil.Cil;
 
 namespace MiniCover.Extensions
 {
     public static class GraphNodeExtensions
     {
-        public static HashSet<GraphNode> Filter(
-            this GraphNode rootNode,
-            HashSet<Instruction> allowedInstructions)
+        public static HashSet<GraphNode<T>> Filter<T>(
+            this GraphNode<T> rootNode,
+            HashSet<T> allowedValues)
         {
-            var rootList = new HashSet<GraphNode> { rootNode };
-            var toVisit = new Stack<(HashSet<GraphNode> parentList, GraphNode node)>();
-            toVisit.Push((rootList, rootNode));
+            var rootList = new HashSet<GraphNode<T>> { rootNode };
 
-            var visitedNodes = new HashSet<GraphNode>();
+            var pending = new Queue<(HashSet<GraphNode<T>> parentList, GraphNode<T> node)>();
+            pending.Enqueue((rootList, rootNode));
 
-            while (toVisit.Count > 0)
+            var visitedNodes = new HashSet<(HashSet<GraphNode<T>> parentList, GraphNode<T> node)>();
+
+            while (pending.Count > 0)
             {
-                var current = toVisit.Pop();
+                var current = pending.Dequeue();
 
-                if (allowedInstructions.Contains(current.node.Instruction))
+                if (allowedValues.Contains(current.node.Value))
                 {
-                    if (visitedNodes.Contains(current.node))
+                    if (!visitedNodes.Add(current))
                         continue;
 
-                    visitedNodes.Add(current.node);
-
                     foreach (var child in current.node.Children)
-                        toVisit.Push((current.node.Children, child));
+                        pending.Enqueue((current.node.Children, child));
                 }
-                else
+                else if (current.parentList.Remove(current.node))
                 {
-                    current.parentList.Remove(current.node);
+                    if (!visitedNodes.Add(current))
+                        continue;
 
                     foreach (var child in current.node.Children)
                     {
                         current.parentList.Add(child);
-                        toVisit.Push((current.parentList, child));
+                        pending.Enqueue((current.parentList, child));
                     }
                 }
             }
@@ -45,20 +44,18 @@ namespace MiniCover.Extensions
             return rootList;
         }
 
-        public static HashSet<GraphNode> GetBranches(this HashSet<GraphNode> nodes)
+        public static HashSet<GraphNode<T>> GetBranches<T>(this HashSet<GraphNode<T>> nodes)
         {
-            var toVisit = new Stack<GraphNode>(nodes);
-            var branches = new HashSet<GraphNode>();
-            var visitedNodes = new HashSet<GraphNode>();
+            var pending = new Queue<GraphNode<T>>(nodes);
+            var branches = new HashSet<GraphNode<T>>();
+            var visitedNodes = new HashSet<GraphNode<T>>();
 
-            while (toVisit.Count > 0)
+            while (pending.Count > 0)
             {
-                var node = toVisit.Pop();
+                var node = pending.Dequeue();
 
-                if (visitedNodes.Contains(node))
+                if (!visitedNodes.Add(node))
                     continue;
-
-                visitedNodes.Add(node);
 
                 if (node.Children.Count > 1)
                 {
@@ -66,7 +63,7 @@ namespace MiniCover.Extensions
                 }
 
                 foreach (var child in node.Children)
-                    toVisit.Push(child);
+                    pending.Enqueue(child);
             }
 
             return branches;

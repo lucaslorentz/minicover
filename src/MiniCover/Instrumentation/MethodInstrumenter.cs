@@ -125,7 +125,7 @@ namespace MiniCover.Instrumentation
                 .ToGraph()
                 .Filter(userInstructions)
                 .GetBranches()
-                .ToLookup(b => sequencePointByInstruction[b.Instruction]);
+                .ToLookup(b => sequencePointByInstruction[b.Value]);
 
             var sequencePointsGroups = userSequencePointsInstructions
                 .GroupBy(j => j.sequencePoint);
@@ -180,7 +180,7 @@ namespace MiniCover.Instrumentation
                     foreach (var child in branch.Children)
                     {
                         var branchId = InstrumentInstruction(
-                            child.Instruction,
+                            child.Value,
                             ilProcessor,
                             methodContextVariable,
                             hitMethodReference,
@@ -190,15 +190,15 @@ namespace MiniCover.Instrumentation
                         instrumentedBranches.Add(new InstrumentedBranch
                         {
                             HitId = branchId,
-                            External = !instructions.Contains(child.Instruction),
-                            Instruction = child.Instruction.ToString()
+                            External = !instructions.Contains(child.Value),
+                            Instruction = child.Value.ToString()
                         });
                     }
 
                     instrumentedConditions.Add(new InstrumentedCondition
                     {
                         Branches = instrumentedBranches.ToArray(),
-                        Instruction = branch.Instruction.ToString()
+                        Instruction = branch.Value.ToString()
                     });
                 }
 

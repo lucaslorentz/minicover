@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using Mono.Cecil.Cil;
 
 namespace MiniCover.Model
 {
-    public class GraphNode
+    public class GraphNode<T>
     {
-        public Instruction Instruction { get; }
+        public T Value { get; }
 
-        public HashSet<GraphNode> Children { get; } = new HashSet<GraphNode>();
+        public HashSet<GraphNode<T>> Children { get; }
 
-        public GraphNode(Instruction instruction)
+        public GraphNode(T value, params GraphNode<T>[] children)
         {
-            Instruction = instruction;
+            Value = value;
+            Children = new HashSet<GraphNode<T>>(children);
         }
     }
 }

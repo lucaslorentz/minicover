@@ -6,24 +6,32 @@ namespace MiniCover.Extensions
 {
     public static class InstructionExtensions
     {
-        public static GraphNode ToGraph(this Instruction rootInstruction)
+        public static GraphNode<Instruction> ToGraph(this Instruction rootInstruction)
         {
-            var cache = new Dictionary<Instruction, GraphNode>();
+            var cache = new Dictionary<Instruction, GraphNode<Instruction>>();
 
-            GraphNode Visit(Instruction instruction)
+            var rootNode = new GraphNode<Instruction>(rootInstruction);
+            cache[rootInstruction] = rootNode;
+
+            var pending = new Queue<GraphNode<Instruction>>();
+            pending.Enqueue(rootNode);
+
+            while (pending.TryDequeue(out var node))
             {
-                if (cache.ContainsKey(instruction))
-                    return cache[instruction];
+                foreach (var childInstruction in node.Value.GetChildren())
+                {
+                    if (!cache.TryGetValue(childInstruction, out var childNode))
+                    {
+                        childNode = new GraphNode<Instruction>(childInstruction);
+                        cache[childInstruction] = childNode;
+                        pending.Enqueue(childNode);
+                    }
 
-                var node = new GraphNode(instruction);
-                cache[instruction] = node;
-                foreach (var child in instruction.GetChildren())
-                    node.Children.Add(Visit(child));
-
-                return node;
+                    node.Children.Add(childNode);
+                }
             }
 
-            return Visit(rootInstruction);
+            return rootNode;
         }
 
         public static IEnumerable<Instruction> GetChildren(this Instruction instruction)
