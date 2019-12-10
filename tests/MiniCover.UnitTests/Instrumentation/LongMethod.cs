@@ -308,6 +308,306 @@
                 if (x % 2 == 0 && x % 3 == 0)
                     result++;
 
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
+                if (x % 2 == 0 && x % 3 == 0)
+                    result++;
+
                 return result;
             }
         }
