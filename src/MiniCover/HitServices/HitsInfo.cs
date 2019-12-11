@@ -50,11 +50,14 @@ namespace MiniCover
         {
             var contexts = new List<HitContext>();
 
-            foreach (var hitFile in Directory.GetFiles(path, "*.hits"))
+            if (Directory.Exists(path))
             {
-                using (var fileStream = File.Open(hitFile, FileMode.Open, FileAccess.Read))
+                foreach (var hitFile in Directory.GetFiles(path, "*.hits"))
                 {
-                    contexts.AddRange(HitContext.Deserialize(fileStream));
+                    using (var fileStream = File.Open(hitFile, FileMode.Open, FileAccess.Read))
+                    {
+                        contexts.AddRange(HitContext.Deserialize(fileStream));
+                    }
                 }
             }
 
