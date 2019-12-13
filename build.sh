@@ -36,6 +36,6 @@ if [ -n "${BUILD_BUILDID}" ] && [ -n "${COVERALLS_REPO_TOKEN}" ]; then
 		--commit-message "$BUILD_SOURCEVERSIONMESSAGE" \
 		--branch "$BUILD_SOURCEBRANCHNAME" \
 		--remote "origin" \
-		--remote-url "https://github.com/lucaslorentz/minicover.git"
+		--remote-url "${BUILD_REPOSITORY_URI}"
 	echo "# End Coveralls Report"
 fi
