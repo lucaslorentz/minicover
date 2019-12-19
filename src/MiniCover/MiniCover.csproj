@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -45,8 +45,21 @@
     <Folder Include="Exceptions\" />
     <Folder Include="Infrastructure\FileSystem\" />
     <Folder Include="Instrumentation\Patterns\" />
+    <Folder Include="Reports\Html\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Infrastructure\Verbosity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Reports\Html\SourceFile.css" />
+    <None Remove="Reports\Html\Summary.css" />
+    <None Remove="Reports\Html\Shared.css" />
+    <None Remove="Reports\Html\SourceFile.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\Html\SourceFile.css" />
+    <EmbeddedResource Include="Reports\Html\Summary.css" />
+    <EmbeddedResource Include="Reports\Html\Shared.css" />
+    <EmbeddedResource Include="Reports\Html\Shared.js" />
   </ItemGroup>
 </Project>

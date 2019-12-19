@@ -1,0 +1,131 @@
+﻿.legend {
+    margin-bottom: 10px;
+}
+
+.legend label {
+    vertical-align: middle;
+}
+
+.legend div {
+    margin-left: 10px;
+    padding: 0 4px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+    .legend div.hit {
+        background-color: #c8e6c9;
+    }
+
+    .legend div.not-hit {
+        background-color: #ffcdd2;
+    }
+
+    .legend div.partial {
+        background-color: #ffecb3;
+    }
+
+.legend div, .code {
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.code {
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+}
+
+.line {
+    position: relative;
+    white-space: pre;
+    padding-left: 40px;
+}
+
+.line-number {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    text-align: right;
+    background: #fff;
+    padding-right: 5px;
+    color: #555;
+}
+
+.hit-count {
+    display: inline-block;
+    width: 30px;
+    font-size: 10px;
+}
+
+.line-content {
+    padding-left: 5px;
+}
+
+.line.hit {
+    background-color: #e8f5e9;
+}
+
+.line.partial {
+    background-color: #fff8e1;
+}
+
+.line.not-hit {
+    background-color: #ffebee;
+}
+
+
+.statement {
+    position: relative;
+    display: inline-block;
+    color: #000;
+    cursor: pointer;
+}
+
+    .statement.hit {
+        background-color: #c8e6c9;
+    }
+
+    .statement.partial {
+        background-color: #ffecb3;
+    }
+
+    .statement.not-hit {
+        background-color: #ffcdd2;
+    }
+
+    .statement.hit.hover, .statement.hit.active {
+        background-color: #a5d6a7;
+    }
+
+    .statement.not-hit.hover, .statement.not-hit.active {
+        background-color: #ef9a9a;
+    }
+
+    .statement.partial.hover, .statement.partial.active {
+        background-color: #ffe082;
+    }
+
+.statement-info {
+    display: none;
+    position: absolute;
+    background: #fff;
+    box-shadow: 0 3px 4px 0 rgba(0,0,0,0.14), 0 3px 3px -2px rgba(0,0,0,0.12), 0 1px 8px 0 rgba(0,0,0,0.20);
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    padding: 15px;
+    cursor: initial;
+}
+
+    .statement-info ul {
+        margin: 0;
+    }
+
+    .statement-info.active {
+        display: block;
+    }

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
 using MiniCover.Reports;
+using MiniCover.Reports.Html;
 
 namespace MiniCover.CommandLine.Commands
 {
