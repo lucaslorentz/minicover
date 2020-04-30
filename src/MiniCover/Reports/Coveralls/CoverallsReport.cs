@@ -106,9 +106,9 @@ namespace MiniCover.Reports.Coveralls
                 SourceFiles = new List<CoverallsSourceFileModel>()
             };
 
-            foreach (var kvFile in files)
+            foreach (var file in files)
             {
-                var sourceFile = Path.Combine(result.SourcePath, kvFile.Key);
+                var sourceFile = Path.Combine(result.SourcePath, file.Path);
 
                 if (!File.Exists(sourceFile))
                 {
@@ -118,8 +118,8 @@ namespace MiniCover.Reports.Coveralls
 
                 var sourceLines = File.ReadAllLines(sourceFile);
 
-                var hitsPerLine = kvFile.Value.Sequences
-                    .GroupByMany(i => i.GetLines())
+                var hitsPerLine = file.Sequences
+                    .GroupByMany(f => f.GetLines())
                     .ToDictionary(g => g.Key, g => g.Sum(i => hits.GetHitCount(i.HitId)));
 
                 var fileName = Path.GetRelativePath(_rootFolder, sourceFile).Replace("\\", "/");

@@ -54,7 +54,7 @@ namespace MiniCover.UnitTests.Instrumentation
             }
 
             var instrumentedInstructions = instrumentedAssembly.SourceFiles
-                .SelectMany(kv => kv.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .ToArray();
 
             if (ExpectedInstructions != null)

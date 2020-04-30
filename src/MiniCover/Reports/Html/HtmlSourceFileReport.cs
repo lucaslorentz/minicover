@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using MiniCover.Model;
+using MiniCover.Reports.Helpers;
 using MiniCover.Utils;
 
 namespace MiniCover.Reports.Html
@@ -12,42 +13,20 @@ namespace MiniCover.Reports.Html
     {
         public void Generate(
             InstrumentationResult result,
-            string file,
             SourceFile sourceFile,
             HitsInfo hitsInfo,
             float threshold,
             string outputFile)
         {
-            var lines = File.ReadAllLines(Path.Combine(result.SourcePath, file));
+            var lines = File.ReadAllLines(Path.Combine(result.SourcePath, sourceFile.Path));
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
 
-            var totalLines = sourceFile.Sequences
-                .SelectMany(s => s.GetLines())
-                .Distinct()
-                .Count();
+            var summary = SummaryHelpers.CalculateFilesSummary(new[] { sourceFile }, hitsInfo, threshold);
 
-            var coveredLines = sourceFile.Sequences
-                .Where(s => hitsInfo.WasHit(s.HitId))
-                .SelectMany(s => s.GetLines())
-                .Distinct()
-                .Count();
-
-            var totalBranches = sourceFile.Sequences
-                .SelectMany(s => s.Conditions)
-                .SelectMany(c => c.Branches)
-                .Count();
-
-            var coveredBranches = sourceFile.Sequences
-                .SelectMany(s => s.Conditions)
-                .SelectMany(c => c.Branches)
-                .Where(b => hitsInfo.WasHit(b.HitId))
-                .Count();
-
-            var linePercentage = totalLines == 0 ? 1 : (float)coveredLines / totalLines;
-            var lineCoverageClass = linePercentage >= threshold ? "green" : "red";
-            var branchPercentage = totalBranches == 0 ? 1 : (float)coveredBranches / totalBranches;
-            var branchCoverageClass = branchPercentage >= threshold ? "green" : "red";
+            var lineCoverageClass = summary.LinesCoveragePass ? "green" : "red";
+            var statementsCoverageClass = summary.StatementsCoveragePass ? "green" : "red";
+            var branchCoverageClass = summary.BranchesCoveragePass ? "green" : "red";
 
             using (var htmlWriter = (TextWriter)File.CreateText(outputFile))
             {
@@ -64,8 +43,9 @@ namespace MiniCover.Reports.Html
                 htmlWriter.WriteLine("<h2>Summary</h2>");
                 htmlWriter.WriteLine("<table>");
                 htmlWriter.WriteLine($"<tr><th>Generated on</th><td>{DateTime.Now}</td></tr>");
-                htmlWriter.WriteLine($"<tr><th>Line Coverage</th><td class=\"{lineCoverageClass}\">{coveredLines}/{totalLines} ({linePercentage:P})</td></tr>");
-                htmlWriter.WriteLine($"<tr><th>Branch Coverage</th><td class=\"{branchCoverageClass}\">{coveredBranches}/{totalBranches} ({branchPercentage:P})</td></tr>");
+                htmlWriter.WriteLine($"<tr><th>Line Coverage</th><td class=\"{lineCoverageClass}\">{summary.LinesPercentage:P} ({summary.CoveredLines}/{summary.Lines})</td></tr>");
+                htmlWriter.WriteLine($"<tr><th>Statements Coverage</th><td class=\"{branchCoverageClass}\">{summary.StatementsPercentage:P} ({summary.CoveredStatements}/{summary.Statements})</td></tr>");
+                htmlWriter.WriteLine($"<tr><th>Branch Coverage</th><td class=\"{branchCoverageClass}\">{summary.BranchesPercentage:P} ({summary.CoveredBranches}/{summary.Branches})</td></tr>");
                 htmlWriter.WriteLine($"<tr><th>Threshold</th><td>{threshold:P}</td></tr>");
                 htmlWriter.WriteLine("</table>");
 
@@ -91,12 +71,14 @@ namespace MiniCover.Reports.Html
 
                     if (lineHitCount > 0)
                     {
-                        lineClasses.Add("hit");
-
                         if (instructions.Any(i => !hitsInfo.WasHit(i.HitId)
                             || i.Conditions.SelectMany(x => x.Branches).Any(b => !hitsInfo.WasHit(b.HitId))))
                         {
                             lineClasses.Add("partial");
+                        }
+                        else
+                        {
+                            lineClasses.Add("hit");
                         }
                     }
                     else if (instructions.Length > 0)

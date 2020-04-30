@@ -1,120 +1,82 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using MiniCover.Model;
+using MiniCover.Reports.Helpers;
 
 namespace MiniCover.Reports
 {
-    public class ConsoleReport : BaseReport
+    public class ConsoleReport
     {
-        private int _fileColumnLength;
-
-        protected override void SetFileColumnLength(int fileColumnsLength)
+        public int Execute(InstrumentationResult result, float threshold)
         {
-            _fileColumnLength = fileColumnsLength;
-        }
+            var hitsInfo = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
-        protected override void WriteHeader()
-        {
-            WriteHorizontalLine(_fileColumnLength);
+            var files = result.GetSourceFiles();
 
-            Write("| ");
-            Write(Pad("File", _fileColumnLength));
-            Write(" | ");
-            Write(Pad("Lines", 5, Align.Center));
-            Write(" | ");
-            Write(Pad("Covered Lines", 13, Align.Center));
-            Write(" | ");
-            Write(Pad("Percentage", 10, Align.Center));
-            Write(" |");
-            Write(Environment.NewLine);
+            var summary = SummaryHelpers.CalculateFilesSummary(files, hitsInfo, threshold);
 
-            WriteHorizontalLine(_fileColumnLength);
-        }
+            var tableRows = SummaryHelpers.GetSummaryGrid(files, hitsInfo, threshold);
 
-        protected override void WriteReport(KeyValuePair<string, SourceFile> kvFile, int lines, int coveredLines, float coveragePercentage, ConsoleColor color)
-        {
-            Write("| ");
-            Write(Pad(kvFile.Key, _fileColumnLength), color);
-            Write(" | ");
-            Write(Pad(lines.ToString().PadLeft(3), 5, Align.Center), color);
-            Write(" | ");
-            Write(Pad(coveredLines.ToString().PadLeft(3), 13, Align.Center), color);
-            Write(" | ");
-            Write(Pad(coveragePercentage.ToString("P").PadLeft(8), 10, Align.Center), color);
-            Write(" |");
-            Write(Environment.NewLine);
-        }
-
-        protected override void WriteDetailedReport(InstrumentationResult result, IDictionary<string, SourceFile> files, HitsInfo hits)
-        {
-        }
-
-        protected override void WriteFooter(int lines, int coveredLines, float coveragePercentage, float threshold, ConsoleColor color)
-        {
-            WriteHorizontalLine(_fileColumnLength);
-
-            Write("| ");
-            Write(Pad("All files", _fileColumnLength), color);
-            Write(" | ");
-            Write(Pad(lines.ToString().PadLeft(3), 5, Align.Center), color);
-            Write(" | ");
-            Write(Pad(coveredLines.ToString().PadLeft(3), 13, Align.Center), color);
-            Write(" | ");
-            Write(Pad(coveragePercentage.ToString("P").PadLeft(8), 10, Align.Center), color);
-            Write(" |");
-            Write(Environment.NewLine);
-
-            WriteHorizontalLine(_fileColumnLength);
-        }
-
-        private void WriteHorizontalLine(int fileColumnLength)
-        {
-            Write("+-");
-            Write(new string('-', fileColumnLength));
-            Write("-+-");
-            Write(new string('-', 5));
-            Write("-+-");
-            Write(new string('-', 13));
-            Write("-+-");
-            Write(new string('-', 10));
-            Write("-+");
-            Write(Environment.NewLine);
-        }
-
-        private string Pad(string text, int length, Align alignment = Align.Left)
-        {
-            switch (alignment)
+            var consoleTable = new ConsoleTable
             {
-                case Align.Left:
-                    return text.PadRight(length);
-                case Align.Center:
-                    var left = (int)Math.Ceiling((float)length / 2 + (float)text.Length / 2);
-                    return text.PadLeft(left).PadRight(length);
-                case Align.Right:
-                    return text.PadLeft(length);
-                default:
-                    throw new InvalidOperationException();
-            }
+                Header = CreateHeader(),
+                Body = tableRows.Where(r => !r.Root).Select(f => CreateRow(f)).ToArray(),
+                Footer = CreateFooter(summary)
+            };
+
+            consoleTable.WriteTable();
+
+            return summary.LinesCoveragePass ? 0 : 1;
         }
 
-        private void Write(string text)
+        private ConsoleRow CreateHeader()
         {
-            Console.Write(text);
+            var row = new ConsoleRow();
+            row.Cells.Add(new ConsoleCell("File"));
+            row.Cells.Add(new ConsoleCell("Lines", TextAlign.Center));
+            row.Cells.Add(new ConsoleCell("% Lines", TextAlign.Center));
+            row.Cells.Add(new ConsoleCell("Stmts", TextAlign.Center));
+            row.Cells.Add(new ConsoleCell("% Stmts", TextAlign.Center));
+            row.Cells.Add(new ConsoleCell("Branches", TextAlign.Center));
+            row.Cells.Add(new ConsoleCell("% Branches", TextAlign.Center));
+            return row;
         }
 
-        private void Write(string text, ConsoleColor color)
+        private ConsoleRow CreateRow(SummaryRow r)
         {
-            var originalColor = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            Console.Write(text);
-            Console.ForegroundColor = originalColor;
+            var summary = r.Summary;
+
+            var linesColor = summary.LinesCoveragePass ? ConsoleColor.Green : ConsoleColor.Red;
+            var statementsColor = summary.StatementsCoveragePass ? ConsoleColor.Green : ConsoleColor.Red;
+            var branchesColor = summary.BranchesCoveragePass ? ConsoleColor.Green : ConsoleColor.Red;
+
+            var row = new ConsoleRow();
+            var indentation = Math.Max(r.Level - 1, 0) * 2;
+            row.Cells.Add(new ConsoleCell($"{new string(' ', indentation)}{r.Name}"));
+            row.Cells.Add(new ConsoleCell($"{summary.CoveredLines}/{summary.Lines}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.LinesPercentage:P}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.CoveredStatements}/{summary.Statements}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.StatementsPercentage:P}", TextAlign.Right, statementsColor));
+            row.Cells.Add(new ConsoleCell($"{summary.CoveredBranches}/{summary.Branches}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.BranchesPercentage:P}", TextAlign.Right, branchesColor));
+            return row;
         }
 
-        private enum Align
+        private ConsoleRow CreateFooter(Summary summary)
         {
-            Left,
-            Center,
-            Right
+            var linesColor = summary.LinesCoveragePass ? ConsoleColor.Green : ConsoleColor.Red;
+            var statementsColor = summary.StatementsCoveragePass ? ConsoleColor.Green : ConsoleColor.Red;
+            var branchesColor = summary.BranchesCoveragePass ? ConsoleColor.Green : ConsoleColor.Red;
+
+            var row = new ConsoleRow();
+            row.Cells.Add(new ConsoleCell("All files"));
+            row.Cells.Add(new ConsoleCell($"{summary.CoveredLines}/{summary.Lines}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.LinesPercentage:P}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.CoveredStatements}/{summary.Statements}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.StatementsPercentage:P}", TextAlign.Right, statementsColor));
+            row.Cells.Add(new ConsoleCell($"{summary.CoveredBranches}/{summary.Branches}", TextAlign.Right, linesColor));
+            row.Cells.Add(new ConsoleCell($"{summary.BranchesPercentage:P}", TextAlign.Right, branchesColor));
+            return row;
         }
     }
 }

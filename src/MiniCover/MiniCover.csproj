@@ -46,6 +46,10 @@
     <Folder Include="Infrastructure\FileSystem\" />
     <Folder Include="Instrumentation\Patterns\" />
     <Folder Include="Reports\Html\" />
+    <Folder Include="Reports\Helpers\" />
+    <Folder Include="Reports\Cobertura\" />
+    <Folder Include="Reports\NCover\" />
+    <Folder Include="Reports\OpenCover\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Infrastructure\Verbosity.cs" />

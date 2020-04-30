@@ -1,10 +1,10 @@
-﻿using MiniCover.Model;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using MiniCover.Model;
 
-namespace MiniCover.Reports
+namespace MiniCover.Reports.NCover
 {
     public static class NCoverReport
     {
@@ -36,7 +36,7 @@ namespace MiniCover.Reports
 
                 var methods = assembly.SourceFiles.Select(file =>
                 {
-                    return file.Value.Sequences
+                    return file.Sequences
                         .GroupBy(instruction => instruction.Method)
                         .Select(instruction =>
                     {
@@ -61,7 +61,7 @@ namespace MiniCover.Reports
                                 new XAttribute(XName.Get("endline"), methodPoint.EndLine),
                                 new XAttribute(XName.Get("endcolumn"), methodPoint.EndColumn),
                                 new XAttribute(XName.Get("excluded"), "false"),
-                                new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Key))
+                                new XAttribute(XName.Get("document"), Path.Combine(result.SourcePath, file.Path))
                                 );
 
                             return point;

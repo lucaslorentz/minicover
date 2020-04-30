@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace MiniCover.Model
 {
@@ -26,12 +26,13 @@ namespace MiniCover.Model
             ExtraAssemblies.Add(file);
         }
 
-        public SortedDictionary<string, SourceFile> GetSourceFiles()
+        public SourceFile[] GetSourceFiles()
         {
-            return new SortedDictionary<string, SourceFile>(Assemblies
+            return Assemblies
                 .SelectMany(a => a.SourceFiles)
-                .GroupBy(kv => kv.Key, kv => kv.Value)
-                .ToDictionary(g => g.Key, g => SourceFile.Merge(g)));
+                .GroupBy(sf => sf.Path)
+                .Select(g => SourceFile.Merge(g))
+                .ToArray();
         }
     }
 }

@@ -13,14 +13,14 @@ namespace MiniCover.Utils
             var totalLines = 0;
             var totalCoveredLines = 0;
             
-            foreach (var kvFile in files)
+            foreach (var file in files)
             {
-                var lines = kvFile.Value.Sequences
+                var lines = file.Sequences
                     .SelectMany(i => i.GetLines())
                     .Distinct()
                     .Count();
 
-                var coveredLines = kvFile.Value.Sequences
+                var coveredLines = file.Sequences
                     .Where(h => hits.WasHit(h.HitId))
                     .SelectMany(i => i.GetLines())
                     .Distinct()

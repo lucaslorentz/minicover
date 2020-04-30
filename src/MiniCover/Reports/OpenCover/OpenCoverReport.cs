@@ -1,11 +1,11 @@
-using MiniCover.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using MiniCover.Model;
 
-namespace MiniCover.Reports
+namespace MiniCover.Reports.OpenCover
 {
     public static class OpenCoverReport
     {
@@ -45,11 +45,11 @@ namespace MiniCover.Reports
 
                 var filesElement = new XElement("Files", assembly.SourceFiles.Select(file =>
                 {
-                    dctSourceFileCount.Add(file.Value, ++fileIndex);
+                    dctSourceFileCount.Add(file, ++fileIndex);
                     var fileElement = new XElement(
                         XName.Get("File"),
-                        new XAttribute(XName.Get("uid"), dctSourceFileCount[file.Value]),
-                        new XAttribute(XName.Get("fullPath"), Path.Combine(result.SourcePath, file.Key))
+                        new XAttribute(XName.Get("uid"), dctSourceFileCount[file]),
+                        new XAttribute(XName.Get("fullPath"), Path.Combine(result.SourcePath, file.Path))
                     );
 
                     return fileElement;
@@ -57,9 +57,9 @@ namespace MiniCover.Reports
 
                 var classesElement = new XElement("Classes", assembly.SourceFiles.Select(file =>
                 {
-                    var hitInstructions = file.Value.Sequences.Where(h => hits.WasHit(h.HitId)).ToArray();
+                    var hitInstructions = file.Sequences.Where(h => hits.WasHit(h.HitId)).ToArray();
 
-                    return file.Value.Sequences
+                    return file.Sequences
                         .GroupBy(instruction => new { instruction.Method.Class })
                         .Select(classes =>
                     {
@@ -83,7 +83,7 @@ namespace MiniCover.Reports
 
                                 var fileRefElement = new XElement(
                                     XName.Get("FileRef"),
-                                    new XAttribute(XName.Get("uid"), dctSourceFileCount[file.Value])
+                                    new XAttribute(XName.Get("uid"), dctSourceFileCount[file])
                                 );
 
                                 int sequencePointMiniCounter = 0;

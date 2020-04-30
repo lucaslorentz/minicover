@@ -28,6 +28,10 @@ tr.total {
     font-weight: bold;
 }
 
+th.value {
+    text-align: center;
+}
+
 td.value {
     text-align: right;
 }
