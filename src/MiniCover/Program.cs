@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO.Abstractions;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.CommandLineUtils;
@@ -13,6 +14,7 @@ using MiniCover.Infrastructure;
 using MiniCover.Infrastructure.Console;
 using MiniCover.Infrastructure.FileSystem;
 using MiniCover.Instrumentation;
+using MiniCover.Utils;
 
 namespace MiniCover
 {
@@ -111,11 +113,14 @@ namespace MiniCover
             services.AddTransient<VerbosityOption>();
 
             services.AddSingleton<Instrumenter>();
+            services.AddSingleton<Uninstrumenter>();
             services.AddSingleton<AssemblyInstrumenter>();
             services.AddSingleton<TypeInstrumenter>();
             services.AddSingleton<MethodInstrumenter>();
 
+            services.AddSingleton<DepsJsonUtils>();
             services.AddSingleton<IFileReader, CachedFileReader>();
+            services.AddSingleton<IFileSystem, FileSystem>();
 
             return services.BuildServiceProvider();
         }

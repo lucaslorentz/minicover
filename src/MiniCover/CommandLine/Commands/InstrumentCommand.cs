@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,10 +105,10 @@ namespace MiniCover.Commands
             return Task.FromResult(0);
         }
 
-        private static FileInfo[] GetFiles(
+        private static IFileInfo[] GetFiles(
             IEnumerable<string> includes,
             IEnumerable<string> excludes,
-            DirectoryInfo parentDir)
+            IDirectoryInfo parentDir)
         {
             var matcher = new Microsoft.Extensions.FileSystemGlobbing.Matcher();
 
@@ -121,10 +122,10 @@ namespace MiniCover.Commands
                 matcher.AddExclude(exclude);
             }
 
-            var fileMatchResult = matcher.Execute(new DirectoryInfoWrapper(parentDir));
+            var fileMatchResult = matcher.Execute(new Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper(new DirectoryInfo(parentDir.FullName)));
 
             return fileMatchResult.Files
-                .Select(f => new FileInfo(Path.GetFullPath(Path.Combine(parentDir.ToString(), f.Path))))
+                .Select(f => parentDir.FileSystem.FileInfo.FromFileName(Path.GetFullPath(Path.Combine(parentDir.ToString(), f.Path))))
                 .ToArray();
         }
 

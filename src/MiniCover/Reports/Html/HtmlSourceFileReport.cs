@@ -92,91 +92,99 @@ namespace MiniCover.Reports.Html
 
                     htmlWriter.Write("<div class=\"line-content\">");
 
-                    for (var c = 1; c <= line.Length; c++)
+                    if (line.Length > 0)
                     {
-                        var character = line[c - 1].ToString();
-
-                        foreach (var instruction in instructions)
+                        for (var c = 1; c <= line.Length; c++)
                         {
-                            if (instruction.StartLine == l && instruction.StartColumn == c
-                                || instruction.StartLine < l && c == 1)
+                            var character = line[c - 1].ToString();
+
+                            foreach (var instruction in instructions)
                             {
-                                var statementIdClass = $"s-{instruction.HitId}";
-
-                                var statementClasses = new List<string> { "statement", statementIdClass };
-
-                                if (hitsInfo.WasHit(instruction.HitId))
+                                if (instruction.StartLine == l && instruction.StartColumn == c
+                                    || instruction.StartLine < l && c == 1)
                                 {
-                                    statementClasses.Add("hit");
+                                    var statementIdClass = $"s-{instruction.HitId}";
 
-                                    if (instruction.Conditions.SelectMany(x => x.Branches).Any(b => !hitsInfo.WasHit(b.HitId)))
+                                    var statementClasses = new List<string> { "statement", statementIdClass };
+
+                                    if (hitsInfo.WasHit(instruction.HitId))
                                     {
-                                        statementClasses.Add("partial");
-                                    }
-                                }
-                                else
-                                {
-                                    statementClasses.Add("not-hit");
-                                }
+                                        statementClasses.Add("hit");
 
-                                htmlWriter.Write($"<div data-hover-target=\".{statementIdClass}\" data-activate-target=\".{statementIdClass}\" class=\"{string.Join(" ", statementClasses)}\">");
-
-                                if (instruction.EndLine == l)
-                                {
-                                    var hitCount = hitsInfo.GetHitCount(instruction.HitId);
-
-                                    var contexts = hitsInfo.GetHitContexts(instruction.HitId)
-                                        .Distinct()
-                                        .ToArray();
-
-                                    htmlWriter.Write($"<div class=\"statement-info {statementIdClass}\">");
-                                    htmlWriter.Write($"<div>Id: {instruction.HitId}</div>");
-                                    htmlWriter.Write($"<div>Hits: {hitCount}</div>");
-                                    if (instruction.Conditions.Length > 0)
-                                    {
-                                        var conditionIndex = 0;
-                                        foreach (var condition in instruction.Conditions)
+                                        if (instruction.Conditions.SelectMany(x => x.Branches).Any(b => !hitsInfo.WasHit(b.HitId)))
                                         {
-                                            htmlWriter.Write($"<div>Condition {++conditionIndex}:");
-                                            htmlWriter.Write("<ul>");
-                                            var branchIndex = 0;
-                                            foreach (var branch in condition.Branches)
+                                            statementClasses.Add("partial");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        statementClasses.Add("not-hit");
+                                    }
+
+                                    htmlWriter.Write($"<div data-hover-target=\".{statementIdClass}\" data-activate-target=\".{statementIdClass}\" class=\"{string.Join(" ", statementClasses)}\">");
+
+                                    if (instruction.EndLine == l)
+                                    {
+                                        var hitCount = hitsInfo.GetHitCount(instruction.HitId);
+
+                                        var contexts = hitsInfo.GetHitContexts(instruction.HitId)
+                                            .Distinct()
+                                            .ToArray();
+
+                                        htmlWriter.Write($"<div class=\"statement-info {statementIdClass}\">");
+                                        htmlWriter.Write($"<div>Id: {instruction.HitId}</div>");
+                                        htmlWriter.Write($"<div>Hits: {hitCount}</div>");
+                                        if (instruction.Conditions.Length > 0)
+                                        {
+                                            var conditionIndex = 0;
+                                            foreach (var condition in instruction.Conditions)
                                             {
-                                                var branchHitCount = hitsInfo.GetHitCount(branch.HitId);
-                                                htmlWriter.Write($"<li>Branch {++branchIndex}: {FormatHits(branchHitCount)}</li>");
+                                                htmlWriter.Write($"<div>Condition {++conditionIndex}:");
+                                                htmlWriter.Write("<ul>");
+                                                var branchIndex = 0;
+                                                foreach (var branch in condition.Branches)
+                                                {
+                                                    var branchHitCount = hitsInfo.GetHitCount(branch.HitId);
+                                                    htmlWriter.Write($"<li>Branch {++branchIndex}: {FormatHits(branchHitCount)}</li>");
+                                                }
+                                                htmlWriter.Write("</ul>");
+                                                htmlWriter.Write("</div>");
                                             }
-                                            htmlWriter.Write("</ul>");
-                                            htmlWriter.Write("</div>");
                                         }
-                                    }
-                                    if (contexts.Length > 0)
-                                    {
-                                        htmlWriter.Write("<div>Contexts:");
-                                        htmlWriter.Write("<ul>");
-                                        foreach (var context in contexts)
+                                        if (contexts.Length > 0)
                                         {
-                                            var contextHitCount = context.GetHitCount(instruction.HitId);
-                                            var description = $"{context.ClassName}.{context.MethodName}";
-                                            htmlWriter.Write($"<li>{WebUtility.HtmlEncode(description)}: {FormatHits(contextHitCount)}</li>");
+                                            htmlWriter.Write("<div>Contexts:");
+                                            htmlWriter.Write("<ul>");
+                                            foreach (var context in contexts)
+                                            {
+                                                var contextHitCount = context.GetHitCount(instruction.HitId);
+                                                var description = $"{context.ClassName}.{context.MethodName}";
+                                                htmlWriter.Write($"<li>{WebUtility.HtmlEncode(description)}: {FormatHits(contextHitCount)}</li>");
+                                            }
+                                            htmlWriter.Write("</ul></div>");
                                         }
-                                        htmlWriter.Write("</ul></div>");
+                                        htmlWriter.Write("</div>");
                                     }
+                                }
+                            }
+
+                            htmlWriter.Write(WebUtility.HtmlEncode(character));
+
+                            foreach (var instruction in instructions)
+                            {
+                                if (instruction.EndLine == l && instruction.EndColumn == c + 1
+                                    || instruction.EndLine > l && c == line.Length)
+                                {
                                     htmlWriter.Write("</div>");
                                 }
                             }
                         }
-
-                        htmlWriter.Write(WebUtility.HtmlEncode(character));
-
-                        foreach (var instruction in instructions)
-                        {
-                            if (instruction.EndLine == l && instruction.EndColumn == c + 1
-                                || instruction.EndLine > l && c == line.Length)
-                            {
-                                htmlWriter.Write("</div>");
-                            }
-                        }
                     }
+                    else
+                    {
+                        htmlWriter.WriteLine("&nbsp;");
+                    }
+
                     htmlWriter.Write("</div>");
                     htmlWriter.WriteLine("</div>");
                 }

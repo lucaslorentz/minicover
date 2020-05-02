@@ -1,4 +1,6 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
     class HtmlOutputFolderOption : DirectoryOption
     {
@@ -6,8 +8,9 @@
         private const string _template = "--output";
         private static readonly string _description = $"Output folder for html report [default: {_defaultValue}]";
 
-        public HtmlOutputFolderOption()
-            : base(_template, _description)
+        public HtmlOutputFolderOption(
+            IFileSystem fileSystem)
+            : base(_template, _description, fileSystem)
         {
         }
 

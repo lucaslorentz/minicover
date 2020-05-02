@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.DependencyModel;
 using Newtonsoft.Json;
@@ -9,21 +10,28 @@ namespace MiniCover.Utils
 {
     public class DepsJsonUtils
     {
-        public static void PatchDepsJson(FileInfo depsJsonFile, string hitServicesVersion)
+        public readonly IFileSystem _fileSystem;
+
+        public DepsJsonUtils(IFileSystem fileSystem)
         {
-            var content = File.ReadAllText(depsJsonFile.FullName);
+            _fileSystem = fileSystem;
+        }
+
+        public void PatchDepsJson(IFileInfo depsJsonFile, string hitServicesVersion)
+        {
+            var content = _fileSystem.File.ReadAllText(depsJsonFile.FullName);
             var newContent = PatchDepsJsonContent(content, hitServicesVersion);
-            File.WriteAllText(depsJsonFile.FullName, newContent);
+            _fileSystem.File.WriteAllText(depsJsonFile.FullName, newContent);
         }
 
-        public static void UnpatchDepsJson(FileInfo depsJsonFile)
+        public void UnpatchDepsJson(IFileInfo depsJsonFile)
         {
-            var content = File.ReadAllText(depsJsonFile.FullName);
+            var content = _fileSystem.File.ReadAllText(depsJsonFile.FullName);
             var newContent = UnpatchDepsJsonContent(content);
-            File.WriteAllText(depsJsonFile.FullName, newContent);
+            _fileSystem.File.WriteAllText(depsJsonFile.FullName, newContent);
         }
 
-        public static string PatchDepsJsonContent(string content, string hitServicesVersion)
+        public string PatchDepsJsonContent(string content, string hitServicesVersion)
         {
             var json = JsonConvert.DeserializeObject<JObject>(content);
 
@@ -57,7 +65,7 @@ namespace MiniCover.Utils
             return JsonConvert.SerializeObject(json, Formatting.Indented);
         }
 
-        public static string UnpatchDepsJsonContent(string content)
+        public string UnpatchDepsJsonContent(string content)
         {
             var json = JsonConvert.DeserializeObject<JObject>(content);
 
@@ -89,26 +97,24 @@ namespace MiniCover.Utils
             return JsonConvert.SerializeObject(json, Formatting.Indented);
         }
 
-        public static DependencyContext LoadDependencyContext(DirectoryInfo assemblyDirectory)
+        public DependencyContext LoadDependencyContext(IDirectoryInfo assemblyDirectory)
         {
             var depsJsonPath = assemblyDirectory.GetFiles("*.deps.json", SearchOption.TopDirectoryOnly)
                 .FirstOrDefault();
 
-            if (depsJsonPath != null)
+            if (depsJsonPath == null)
+                return null;
+
+            using (var depsJsonStream = depsJsonPath.OpenRead())
             {
-                using (var depsJsonStream = depsJsonPath.OpenRead())
+                using (var reader = new DependencyContextJsonReader())
                 {
-                    using (var reader = new DependencyContextJsonReader())
-                    {
-                        return reader.Read(depsJsonStream);
-                    }
+                    return reader.Read(depsJsonStream);
                 }
             }
-
-            return null;
         }
 
-        public static List<string> GetAdditionalPaths(string runtimeConfigContent)
+        public List<string> GetAdditionalPaths(string runtimeConfigContent)
         {
             var additionalPaths = new List<string>();
             if (string.IsNullOrEmpty(runtimeConfigContent))
@@ -118,9 +124,7 @@ namespace MiniCover.Utils
 
             var runtimeConfig = JsonConvert.DeserializeObject<JObject>(runtimeConfigContent);
             if (runtimeConfig == null)
-            {
                 return additionalPaths;
-            }
 
             var additionalProbingPaths = runtimeConfig["runtimeOptions"]?["additionalProbingPaths"];
             if (additionalProbingPaths != null)

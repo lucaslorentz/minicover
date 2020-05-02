@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
@@ -19,24 +20,30 @@ namespace MiniCover.Instrumentation
         private readonly TypeInstrumenter _typeInstrumenter;
         private readonly ILogger<AssemblyInstrumenter> _logger;
         private readonly ILogger<CustomAssemblyResolver> _assemblyResolverLogger;
+        private readonly DepsJsonUtils _depsJsonUtils;
+        private readonly IFileSystem _fileSystem;
 
         public AssemblyInstrumenter(
             TypeInstrumenter typeInstrumenter,
             ILogger<AssemblyInstrumenter> logger,
-            ILogger<CustomAssemblyResolver> assemblyResolverLogger)
+            ILogger<CustomAssemblyResolver> assemblyResolverLogger,
+            DepsJsonUtils depsJsonUtils,
+            IFileSystem fileSystem)
         {
             _typeInstrumenter = typeInstrumenter;
             _logger = logger;
             _assemblyResolverLogger = assemblyResolverLogger;
+            _depsJsonUtils = depsJsonUtils;
+            _fileSystem = fileSystem;
         }
 
         public InstrumentedAssembly InstrumentAssemblyFile(
             InstrumentationContext context,
-            FileInfo assemblyFile)
+            IFileInfo assemblyFile)
         {
             var assemblyDirectory = assemblyFile.Directory;
 
-            var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger);
+            var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger, _depsJsonUtils);
 
             _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
 
@@ -108,7 +115,7 @@ namespace MiniCover.Instrumentation
 
             var miniCoverTempPath = GetMiniCoverTempPath();
 
-            var instrumentedAssemblyFile = new FileInfo(Path.Combine(miniCoverTempPath, $"{Guid.NewGuid()}.dll"));
+            var instrumentedAssemblyFile = _fileSystem.FileInfo.FromFileName(Path.Combine(miniCoverTempPath, $"{Guid.NewGuid()}.dll"));
             var instrumentedPdbFile = FileUtils.GetPdbFile(instrumentedAssemblyFile);
 
             assemblyDefinition.Write(instrumentedAssemblyFile.FullName, new WriterParameters { WriteSymbols = true });

@@ -1,12 +1,13 @@
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Security.Cryptography;
 
 namespace MiniCover.Utils
 {
     public static class FileUtils
     {
-        public static string GetFileHash(FileInfo file)
+        public static string GetFileHash(IFileInfo file)
         {
             using (var stream = file.OpenRead())
             {
@@ -18,26 +19,26 @@ namespace MiniCover.Utils
             }
         }
 
-        public static DirectoryInfo AddEndingDirectorySeparator(this DirectoryInfo info)
+        public static IDirectoryInfo AddEndingDirectorySeparator(this IDirectoryInfo info)
         {
             if (info.FullName.EndsWith(Path.DirectorySeparatorChar)
                 || info.FullName.EndsWith(Path.AltDirectorySeparatorChar))
                 return info;
 
-            return new DirectoryInfo($"{info.FullName}{Path.DirectorySeparatorChar}");
+            return info.FileSystem.DirectoryInfo.FromDirectoryName($"{info.FullName}{Path.DirectorySeparatorChar}");
         }
 
-        public static FileInfo GetPdbFile(FileInfo assemblyFile)
+        public static IFileInfo GetPdbFile(IFileInfo assemblyFile)
         {
-            return new FileInfo(Path.ChangeExtension(assemblyFile.FullName, "pdb"));
+            return assemblyFile.FileSystem.FileInfo.FromFileName(Path.ChangeExtension(assemblyFile.FullName, "pdb"));
         }
 
-        public static FileInfo GetBackupFile(FileInfo file)
+        public static IFileInfo GetBackupFile(IFileInfo file)
         {
-            return new FileInfo(Path.ChangeExtension(file.FullName, $"uninstrumented{file.Extension}"));
+            return file.FileSystem.FileInfo.FromFileName(Path.ChangeExtension(file.FullName, $"uninstrumented{file.Extension}"));
         }
 
-        public static bool IsBackupFile(FileInfo file)
+        public static bool IsBackupFile(IFileInfo file)
         {
             return file.Name.Contains(".uninstrumented");
         }

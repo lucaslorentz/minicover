@@ -1,17 +1,24 @@
 ﻿using System.IO;
+using System.IO.Abstractions;
 
 namespace MiniCover.CommandLine.Options
 {
-    abstract class DirectoryOption : SingleValueOption<DirectoryInfo>
+    abstract class DirectoryOption : SingleValueOption<IDirectoryInfo>
     {
-        protected DirectoryOption(string template, string description)
+        private readonly IFileSystem _fileSystem;
+
+        protected DirectoryOption(
+            string template,
+            string description,
+            IFileSystem fileSystem)
             : base(template, description)
         {
+            _fileSystem = fileSystem;
         }
 
-        protected override DirectoryInfo PrepareValue(string value)
+        protected override IDirectoryInfo PrepareValue(string value)
         {
-            return new DirectoryInfo(value ?? GetDefaultValue());
+            return _fileSystem.DirectoryInfo.FromDirectoryName(value ?? GetDefaultValue());
         }
 
         protected abstract string GetDefaultValue();

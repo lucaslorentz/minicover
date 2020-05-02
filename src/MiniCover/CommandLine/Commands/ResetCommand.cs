@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -44,7 +44,7 @@ namespace MiniCover.Commands
 
             var hitsFiles = hitsDirectory.Exists
                 ? hitsDirectory.GetFiles("*.hits")
-                : new FileInfo[0];
+                : new IFileInfo[0];
 
             if (!hitsFiles.Any())
             {

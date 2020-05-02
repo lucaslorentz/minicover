@@ -11,15 +11,17 @@ namespace MiniCover.Commands
         private const string _description = "Uninstrument assemblies";
 
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly Uninstrumenter _uninstrumenter;
 
         public UninstrumentCommand(
             VerbosityOption verbosityOption,
             WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption)
+            CoverageLoadedFileOption coverageLoadedFileOption,
+            Uninstrumenter uninstrumenter)
             : base(_name, _description)
         {
             _coverageLoadedFileOption = coverageLoadedFileOption;
-
+            _uninstrumenter = uninstrumenter;
             Options = new IOption[]
             {
                 verbosityOption,
@@ -31,7 +33,7 @@ namespace MiniCover.Commands
         protected override Task<int> Execute()
         {
             var result = _coverageLoadedFileOption.Result;
-            Uninstrumenter.Execute(result);
+            _uninstrumenter.Execute(result);
             return Task.FromResult(0);
         }
     }
