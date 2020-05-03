@@ -1,24 +1,21 @@
 ﻿namespace MiniCover.CommandLine.Options
 {
-    class ThresholdOption : SingleValueOption<float>
+    class ThresholdOption : ISingleValueOption
     {
         private const float _defaultValue = 90;
-        private const string _template = "--threshold";
-        private static readonly string _description = $"Coverage percentage threshold [default: {_defaultValue}]";
 
-        public ThresholdOption()
-            : base(_template, _description)
-        {
-        }
+        public float Value { get; private set; }
+        public string Template => "--threshold";
+        public string Description => $"Coverage percentage threshold [default: {_defaultValue}]";
 
-        protected override float PrepareValue(string value)
+        public void ReceiveValue(string value)
         {
-            if (!float.TryParse(value, out var proposalThreshold))
+            if (!float.TryParse(value, out var threshold))
             {
-                proposalThreshold = _defaultValue;
+                threshold = _defaultValue;
             }
 
-            return proposalThreshold / 100;
+            Value = threshold / 100;
         }
     }
 }

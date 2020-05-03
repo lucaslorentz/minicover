@@ -1,5 +1,6 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
+using MiniCover.UnitTests.TestHelpers;
 using MiniCover.Utils;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace MiniCover.UnitTests.Utils
         [Fact]
         public void GetFileHash_ShouldReturnHash()
         {
-            var fileName = @"/test/ACME.Something.dll";
+            var fileName = @"/test/ACME.Something.dll".ToOSPath();
 
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName, new MockFileData(new byte[] { 1, 2, 3, 4, 5 }));
@@ -22,23 +23,9 @@ namespace MiniCover.UnitTests.Utils
         }
 
         [Fact]
-        public void AddEndingDirectorySeparator_ShouldReturnNewDirectory()
-        {
-            var directoryName = "/test";
-
-            var mockFileSystem = new MockFileSystem();
-            mockFileSystem.AddDirectory(directoryName);
-
-            var directoryInfo = mockFileSystem.DirectoryInfo.FromDirectoryName(directoryName);
-            var newDirectoryInfo = FileUtils.AddEndingDirectorySeparator(directoryInfo);
-
-            newDirectoryInfo.FullName.Should().Be("/test/");
-        }
-
-        [Fact]
         public void GetPdbFile_ShouldReturnPDBFile()
         {
-            var fileName = @"/test/ACME.Something.dll";
+            var fileName = @"/test/ACME.Something.dll".ToOSPath();
 
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName, new MockFileData(new byte[5]));
@@ -46,13 +33,13 @@ namespace MiniCover.UnitTests.Utils
             var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName);
             var pdbInfo = FileUtils.GetPdbFile(fileInfo);
 
-            pdbInfo.FullName.Should().Be(@"/test/ACME.Something.pdb");
+            pdbInfo.FullName.Should().Be(@"/test/ACME.Something.pdb".ToOSPath());
         }
 
         [Fact]
         public void GetBackupFile_ShouldReturnBackupFile()
         {
-            var fileName = @"/test/ACME.Something.dll";
+            var fileName = @"/test/ACME.Something.dll".ToOSPath();
 
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName, new MockFileData(new byte[5]));
@@ -60,7 +47,7 @@ namespace MiniCover.UnitTests.Utils
             var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName);
             var backupInfo = FileUtils.GetBackupFile(fileInfo);
 
-            backupInfo.FullName.Should().Be(@"/test/ACME.Something.uninstrumented.dll");
+            backupInfo.FullName.Should().Be(@"/test/ACME.Something.uninstrumented.dll".ToOSPath());
         }
 
         [InlineData(@"/test/ACME.Something.dll", false)]
@@ -69,9 +56,9 @@ namespace MiniCover.UnitTests.Utils
         public void IsBackupFile_ShouldReturnBackupFile(string fileName, bool isBackup)
         {
             var mockFileSystem = new MockFileSystem();
-            mockFileSystem.AddFile(fileName, new MockFileData(new byte[5]));
+            mockFileSystem.AddFile(fileName.ToOSPath(), new MockFileData(new byte[5]));
 
-            var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName);
+            var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName.ToOSPath());
             var result = FileUtils.IsBackupFile(fileInfo);
 
             result.Should().Be(isBackup);

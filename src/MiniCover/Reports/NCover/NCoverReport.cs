@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Xml.Linq;
 using MiniCover.Model;
@@ -8,7 +9,7 @@ namespace MiniCover.Reports.NCover
 {
     public static class NCoverReport
     {
-        public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
+        public static void Execute(InstrumentationResult result, IFileInfo output, float threshold)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 

@@ -50,7 +50,7 @@ namespace MiniCover.UnitTests.Instrumentation
 
             if (ExpectedIL != null)
             {
-                il.NormalizeLineEndings().Should().Be(ExpectedIL.NormalizeLineEndings());
+                il.ToOSLineEnding().Should().Be(ExpectedIL.ToOSLineEnding());
             }
 
             var instrumentedInstructions = instrumentedAssembly.SourceFiles
@@ -59,7 +59,7 @@ namespace MiniCover.UnitTests.Instrumentation
 
             if (ExpectedInstructions != null)
                 instrumentedInstructions.Should().BeEquivalentTo(ExpectedInstructions, config => config
-                .Using<string>(strCtx => strCtx.Subject?.NormalizeLineEndings().Should().Be(strCtx.Expectation?.NormalizeLineEndings()))
+                .Using<string>(strCtx => strCtx.Subject?.ToOSLineEnding().Should().Be(strCtx.Expectation?.ToOSLineEnding()))
                 .WhenTypeIs<string>());
 
             var instrumentedType = typeDefinition.Load();

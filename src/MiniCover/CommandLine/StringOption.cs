@@ -1,14 +1,21 @@
-﻿namespace MiniCover.CommandLine
+﻿using System;
+namespace MiniCover.CommandLine
 {
-    class StringOption : SingleValueOption<string>
+    public class StringOption : ISingleValueOption
     {
-        public StringOption(string template, string description) : base(template, description)
+        public StringOption(string template, string description)
         {
+            Template = template;
+            Description = description;
         }
 
-        protected override string PrepareValue(string value)
+        public string Value { get; private set; }
+        public string Template { get; }
+        public string Description { get; }
+
+        public void ReceiveValue(string value)
         {
-            return value;
+            Value = value;
         }
     }
 }

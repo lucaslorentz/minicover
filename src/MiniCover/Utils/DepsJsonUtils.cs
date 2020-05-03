@@ -118,9 +118,7 @@ namespace MiniCover.Utils
         {
             var additionalPaths = new List<string>();
             if (string.IsNullOrEmpty(runtimeConfigContent))
-            {
                 return additionalPaths;
-            }
 
             var runtimeConfig = JsonConvert.DeserializeObject<JObject>(runtimeConfigContent);
             if (runtimeConfig == null)

@@ -1,16 +1,20 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
+﻿using System.Collections.Generic;
 
 namespace MiniCover.CommandLine
 {
     interface IOption
     {
-        void AddTo(CommandLineApplication command);
-
-        void Prepare();
+        string Template { get; }
+        string Description { get; }
     }
 
-    interface IOption<out T> : IOption
+    interface ISingleValueOption : IOption
     {
-        T Value { get; }
+        void ReceiveValue(string value);
+    }
+
+    interface IMultiValueOption : IOption
+    {
+        void ReceiveValue(IList<string> values);
     }
 }

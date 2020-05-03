@@ -1,42 +1,42 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
-using MiniCover.Reports;
 using MiniCover.Reports.Html;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class HtmlReportCommand : BaseCommand
+    class HtmlReportCommand : ICommand
     {
-        private const string _name = "htmlreport";
-        private const string _description = "Write html report to folder";
-
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly HtmlOutputFolderOption _htmlOutputFolderOption;
+        private readonly HtmlOutputDirectoryOption _htmlOutputFolderOption;
         private readonly ThresholdOption _thresholdOption;
 
         public HtmlReportCommand(
             WorkingDirectoryOption workingDirectoryOption,
             CoverageLoadedFileOption coverageLoadedFileOption,
-            HtmlOutputFolderOption htmlOutputFolderOption,
+            HtmlOutputDirectoryOption htmlOutputFolderOption,
             ThresholdOption thresholdOption)
-            : base(_name, _description)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
             _htmlOutputFolderOption = htmlOutputFolderOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                thresholdOption,
-                htmlOutputFolderOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "htmlreport";
+        public string CommandDescription => "Write html report to folder";
+
+        public IOption[] Options => new IOption[]
         {
-            var consoleReport = new HtmlReport(_htmlOutputFolderOption.Value.FullName);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _thresholdOption,
+            _htmlOutputFolderOption
+        };
+
+        public Task<int> Execute()
+        {
+            var consoleReport = new HtmlReport(_htmlOutputFolderOption.DirectoryInfo.FullName);
             var result = consoleReport.Execute(_coverageLoadedFileOption.Result, _thresholdOption.Value);
             return Task.FromResult(result);
         }

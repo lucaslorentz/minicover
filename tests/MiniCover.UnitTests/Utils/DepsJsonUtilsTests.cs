@@ -1,5 +1,6 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
+using MiniCover.UnitTests.TestHelpers;
 using MiniCover.Utils;
 using Xunit;
 
@@ -29,7 +30,7 @@ namespace MiniCover.UnitTests.Utils
             _sut.PatchDepsJson(_mockFileSystem.FileInfo.FromFileName(fileName), "1.0.0");
 
             var result = _mockFileSystem.GetFile(fileName).TextContents;
-            NormalizeLineEnding(result).Should().Be(NormalizeLineEnding(expectedResult));
+            result.ToOSLineEnding().Should().Be(expectedResult.ToOSLineEnding());
         }
 
         [Fact]
@@ -45,7 +46,7 @@ namespace MiniCover.UnitTests.Utils
             _sut.UnpatchDepsJson(_mockFileSystem.FileInfo.FromFileName(fileName));
 
             var result = _mockFileSystem.GetFile(fileName).TextContents;
-            NormalizeLineEnding(result).Should().Be(NormalizeLineEnding(expectedResult));
+            result.ToOSLineEnding().Should().Be(expectedResult.ToOSLineEnding());
         }
 
         [Fact]
@@ -97,11 +98,6 @@ namespace MiniCover.UnitTests.Utils
             var directoryInfo = _mockFileSystem.DirectoryInfo.FromDirectoryName(directory);
             var result = _sut.LoadDependencyContext(directoryInfo);
             result.Should().BeNull();
-        }
-
-        public string NormalizeLineEnding(string text)
-        {
-            return text.Replace("\r\n", "\n");
         }
 
         private static string GetOriginalDepsJsonContent()

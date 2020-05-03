@@ -5,23 +5,19 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using MiniCover.CommandLine;
 using MiniCover.CommandLine.Options;
 using MiniCover.Exceptions;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
-using MiniCover.Utils;
 using Newtonsoft.Json;
 
 namespace MiniCover.Commands
 {
-    class InstrumentCommand : BaseCommand
+    class InstrumentCommand : ICommand
     {
-        private const string _name = "instrument";
-        private const string _description = "Instrument assemblies";
-
         private readonly IServiceProvider _serviceProvider;
+        private readonly VerbosityOption _verbosityOption;
         private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly ParentDirectoryOption _parentDirOption;
         private readonly IncludeAssembliesPatternOption _includeAssembliesOption;
@@ -45,9 +41,9 @@ namespace MiniCover.Commands
             ExcludeTestsPatternOption excludeTestsOption,
             HitsDirectoryOption hitsDirectoryOption,
             CoverageFileOption coverageFileOption)
-            : base(_name, _description)
         {
             _serviceProvider = serviceProvider;
+            _verbosityOption = verbosityOption;
             _workingDirectoryOption = workingDirectoryOption;
             _parentDirOption = parentDirOption;
             _includeAssembliesOption = includeAssembliesOption;
@@ -58,48 +54,50 @@ namespace MiniCover.Commands
             _excludeTestsOption = excludeTestsOption;
             _hitsDirectoryOption = hitsDirectoryOption;
             _coverageFileOption = coverageFileOption;
-
-            Options = new IOption[]
-            {
-                verbosityOption,
-                workingDirectoryOption,
-                parentDirOption,
-                includeAssembliesOption,
-                excludeAssembliesOption,
-                includeSourceOption,
-                excludeSourceOption,
-                includeTestsOption,
-                excludeTestsOption,
-                hitsDirectoryOption,
-                coverageFileOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "instrument";
+        public string CommandDescription => "Instrument assemblies";
+        public IOption[] Options => new IOption[]
         {
-            var assemblies = GetFiles(_includeAssembliesOption.Value, _excludeAssembliesOption.Value, _parentDirOption.Value);
+            _verbosityOption,
+            _workingDirectoryOption,
+            _parentDirOption,
+            _includeAssembliesOption,
+            _excludeAssembliesOption,
+            _includeSourceOption,
+            _excludeSourceOption,
+            _includeTestsOption,
+            _excludeTestsOption,
+            _hitsDirectoryOption,
+            _coverageFileOption
+        };
+
+        public Task<int> Execute()
+        {
+            var assemblies = GetFiles(_includeAssembliesOption.Value, _excludeAssembliesOption.Value, _parentDirOption.DirectoryInfo);
             if (assemblies.Length == 0)
                 throw new ValidationException("No assemblies found");
 
-            var sourceFiles = GetFiles(_includeSourceOption.Value, _excludeSourceOption.Value, _parentDirOption.Value);
+            var sourceFiles = GetFiles(_includeSourceOption.Value, _excludeSourceOption.Value, _parentDirOption.DirectoryInfo);
             if (sourceFiles.Length == 0)
                 throw new ValidationException("No source files found");
 
-            var testFiles = GetFiles(_includeTestsOption.Value, _excludeTestsOption.Value, _parentDirOption.Value);
+            var testFiles = GetFiles(_includeTestsOption.Value, _excludeTestsOption.Value, _parentDirOption.DirectoryInfo);
 
             var instrumentationContext = new InstrumentationContext
             {
                 Assemblies = assemblies,
-                HitsPath = _hitsDirectoryOption.Value.FullName,
+                HitsPath = _hitsDirectoryOption.DirectoryInfo.FullName,
                 Sources = sourceFiles,
                 Tests = testFiles,
-                Workdir = _workingDirectoryOption.Value.AddEndingDirectorySeparator()
+                Workdir = _workingDirectoryOption.DirectoryInfo
             };
 
             var instrumenter = _serviceProvider.GetService<Instrumenter>();
             var result = instrumenter.Execute(instrumentationContext);
 
-            var coverageFile = _coverageFileOption.Value;
+            var coverageFile = _coverageFileOption.FileInfo;
             SaveCoverageFile(coverageFile, result);
 
             return Task.FromResult(0);
@@ -129,7 +127,7 @@ namespace MiniCover.Commands
                 .ToArray();
         }
 
-        private static void SaveCoverageFile(FileInfo coverageFile, InstrumentationResult result)
+        private static void SaveCoverageFile(IFileInfo coverageFile, InstrumentationResult result)
         {
             var settings = new JsonSerializerSettings
             {

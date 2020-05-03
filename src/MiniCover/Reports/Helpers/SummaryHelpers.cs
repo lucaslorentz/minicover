@@ -75,6 +75,18 @@ namespace MiniCover.Reports.Helpers
             }
         }
 
+        public static Summary CalculateSummary(
+            InstrumentationResult result,
+            float threshold)
+        {
+            var hitsInfo = HitsInfo.TryReadFromDirectory(result.HitsPath);
+
+            return CalculateFilesSummary(
+                result.GetSourceFiles(),
+                hitsInfo,
+                threshold);
+        }
+
         public static Summary CalculateFilesSummary(
             IEnumerable<SourceFile> sourceFiles,
             HitsInfo hitsInfo,

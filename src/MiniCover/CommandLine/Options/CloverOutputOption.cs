@@ -1,19 +1,16 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
-    class CloverOutputOption :  FileOption
+    public class CloverOutputOption : FileOption
     {
-        private const string _defaultValue = "./clover.xml";
-        private const string _template = "--output";
-        private static readonly string _description = $"Output file for Clover report [default: {_defaultValue}]";
-
-        public CloverOutputOption()
-            : base(_template, _description)
+        public CloverOutputOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return _defaultValue;
-        }
+        public override string Template => "--output";
+        public override string Description => $"Output file for Clover report [default: {DefaultValue}]";
+        protected override string DefaultValue => "./clover.xml";
     }
 }

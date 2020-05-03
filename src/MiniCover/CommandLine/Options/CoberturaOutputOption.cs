@@ -1,19 +1,16 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
-    class CoberturaOutputOption : FileOption
+    public class CoberturaOutputOption : FileOption
     {
-        private const string _defaultValue = "./cobertura.xml";
-        private const string _template = "--output";
-        private static readonly string _description = $"Output file for cobertura report [default: {_defaultValue}]";
-
-        public CoberturaOutputOption()
-            : base(_template, _description)
+        public CoberturaOutputOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return _defaultValue;
-        }
+        public override string Template => "--output";
+        public override string Description => $"Output file for cobertura report [default: {DefaultValue}]";
+        protected override string DefaultValue => "./cobertura.xml";
     }
 }

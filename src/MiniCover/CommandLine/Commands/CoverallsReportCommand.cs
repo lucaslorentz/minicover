@@ -5,11 +5,8 @@ using MiniCover.Reports.Coveralls;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class CoverallsReportCommand : BaseCommand
+    class CoverallsReportCommand : ICommand
     {
-        private const string _name = "coverallsreport";
-        private const string _description = "Write a coveralls-formatted JSON report to folder";
-
         private readonly StringOption _rootPathOption = new StringOption("--root-path", "Set the git root path");
         private readonly StringOption _outputOption = new StringOption("--output", "Output file for coveralls report");
         private readonly StringOption _serviceJobIdOption = new StringOption("--service-job-id", "Define service_job_id in coveralls json");
@@ -24,37 +21,42 @@ namespace MiniCover.CommandLine.Commands
         private readonly StringOption _branchOption = new StringOption("--branch", "set the git branch");
         private readonly StringOption _remoteOption = new StringOption("--remote", "set the git remote name");
         private readonly StringOption _remoteUrlOption = new StringOption("--remote-url", "set the git remote url");
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
 
         public CoverallsReportCommand(
             WorkingDirectoryOption workingDirectoryOption,
             CoverageLoadedFileOption coverageLoadedFileOption)
-            : base(_name, _description)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                _rootPathOption,
-                _outputOption,
-                _serviceJobIdOption,
-                _serviceNameOption,
-                _repoTokenOption,
-                _commitOption,
-                _commitMessageOption,
-                _commitAuthorNameOption,
-                _commitAuthorEmailOption,
-                _commitCommitterNameOption,
-                _commitCommitterEmailOption,
-                _branchOption,
-                _remoteOption,
-                _remoteUrlOption
-            };
         }
 
-        protected override async Task<int> Execute()
+        public string CommandName => "coverallsreport";
+
+        public string CommandDescription => "Write a coveralls-formatted JSON report to folder";
+
+        public IOption[] Options => new IOption[]
+        {
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _rootPathOption,
+            _outputOption,
+            _serviceJobIdOption,
+            _serviceNameOption,
+            _repoTokenOption,
+            _commitOption,
+            _commitMessageOption,
+            _commitAuthorNameOption,
+            _commitAuthorEmailOption,
+            _commitCommitterNameOption,
+            _commitCommitterEmailOption,
+            _branchOption,
+            _remoteOption,
+            _remoteUrlOption
+        };
+
+        public async Task<int> Execute()
         {
             var result = _coverageLoadedFileOption.Result;
             var output = _outputOption.Value;

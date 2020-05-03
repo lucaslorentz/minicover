@@ -1,0 +1,16 @@
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
+{
+    public class HtmlOutputDirectoryOption : DirectoryOption
+    {
+        public HtmlOutputDirectoryOption(IFileSystem fileSystem)
+            : base(fileSystem)
+        {
+        }
+
+        public override string Template => "--output";
+        public override string Description => $"Output folder for html report [default: {DefaultValue}]";
+        protected override string DefaultValue => "./coverage-html";
+    }
+}

@@ -21,6 +21,8 @@
   <ItemGroup>
     <Folder Include="TestHelpers\" />
     <Folder Include="Extensions\" />
+    <Folder Include="CommandLine\" />
+    <Folder Include="CommandLine\Options\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Reports\Sample\SomeClass.cs" />

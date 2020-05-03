@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Reflection;
 using System.Text;
@@ -33,10 +34,28 @@ namespace MiniCover
             commandLineApplication.FullName = "MiniCover";
             commandLineApplication.Description = "MiniCover - Code coverage for .NET Core via assembly instrumentation";
 
-            var commands = serviceProvider.GetServices<BaseCommand>();
+            var commands = serviceProvider.GetServices<ICommand>();
             foreach (var command in commands)
             {
-                command.AddTo(commandLineApplication);
+                commandLineApplication
+                    .Command(command.CommandName, commandConfig =>
+                    {
+                        commandConfig.Description = command.CommandDescription;
+                        commandConfig.HelpOption("-h | --help");
+
+                        var prepareOptions = new List<Action>();
+
+                        foreach (var option in command.Options)
+                            prepareOptions.Add(AddOption(commandConfig, option));
+
+                        commandConfig.OnExecute(() =>
+                        {
+                            foreach (var prepare in prepareOptions)
+                                prepare();
+
+                            return command.Execute();
+                        });
+                    });
             }
 
             commandLineApplication.HelpOption("-h | --help");
@@ -70,6 +89,25 @@ namespace MiniCover
             }
         }
 
+        private static Action AddOption(CommandLineApplication command, IOption baseOption)
+        {
+            switch (baseOption)
+            {
+                case IMultiValueOption multiValueOption:
+                    {
+                        var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.MultipleValue);
+                        return () => multiValueOption.ReceiveValue(option.Values);
+                    }
+                case ISingleValueOption singleValueOption:
+                    {
+                        var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.SingleValue);
+                        return () => singleValueOption.ReceiveValue(option.Value());
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         private static IServiceProvider ConfigureServices(IOutput output)
         {
             var services = new ServiceCollection();
@@ -82,16 +120,16 @@ namespace MiniCover
 
             services.AddMemoryCache();
 
-            services.AddTransient<BaseCommand, InstrumentCommand>();
-            services.AddTransient<BaseCommand, UninstrumentCommand>();
-            services.AddTransient<BaseCommand, ResetCommand>();
-            services.AddTransient<BaseCommand, ConsoleReportCommand>();
-            services.AddTransient<BaseCommand, HtmlReportCommand>();
-            services.AddTransient<BaseCommand, NCoverReportCommand>();
-            services.AddTransient<BaseCommand, OpenCoverReportCommand>();
-            services.AddTransient<BaseCommand, CloverReportCommand>();
-            services.AddTransient<BaseCommand, CoverallsReportCommand>();
-            services.AddTransient<BaseCommand, CoberturaReportCommand>();
+            services.AddTransient<ICommand, InstrumentCommand>();
+            services.AddTransient<ICommand, UninstrumentCommand>();
+            services.AddTransient<ICommand, ResetCommand>();
+            services.AddTransient<ICommand, ConsoleReportCommand>();
+            services.AddTransient<ICommand, HtmlReportCommand>();
+            services.AddTransient<ICommand, NCoverReportCommand>();
+            services.AddTransient<ICommand, OpenCoverReportCommand>();
+            services.AddTransient<ICommand, CloverReportCommand>();
+            services.AddTransient<ICommand, CoverallsReportCommand>();
+            services.AddTransient<ICommand, CoberturaReportCommand>();
 
             services.AddTransient<WorkingDirectoryOption>();
             services.AddTransient<ParentDirectoryOption>();
@@ -106,7 +144,7 @@ namespace MiniCover
             services.AddTransient<CoverageLoadedFileOption>();
             services.AddTransient<ThresholdOption>();
             services.AddTransient<CloverOutputOption>();
-            services.AddTransient<HtmlOutputFolderOption>();
+            services.AddTransient<HtmlOutputDirectoryOption>();
             services.AddTransient<NCoverOutputOption>();
             services.AddTransient<OpenCoverOutputOption>();
             services.AddTransient<CoberturaOutputOption>();

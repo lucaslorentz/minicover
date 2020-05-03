@@ -37,7 +37,7 @@ namespace MiniCover.Instrumentation
 
         public InstrumentationResult Execute(InstrumentationContext context)
         {
-            context.Workdir = context.Workdir.AddEndingDirectorySeparator();
+            context.Workdir = context.Workdir;
 
             var result = new InstrumentationResult
             {

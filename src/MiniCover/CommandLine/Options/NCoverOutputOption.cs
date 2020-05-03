@@ -1,19 +1,16 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
-    class NCoverOutputOption : FileOption
+    public class NCoverOutputOption : FileOption
     {
-        private const string _defaultValue = "./coverage.xml";
-        private const string _template = "--output";
-        private static readonly string _description = $"Output file for NCover report [default: {_defaultValue}]";
-
-        public NCoverOutputOption()
-            : base(_template, _description)
+        public NCoverOutputOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return _defaultValue;
-        }
+        public override string Template => "--output";
+        public override string Description => $"Output file for NCover report [default: {DefaultValue}]";
+        protected override string DefaultValue => "./coverage.xml";
     }
 }

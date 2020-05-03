@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -11,7 +11,7 @@ namespace MiniCover.Reports.Cobertura
 {
     public class CoberturaReport
     {
-        public void Execute(InstrumentationResult result, FileInfo output)
+        public void Execute(InstrumentationResult result, IFileInfo output)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 

@@ -5,11 +5,10 @@ using MiniCover.Instrumentation;
 
 namespace MiniCover.Commands
 {
-    class UninstrumentCommand : BaseCommand
+    class UninstrumentCommand : ICommand
     {
-        private const string _name = "uninstrument";
-        private const string _description = "Uninstrument assemblies";
-
+        private readonly VerbosityOption _verbosityOption;
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
         private readonly Uninstrumenter _uninstrumenter;
 
@@ -18,19 +17,23 @@ namespace MiniCover.Commands
             WorkingDirectoryOption workingDirectoryOption,
             CoverageLoadedFileOption coverageLoadedFileOption,
             Uninstrumenter uninstrumenter)
-            : base(_name, _description)
         {
+            _verbosityOption = verbosityOption;
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _uninstrumenter = uninstrumenter;
-            Options = new IOption[]
-            {
-                verbosityOption,
-                workingDirectoryOption,
-                coverageLoadedFileOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "uninstrument";
+        public string CommandDescription => "Uninstrument assemblies";
+        public IOption[] Options => new IOption[]
+        {
+            _verbosityOption,
+            _workingDirectoryOption,
+            _coverageLoadedFileOption
+        };
+
+        public Task<int> Execute()
         {
             var result = _coverageLoadedFileOption.Result;
             _uninstrumenter.Execute(result);

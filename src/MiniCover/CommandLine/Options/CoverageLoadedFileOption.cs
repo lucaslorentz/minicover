@@ -1,25 +1,31 @@
-﻿using System.IO;
+﻿using System.IO.Abstractions;
 using MiniCover.Exceptions;
 using MiniCover.Model;
 using Newtonsoft.Json;
 
 namespace MiniCover.CommandLine.Options
 {
-    class CoverageLoadedFileOption : CoverageFileOption
+    public class CoverageLoadedFileOption : CoverageFileOption
     {
+        private readonly IFileSystem _fileSystem;
+
+        public CoverageLoadedFileOption(IFileSystem fileSystem)
+            : base(fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+
         public InstrumentationResult Result { get; private set; }
 
-        protected override FileInfo PrepareValue(string value)
+        public override void ReceiveValue(string value)
         {
-            var fileInfo = base.PrepareValue(value);
+            base.ReceiveValue(value);
 
-            if (!fileInfo.Exists)
-                throw new ValidationException($"Coverage file does not exist '{fileInfo.FullName}'");
+            if (!FileInfo.Exists)
+                throw new ValidationException($"Coverage file does not exist '{FileInfo.FullName}'");
 
-            var coverageFileString = File.ReadAllText(fileInfo.FullName);
+            var coverageFileString = _fileSystem.File.ReadAllText(FileInfo.FullName);
             Result = JsonConvert.DeserializeObject<InstrumentationResult>(coverageFileString);
-
-            return fileInfo;
         }
     }
 }

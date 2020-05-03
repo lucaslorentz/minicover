@@ -1,43 +1,37 @@
-﻿using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace MiniCover.CommandLine.Options
 {
-    class WorkingDirectoryOption : DirectoryOption
+    public class WorkingDirectoryOption : DirectoryOption
     {
-        private const string _defaultValue = "./";
-        private const string _template = "--workdir";
-        private static readonly string _description = $"Change working directory [default: {_defaultValue}]";
-
         private readonly ILogger<WorkingDirectoryOption> _logger;
         private readonly IFileSystem _fileSystem;
 
         public WorkingDirectoryOption(
             ILogger<WorkingDirectoryOption> logger,
             IFileSystem fileSystem)
-            : base(_template, _description, fileSystem)
+            : base(fileSystem)
         {
             _logger = logger;
             _fileSystem = fileSystem;
         }
 
-        protected override IDirectoryInfo PrepareValue(string value)
-        {
-            var directoryInfo = base.PrepareValue(value);
-            var currentDirectory = _fileSystem.DirectoryInfo.FromDirectoryName(Directory.GetCurrentDirectory());
-            if (directoryInfo.FullName != currentDirectory.FullName)
-            {
-                directoryInfo.Create();
-                _logger.LogInformation("Changing working directory to {directory}", directoryInfo.FullName);
-                Directory.SetCurrentDirectory(directoryInfo.FullName);
-            }
-            return directoryInfo;
-        }
+        public override string Template => "--workdir";
+        public override string Description => $"Change working directory [default: {DefaultValue}]";
+        protected override string DefaultValue => "./";
 
-        protected override string GetDefaultValue()
+        public override void ReceiveValue(string value)
         {
-            return _defaultValue;
+            base.ReceiveValue(value);
+
+            var currentDirectory = _fileSystem.DirectoryInfo.FromDirectoryName(_fileSystem.Directory.GetCurrentDirectory());
+            if (DirectoryInfo.FullName != currentDirectory.FullName)
+            {
+                DirectoryInfo.Create();
+                _logger.LogInformation("Changing working directory to {directory}", DirectoryInfo.FullName);
+                _fileSystem.Directory.SetCurrentDirectory(DirectoryInfo.FullName);
+            }
         }
     }
 }

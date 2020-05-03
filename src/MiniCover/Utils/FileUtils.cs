@@ -19,15 +19,6 @@ namespace MiniCover.Utils
             }
         }
 
-        public static IDirectoryInfo AddEndingDirectorySeparator(this IDirectoryInfo info)
-        {
-            if (info.FullName.EndsWith(Path.DirectorySeparatorChar)
-                || info.FullName.EndsWith(Path.AltDirectorySeparatorChar))
-                return info;
-
-            return info.FileSystem.DirectoryInfo.FromDirectoryName($"{info.FullName}{Path.DirectorySeparatorChar}");
-        }
-
         public static IFileInfo GetPdbFile(IFileInfo assemblyFile)
         {
             return assemblyFile.FileSystem.FileInfo.FromFileName(Path.ChangeExtension(assemblyFile.FullName, "pdb"));

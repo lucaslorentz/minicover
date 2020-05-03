@@ -4,11 +4,9 @@ using MiniCover.Reports;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class ConsoleReportCommand : BaseCommand
+    class ConsoleReportCommand : ICommand
     {
-        private const string _name = "report";
-        private const string _description = "Outputs coverage report";
-
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
         private readonly ThresholdOption _thresholdOption;
 
@@ -16,20 +14,22 @@ namespace MiniCover.CommandLine.Commands
             WorkingDirectoryOption workingDirectoryOption,
             CoverageLoadedFileOption coverageLoadedFileOption,
             ThresholdOption thresholdOption)
-            : base(_name, _description)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                thresholdOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "report";
+        public string CommandDescription => "Outputs coverage report";
+        public IOption[] Options => new IOption[]
+        {
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _thresholdOption
+        };
+
+        public Task<int> Execute()
         {
             var consoleReport = new ConsoleReport();
             var result = consoleReport.Execute(_coverageLoadedFileOption.Result, _thresholdOption.Value);

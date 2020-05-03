@@ -1,15 +1,13 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
 using MiniCover.Reports.Clover;
-using MiniCover.Utils;
+using MiniCover.Reports.Helpers;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class CloverReportCommand : BaseCommand
+    class CloverReportCommand : ICommand
     {
-        private const string _name = "cloverreport";
-        private const string _description = "Write an Clover-formatted XML report to file";
-
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly CloverOutputOption _cloverOutputOption;
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
         private readonly ThresholdOption _thresholdOption;
@@ -19,26 +17,29 @@ namespace MiniCover.CommandLine.Commands
             CloverOutputOption cloverOutputOption,
             CoverageLoadedFileOption coverageLoadedFileOption,
             ThresholdOption thresholdOption)
-            : base(_name, _description)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _cloverOutputOption = cloverOutputOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                thresholdOption,
-                cloverOutputOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "cloverreport";
+        public string CommandDescription => "Write an Clover-formatted XML report to file";
+
+        public IOption[] Options => new IOption[]
         {
-            CloverReport.Execute(_coverageLoadedFileOption.Result, _cloverOutputOption.Value, _thresholdOption.Value);
-            var result = CalcUtils.IsHigherThanThreshold(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(result);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _thresholdOption,
+            _cloverOutputOption
+        };
+
+        public Task<int> Execute()
+        {
+            CloverReport.Execute(_coverageLoadedFileOption.Result, _cloverOutputOption.FileInfo, _thresholdOption.Value);
+            var summary = SummaryHelpers.CalculateSummary(_coverageLoadedFileOption.Result, _thresholdOption.Value);
+            return Task.FromResult(summary.LinesCoveragePass ? 0 : 1);
         }
     }
 }

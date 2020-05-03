@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Xml.Linq;
 using MiniCover.Model;
@@ -9,7 +10,7 @@ namespace MiniCover.Reports.OpenCover
 {
     public static class OpenCoverReport
     {
-        public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
+        public static void Execute(InstrumentationResult result, IFileInfo output, float threshold)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 

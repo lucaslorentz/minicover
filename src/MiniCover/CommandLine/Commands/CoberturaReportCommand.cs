@@ -1,15 +1,13 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
 using MiniCover.Reports.Cobertura;
-using MiniCover.Utils;
+using MiniCover.Reports.Helpers;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class CoberturaReportCommand : BaseCommand
+    class CoberturaReportCommand : ICommand
     {
-        private const string _name = "coberturareport";
-        private const string _description = "Write a Cobertura-formatted XML report to file";
-
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
         private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
         private readonly CoberturaOutputOption _coberturaOutputOption;
         private readonly ThresholdOption _thresholdOption;
@@ -19,26 +17,28 @@ namespace MiniCover.CommandLine.Commands
             CoverageLoadedFileOption coverageLoadedFileOption,
             CoberturaOutputOption coberturaOutputOption,
             ThresholdOption thresholdOption)
-        : base(_name, _description)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
             _coberturaOutputOption = coberturaOutputOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                _coverageLoadedFileOption,
-                _thresholdOption,
-                _coberturaOutputOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "coberturareport";
+        public string CommandDescription => "Write a Cobertura-formatted XML report to file";
+        public IOption[] Options => new IOption[]
         {
-            new CoberturaReport().Execute(_coverageLoadedFileOption.Result, _coberturaOutputOption.Value);
-            var result = CalcUtils.IsHigherThanThreshold(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(result);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _thresholdOption,
+            _coberturaOutputOption
+        };
+
+        public Task<int> Execute()
+        {
+            new CoberturaReport().Execute(_coverageLoadedFileOption.Result, _coberturaOutputOption.FileInfo);
+            var summary = SummaryHelpers.CalculateSummary(_coverageLoadedFileOption.Result, _thresholdOption.Value);
+            return Task.FromResult(summary.LinesCoveragePass ? 0 : 1);
         }
     }
 }

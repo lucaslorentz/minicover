@@ -3,21 +3,22 @@ using System.Linq;
 
 namespace MiniCover.CommandLine.Options
 {
-    abstract class FilesPatternOption : MultiValueOption<IList<string>>
+    public abstract class FilesPatternOption : IMultiValueOption
     {
-        protected FilesPatternOption(string template, string description)
-            : base(template, description)
+        public IList<string> Value { get; private set; }
+        public abstract string Template { get; }
+        public abstract string Description { get; }
+        protected abstract IList<string> DefaultValue { get; }
+
+        public void ReceiveValue(IList<string> values)
         {
+            if (values == null || values.Count == 0)
+            {
+                Value = DefaultValue;
+                return;
+            }
+
+            Value = values.Where(v => !string.IsNullOrEmpty(v)).ToArray();
         }
-
-        protected override IList<string> PrepareValue(IList<string> values)
-        {
-            if (values.Count == 0)
-                return GetDefaultValue();
-
-            return values.Where(v => !string.IsNullOrEmpty(v)).ToArray();
-        }
-
-        protected abstract IList<string> GetDefaultValue();
     }
 }
