@@ -2,18 +2,18 @@
 
 namespace MiniCover.CommandLine
 {
-    interface IOption
+    public interface IOption
     {
         string Template { get; }
         string Description { get; }
     }
 
-    interface ISingleValueOption : IOption
+    public interface ISingleValueOption : IOption
     {
         void ReceiveValue(string value);
     }
 
-    interface IMultiValueOption : IOption
+    public interface IMultiValueOption : IOption
     {
         void ReceiveValue(IList<string> values);
     }

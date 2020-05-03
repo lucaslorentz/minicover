@@ -7,9 +7,9 @@ using MiniCover.Model;
 
 namespace MiniCover.Reports.NCover
 {
-    public static class NCoverReport
+    public class NCoverReport : INCoverReport
     {
-        public static void Execute(InstrumentationResult result, IFileInfo output, float threshold)
+        public void Execute(InstrumentationResult result, IFileInfo output)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 

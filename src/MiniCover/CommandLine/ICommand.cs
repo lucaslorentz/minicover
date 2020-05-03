@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine
 {
-    interface ICommand
+    public interface ICommand
     {
         string CommandName { get; }
         string CommandDescription { get; }

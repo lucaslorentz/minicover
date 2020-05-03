@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine.Options
 {
-    public class CloverOutputOption : FileOption
+    public class CloverOutputOption : FileOption, ICloverOutputOption
     {
         public CloverOutputOption(IFileSystem fileSystem)
             : base(fileSystem)

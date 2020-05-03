@@ -8,9 +8,9 @@ using MiniCover.Model;
 
 namespace MiniCover.Reports.OpenCover
 {
-    public static class OpenCoverReport
+    public class OpenCoverReport : IOpenCoverReport
     {
-        public static void Execute(InstrumentationResult result, IFileInfo output, float threshold)
+        public void Execute(InstrumentationResult result, IFileInfo output)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 

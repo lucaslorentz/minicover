@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine.Options
 {
-    public class HtmlOutputDirectoryOption : DirectoryOption
+    public class HtmlOutputDirectoryOption : DirectoryOption, IHtmlOutputDirectoryOption
     {
         public HtmlOutputDirectoryOption(IFileSystem fileSystem)
             : base(fileSystem)

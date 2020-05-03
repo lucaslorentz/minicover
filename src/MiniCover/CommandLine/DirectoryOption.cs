@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine.Options
 {
-    public abstract class DirectoryOption : ISingleValueOption
+    public abstract class DirectoryOption : ISingleValueOption, IDirectoryOption
     {
         private readonly IFileSystem _fileSystem;
 

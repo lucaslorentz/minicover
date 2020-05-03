@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MiniCover.Model;
@@ -9,22 +10,15 @@ using MiniCover.Utils;
 
 namespace MiniCover.Reports.Html
 {
-    public class HtmlReport
+    public class HtmlReport : IHtmlReport
     {
-        private readonly string _output;
-
-        public HtmlReport(string output)
+        public virtual int Execute(InstrumentationResult result, IDirectoryInfo output, float threshold)
         {
-            _output = output;
-        }
-
-        public virtual int Execute(InstrumentationResult result, float threshold)
-        {
-            Directory.CreateDirectory(_output);
+            Directory.CreateDirectory(output.FullName);
 
             var hitsInfo = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
-            var fileName = Path.Combine(_output, "index.html");
+            var fileName = Path.Combine(output.FullName, "index.html");
 
             var sourceFiles = result.GetSourceFiles();
 
@@ -81,7 +75,7 @@ namespace MiniCover.Reports.Html
                 htmlWriter.WriteLine("<th class=\"value\">% Branches</th>");
                 htmlWriter.WriteLine("</tr>");
 
-                foreach (var summaryRow in SummaryHelpers.GetSummaryGrid(result.GetSourceFiles(), hitsInfo, threshold))
+                foreach (var summaryRow in SummaryFactory.GetSummaryGrid(result.GetSourceFiles(), hitsInfo, threshold))
                 {
                     var summary = summaryRow.Summary;
 
@@ -89,7 +83,7 @@ namespace MiniCover.Reports.Html
                     var linesCoverageClass = summary.LinesCoveragePass ? "green" : "red";
                     var branchesCoverageClass = summary.BranchesCoveragePass ? "green" : "red";
 
-                    var classes = new List<string> {  };
+                    var classes = new List<string> { };
 
                     if (summaryRow.Level == 0)
                         classes.Add("root");
@@ -122,8 +116,10 @@ namespace MiniCover.Reports.Html
 
                     if (summaryRow.SourceFiles.Length == 1)
                     {
+                        var relativeFileName = GetHtmlFileName(output, summaryRow.SourceFiles[0].Path);
+
                         new HtmlSourceFileReport()
-                            .Generate(result, summaryRow.SourceFiles.First(), hitsInfo, threshold, GetHtmlFileName(summaryRow.SourceFiles[0].Path));
+                            .Generate(result, summaryRow.SourceFiles.First(), hitsInfo, threshold, relativeFileName);
                     }
                 }
 
@@ -141,10 +137,10 @@ namespace MiniCover.Reports.Html
             return safeName + ".html";
         }
 
-        private string GetHtmlFileName(string fileName)
+        private string GetHtmlFileName(IDirectoryInfo output, string fileName)
         {
             string indexRelativeFileName = GetIndexRelativeHtmlFileName(fileName);
-            return Path.Combine(_output, indexRelativeFileName);
+            return Path.Combine(output.FullName, indexRelativeFileName);
         }
     }
 }

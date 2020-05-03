@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace MiniCover.CommandLine.Options
 {
-    public class CoverageLoadedFileOption : CoverageFileOption
+    public class CoverageLoadedFileOption : CoverageFileOption, ICoverageLoadedFileOption
     {
         private readonly IFileSystem _fileSystem;
 

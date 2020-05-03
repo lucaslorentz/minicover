@@ -23,15 +23,15 @@ echo "# Start HtmlReport"
 dotnet minicover htmlreport --threshold 60
 echo "# End HtmlReport"
 echo "# Start XmlReport"
-dotnet minicover xmlreport --threshold 60
+dotnet minicover xmlreport
 echo "# End XmlReport"
 echo "# Start OpenCoverReport"
-dotnet minicover opencoverreport --threshold 60
+dotnet minicover opencoverreport
 echo "# End OpenCoverReport"
 echo "# Start CloverReport"
-dotnet minicover cloverreport --threshold 60
+dotnet minicover cloverreport
 echo "# End CloverReport"
 echo "# Start CoberturaReport"
-dotnet minicover coberturareport --threshold 60
+dotnet minicover coberturareport
 echo "# End CoberturaReport"
 cd ..

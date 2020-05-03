@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine.Options
 {
-    public abstract class FileOption : ISingleValueOption
+    public abstract class FileOption : ISingleValueOption, IFileOption
     {
         private readonly IFileSystem _fileSystem;
 

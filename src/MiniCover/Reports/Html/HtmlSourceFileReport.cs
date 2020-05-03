@@ -22,7 +22,7 @@ namespace MiniCover.Reports.Html
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
 
-            var summary = SummaryHelpers.CalculateFilesSummary(new[] { sourceFile }, hitsInfo, threshold);
+            var summary = SummaryFactory.CalculateFilesSummary(new[] { sourceFile }, hitsInfo, threshold);
 
             var lineCoverageClass = summary.LinesCoveragePass ? "green" : "red";
             var statementsCoverageClass = summary.StatementsCoveragePass ? "green" : "red";

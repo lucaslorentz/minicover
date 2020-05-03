@@ -4,22 +4,25 @@ using MiniCover.Reports.Html;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class HtmlReportCommand : ICommand
+    public class HtmlReportCommand : ICommand
     {
-        private readonly WorkingDirectoryOption _workingDirectoryOption;
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly HtmlOutputDirectoryOption _htmlOutputFolderOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IHtmlOutputDirectoryOption _htmlOutputFolderOption;
+        private readonly IThresholdOption _thresholdOption;
+        private readonly IHtmlReport _htmlReport;
 
         public HtmlReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            HtmlOutputDirectoryOption htmlOutputFolderOption,
-            ThresholdOption thresholdOption)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IHtmlOutputDirectoryOption htmlOutputFolderOption,
+            IThresholdOption thresholdOption,
+            IHtmlReport htmlReport)
         {
             _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
+            _htmlReport = htmlReport;
             _htmlOutputFolderOption = htmlOutputFolderOption;
         }
 
@@ -36,8 +39,11 @@ namespace MiniCover.CommandLine.Commands
 
         public Task<int> Execute()
         {
-            var consoleReport = new HtmlReport(_htmlOutputFolderOption.DirectoryInfo.FullName);
-            var result = consoleReport.Execute(_coverageLoadedFileOption.Result, _thresholdOption.Value);
+            var result = _htmlReport.Execute(
+                _coverageLoadedFileOption.Result,
+                _htmlOutputFolderOption.DirectoryInfo,
+                _thresholdOption.Value);
+
             return Task.FromResult(result);
         }
     }

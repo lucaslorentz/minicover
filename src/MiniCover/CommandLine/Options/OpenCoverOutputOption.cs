@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine.Options
 {
-    public class OpenCoverOutputOption : FileOption
+    public class OpenCoverOutputOption : FileOption, IOpenCoverOutputOption
     {
         public OpenCoverOutputOption(IFileSystem fileSystem)
             : base(fileSystem)

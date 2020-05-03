@@ -5,18 +5,18 @@ using MiniCover.Instrumentation;
 
 namespace MiniCover.Commands
 {
-    class UninstrumentCommand : ICommand
+    public class UninstrumentCommand : ICommand
     {
-        private readonly VerbosityOption _verbosityOption;
-        private readonly WorkingDirectoryOption _workingDirectoryOption;
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly Uninstrumenter _uninstrumenter;
+        private readonly IVerbosityOption _verbosityOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IUninstrumenter _uninstrumenter;
 
         public UninstrumentCommand(
-            VerbosityOption verbosityOption,
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            Uninstrumenter uninstrumenter)
+            IVerbosityOption verbosityOption,
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IUninstrumenter uninstrumenter)
         {
             _verbosityOption = verbosityOption;
             _workingDirectoryOption = workingDirectoryOption;

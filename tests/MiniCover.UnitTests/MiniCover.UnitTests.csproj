@@ -23,6 +23,7 @@
     <Folder Include="Extensions\" />
     <Folder Include="CommandLine\" />
     <Folder Include="CommandLine\Options\" />
+    <Folder Include="CommandLine\Commands\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Reports\Sample\SomeClass.cs" />

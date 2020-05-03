@@ -9,7 +9,7 @@ using MiniCover.Model;
 
 namespace MiniCover.Reports.Cobertura
 {
-    public class CoberturaReport
+    public class CoberturaReport : ICoberturaReport
     {
         public void Execute(InstrumentationResult result, IFileInfo output)
         {

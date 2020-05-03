@@ -5,7 +5,7 @@ using MiniCover.Reports.Helpers;
 
 namespace MiniCover.Reports
 {
-    public class ConsoleReport
+    public class ConsoleReport : IConsoleReport
     {
         public int Execute(InstrumentationResult result, float threshold)
         {
@@ -13,9 +13,9 @@ namespace MiniCover.Reports
 
             var files = result.GetSourceFiles();
 
-            var summary = SummaryHelpers.CalculateFilesSummary(files, hitsInfo, threshold);
+            var summary = SummaryFactory.CalculateFilesSummary(files, hitsInfo, threshold);
 
-            var tableRows = SummaryHelpers.GetSummaryGrid(files, hitsInfo, threshold);
+            var tableRows = SummaryFactory.GetSummaryGrid(files, hitsInfo, threshold);
 
             var consoleTable = new ConsoleTable
             {

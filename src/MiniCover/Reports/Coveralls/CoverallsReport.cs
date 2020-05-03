@@ -1,9 +1,4 @@
-﻿using MiniCover.Extensions;
-using MiniCover.Model;
-using MiniCover.Reports.Coveralls.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,35 +6,25 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using MiniCover.Extensions;
+using MiniCover.Model;
+using MiniCover.Reports.Coveralls.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MiniCover.Reports.Coveralls
 {
-    public class CoverallsReport
+    public class CoverallsReport : ICoverallsReport
     {
         private const string coverallsJobsUrl = "https://coveralls.io/api/v1/jobs";
 
-        private readonly string _output;
-        private readonly string _repoToken;
-        private readonly string _serviceJobId;
-        private readonly string _serviceName;
-        private readonly string _commitMessage;
-        private readonly string _rootFolder;
-        private readonly string _commit;
-        private readonly string _commitAuthorName;
-        private readonly string _commitAuthorEmail;
-        private readonly string _commitCommitterName;
-        private readonly string _commitCommitterEmail;
-        private readonly string _branch;
-        private readonly string _remoteName;
-        private readonly string _remoteUrl;
-
-        public CoverallsReport(
+        public virtual async Task<int> Execute(InstrumentationResult result,
             string output,
             string repoToken,
             string serviceJobId,
             string serviceName,
             string commitMessage,
-            string rootfolder,
+            string rootFolder,
             string commit,
             string commitAuthorName,
             string commitAuthorEmail,
@@ -49,55 +34,37 @@ namespace MiniCover.Reports.Coveralls
             string remoteName,
             string remoteUrl)
         {
-            _output = output;
-            _repoToken = repoToken;
-            _serviceJobId = serviceJobId;
-            _serviceName = serviceName;
-            _rootFolder = rootfolder;
-            _commit = commit;
-            _commitAuthorName = commitAuthorName;
-            _commitAuthorEmail = commitAuthorEmail;
-            _commitCommitterName = commitCommitterName;
-            _commitCommitterEmail = commitCommitterEmail;
-            _branch = branch;
-            _remoteName = remoteName;
-            _remoteUrl = remoteUrl;
-            _commitMessage = commitMessage;
-        }
-
-        public virtual async Task<int> Execute(InstrumentationResult result)
-        {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
             var files = result.GetSourceFiles();
 
             var coverallsJob = new CoverallsJobModel
             {
-                ServiceJobId = _serviceJobId,
-                ServiceName = _serviceName,
-                RepoToken = _repoToken,
-                CoverallsGitModel = !string.IsNullOrWhiteSpace(_branch)
+                ServiceJobId = serviceJobId,
+                ServiceName = serviceName,
+                RepoToken = repoToken,
+                CoverallsGitModel = !string.IsNullOrWhiteSpace(branch)
                     ? new CoverallsGitModel
                     {
-                        Head = !string.IsNullOrWhiteSpace(_commit)
+                        Head = !string.IsNullOrWhiteSpace(commit)
                             ? new CoverallsCommitModel
                             {
-                                Id = _commit,
-                                AuthorName = _commitAuthorName,
-                                AuthorEmail = _commitAuthorEmail,
-                                CommitterName = _commitCommitterName,
-                                CommitterEmail = _commitCommitterEmail,
-                                Message = _commitMessage
+                                Id = commit,
+                                AuthorName = commitAuthorName,
+                                AuthorEmail = commitAuthorEmail,
+                                CommitterName = commitCommitterName,
+                                CommitterEmail = commitCommitterEmail,
+                                Message = commitMessage
                             }
                             : null,
-                        Branch = _branch,
-                        Remotes = !string.IsNullOrWhiteSpace(_remoteUrl)
+                        Branch = branch,
+                        Remotes = !string.IsNullOrWhiteSpace(remoteUrl)
                             ? new List<CoverallsRemote>
                             {
                                 new CoverallsRemote
                                 {
-                                    Name = _remoteName,
-                                    Url = _remoteUrl
+                                    Name = remoteName,
+                                    Url = remoteUrl
                                 }
                             }
                             : null
@@ -122,7 +89,7 @@ namespace MiniCover.Reports.Coveralls
                     .GroupByMany(f => f.GetLines())
                     .ToDictionary(g => g.Key, g => g.Sum(i => hits.GetHitCount(i.HitId)));
 
-                var fileName = Path.GetRelativePath(_rootFolder, sourceFile).Replace("\\", "/");
+                var fileName = Path.GetRelativePath(rootFolder, sourceFile).Replace("\\", "/");
 
                 var coverallsSourceFileModel = new CoverallsSourceFileModel
                 {
@@ -139,13 +106,14 @@ namespace MiniCover.Reports.Coveralls
                 coverallsJob.SourceFiles.Add(coverallsSourceFileModel);
             }
 
-            var coverallsJson = JsonConvert.SerializeObject(coverallsJob, Formatting.None, new JsonSerializerSettings {
+            var coverallsJson = JsonConvert.SerializeObject(coverallsJob, Formatting.None, new JsonSerializerSettings
+            {
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            if (!string.IsNullOrWhiteSpace(_output))
+            if (!string.IsNullOrWhiteSpace(output))
             {
-                File.WriteAllText(_output, coverallsJson);
+                File.WriteAllText(output, coverallsJson);
             }
 
             return await Post(coverallsJson);

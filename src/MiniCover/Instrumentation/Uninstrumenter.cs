@@ -5,7 +5,7 @@ using MiniCover.Utils;
 
 namespace MiniCover.Instrumentation
 {
-    public class Uninstrumenter
+    public class Uninstrumenter : IUninstrumenter
     {
         private readonly DepsJsonUtils _depsJsonUtils;
         private readonly IFileSystem _fileSystem;

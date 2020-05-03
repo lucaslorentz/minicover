@@ -5,7 +5,7 @@ using MiniCover.Infrastructure;
 
 namespace MiniCover.CommandLine.Options
 {
-    class VerbosityOption : ISingleValueOption
+    public class VerbosityOption : ISingleValueOption, IVerbosityOption
     {
         private readonly IOutput _output;
 

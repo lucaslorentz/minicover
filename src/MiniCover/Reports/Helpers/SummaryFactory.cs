@@ -5,8 +5,15 @@ using MiniCover.Model;
 
 namespace MiniCover.Reports.Helpers
 {
-    public static class SummaryHelpers
+    public class SummaryFactory : ISummaryFactory
     {
+        public Summary CalculateSummary(
+            InstrumentationResult result,
+            float threshold)
+        {
+            return CalculateSummaryStatic(result, threshold);
+        }
+
         public static List<SummaryRow> GetSummaryGrid(
             SourceFile[] sourceFiles,
             HitsInfo hitsInfo,
@@ -75,7 +82,7 @@ namespace MiniCover.Reports.Helpers
             }
         }
 
-        public static Summary CalculateSummary(
+        public static Summary CalculateSummaryStatic(
             InstrumentationResult result,
             float threshold)
         {

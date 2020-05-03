@@ -1,27 +1,26 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
-using MiniCover.Reports.Helpers;
 using MiniCover.Reports.OpenCover;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class OpenCoverReportCommand : ICommand
+    public class OpenCoverReportCommand : ICommand
     {
-        private readonly WorkingDirectoryOption _workingDirectoryOption;
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly OpenCoverOutputOption _openCoverOutputOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IOpenCoverOutputOption _openCoverOutputOption;
+        private readonly IOpenCoverReport _openCoverReport;
 
         public OpenCoverReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            OpenCoverOutputOption openCoverOutputOption,
-            ThresholdOption thresholdOption)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IOpenCoverOutputOption openCoverOutputOption,
+            IOpenCoverReport openCoverReport)
         {
             _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-            _thresholdOption = thresholdOption;
             _openCoverOutputOption = openCoverOutputOption;
+            _openCoverReport = openCoverReport;
         }
 
         public string CommandName => "opencoverreport";
@@ -30,15 +29,13 @@ namespace MiniCover.CommandLine.Commands
         {
             _workingDirectoryOption,
             _coverageLoadedFileOption,
-            _thresholdOption,
             _openCoverOutputOption
         };
 
         public Task<int> Execute()
         {
-            OpenCoverReport.Execute(_coverageLoadedFileOption.Result, _openCoverOutputOption.FileInfo, _thresholdOption.Value);
-            var summary = SummaryHelpers.CalculateSummary(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(summary.LinesCoveragePass ? 0 : 1);
+            _openCoverReport.Execute(_coverageLoadedFileOption.Result, _openCoverOutputOption.FileInfo);
+            return Task.FromResult(0);
         }
     }
 }

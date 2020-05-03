@@ -15,6 +15,13 @@ using MiniCover.Infrastructure;
 using MiniCover.Infrastructure.Console;
 using MiniCover.Infrastructure.FileSystem;
 using MiniCover.Instrumentation;
+using MiniCover.Reports;
+using MiniCover.Reports.Clover;
+using MiniCover.Reports.Cobertura;
+using MiniCover.Reports.Coveralls;
+using MiniCover.Reports.Html;
+using MiniCover.Reports.NCover;
+using MiniCover.Reports.OpenCover;
 using MiniCover.Utils;
 
 namespace MiniCover
@@ -131,6 +138,16 @@ namespace MiniCover
             services.AddTransient<ICommand, CoverallsReportCommand>();
             services.AddTransient<ICommand, CoberturaReportCommand>();
 
+            services.AddTransient<IWorkingDirectoryOption, WorkingDirectoryOption>();
+            services.AddTransient<ICoverageLoadedFileOption, CoverageLoadedFileOption>();
+            services.AddTransient<ICoberturaOutputOption, CoberturaOutputOption>();
+            services.AddTransient<ICloverOutputOption, CloverOutputOption>();
+            services.AddTransient<INCoverOutputOption, NCoverOutputOption>();
+            services.AddTransient<IOpenCoverOutputOption, OpenCoverOutputOption>();
+            services.AddTransient<IHtmlOutputDirectoryOption, HtmlOutputDirectoryOption>();
+            services.AddTransient<IThresholdOption, ThresholdOption>();
+            services.AddTransient<IVerbosityOption, VerbosityOption>();
+
             services.AddTransient<WorkingDirectoryOption>();
             services.AddTransient<ParentDirectoryOption>();
             services.AddTransient<IncludeAssembliesPatternOption>();
@@ -142,19 +159,22 @@ namespace MiniCover
             services.AddTransient<HitsDirectoryOption>();
             services.AddTransient<CoverageFileOption>();
             services.AddTransient<CoverageLoadedFileOption>();
-            services.AddTransient<ThresholdOption>();
-            services.AddTransient<CloverOutputOption>();
             services.AddTransient<HtmlOutputDirectoryOption>();
-            services.AddTransient<NCoverOutputOption>();
-            services.AddTransient<OpenCoverOutputOption>();
-            services.AddTransient<CoberturaOutputOption>();
             services.AddTransient<VerbosityOption>();
 
             services.AddSingleton<Instrumenter>();
-            services.AddSingleton<Uninstrumenter>();
+            services.AddSingleton<IUninstrumenter, Uninstrumenter>();
             services.AddSingleton<AssemblyInstrumenter>();
             services.AddSingleton<TypeInstrumenter>();
             services.AddSingleton<MethodInstrumenter>();
+
+            services.AddSingleton<ICloverReport, CloverReport>();
+            services.AddSingleton<ICoberturaReport, CoberturaReport>();
+            services.AddSingleton<INCoverReport, NCoverReport>();
+            services.AddSingleton<IOpenCoverReport, OpenCoverReport>();
+            services.AddSingleton<IHtmlReport, HtmlReport>();
+            services.AddSingleton<IConsoleReport, ConsoleReport>();
+            services.AddSingleton<ICoverallsReport, CoverallsReport>();
 
             services.AddSingleton<DepsJsonUtils>();
             services.AddSingleton<IFileReader, CachedFileReader>();

@@ -9,9 +9,9 @@ using MiniCover.Model;
 
 namespace MiniCover.Reports.Clover
 {
-    public static class CloverReport
+    public class CloverReport : ICloverReport
     {
-        public static void Execute(InstrumentationResult result, IFileInfo output, float threshold)
+        public void Execute(InstrumentationResult result, IFileInfo output)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 

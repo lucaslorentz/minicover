@@ -20,15 +20,15 @@ echo "# Start Uninstrument"
 echo "# End Uninstrument"
 
 echo "# Start CoberturaReport"
-./minicover.sh coberturareport --threshold 26
+./minicover.sh coberturareport
 echo "# End CoberturaReport"
 
 echo "# Start HtmlReport"
-./minicover.sh htmlreport --threshold 26
+./minicover.sh htmlreport --threshold 35
 echo "# End HtmlReport"
 
 echo "# Start Report"
-./minicover.sh report --threshold 26
+./minicover.sh report --threshold 35
 echo "# End Report"
 
 if [ -n "${BUILD_BUILDID}" ] && [ -n "${COVERALLS_REPO_TOKEN}" ]; then

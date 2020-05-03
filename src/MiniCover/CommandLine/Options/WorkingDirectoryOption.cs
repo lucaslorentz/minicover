@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MiniCover.CommandLine.Options
 {
-    public class WorkingDirectoryOption : DirectoryOption
+    public class WorkingDirectoryOption : DirectoryOption, IWorkingDirectoryOption
     {
         private readonly ILogger<WorkingDirectoryOption> _logger;
         private readonly IFileSystem _fileSystem;
