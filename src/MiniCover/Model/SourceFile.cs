@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace MiniCover.Model
 {
@@ -7,11 +8,22 @@ namespace MiniCover.Model
     {
         public static SourceFile Merge(IEnumerable<SourceFile> sources)
         {
-            return new SourceFile
+            var path = sources.Select(s => s.Path).Distinct().Single();
+
+            return new SourceFile(path)
             {
                 Sequences = sources.SelectMany(s => s.Sequences).ToList()
             };
         }
+
+        [JsonConstructor]
+        public SourceFile(string path)
+        {
+            Path = path;
+        }
+
+        [JsonProperty(Order = -2)]
+        public string Path { get; }
 
         public List<InstrumentedSequence> Sequences = new List<InstrumentedSequence>();
     }

@@ -1,44 +1,42 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
 using MiniCover.Reports.Clover;
-using MiniCover.Utils;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class CloverReportCommand : BaseCommand
+    public class CloverReportCommand : ICommand
     {
-        private const string _name = "cloverreport";
-        private const string _description = "Write an Clover-formatted XML report to file";
-
-        private readonly CloverOutputOption _cloverOutputOption;
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICloverOutputOption _cloverOutputOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly ICloverReport _cloverReport;
 
         public CloverReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CloverOutputOption cloverOutputOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            ThresholdOption thresholdOption)
-            : base(_name, _description)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            ICloverOutputOption cloverOutputOption,
+            ICloverReport cloverReport)
         {
-            _cloverOutputOption = cloverOutputOption;
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-            _thresholdOption = thresholdOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                thresholdOption,
-                cloverOutputOption
-            };
+            _cloverOutputOption = cloverOutputOption;
+            _cloverReport = cloverReport;
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "cloverreport";
+        public string CommandDescription => "Write an Clover-formatted XML report to file";
+
+        public IOption[] Options => new IOption[]
         {
-            CloverReport.Execute(_coverageLoadedFileOption.Result, _cloverOutputOption.Value, _thresholdOption.Value);
-            var result = CalcUtils.IsHigherThanThreshold(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(result);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _cloverOutputOption
+        };
+
+        public Task<int> Execute()
+        {
+            _cloverReport.Execute(_coverageLoadedFileOption.Result, _cloverOutputOption.FileInfo);
+            return Task.FromResult(0);
         }
     }
 }

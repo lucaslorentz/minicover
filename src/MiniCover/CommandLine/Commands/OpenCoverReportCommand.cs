@@ -1,44 +1,41 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
-using MiniCover.Reports;
-using MiniCover.Utils;
+using MiniCover.Reports.OpenCover;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class OpenCoverReportCommand : BaseCommand
+    public class OpenCoverReportCommand : ICommand
     {
-        private const string _name = "opencoverreport";
-        private const string _description = "Write an OpenCover-formatted XML report to file";
-
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly OpenCoverOutputOption _openCoverOutputOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IOpenCoverOutputOption _openCoverOutputOption;
+        private readonly IOpenCoverReport _openCoverReport;
 
         public OpenCoverReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            OpenCoverOutputOption openCoverOutputOption,
-            ThresholdOption thresholdOption)
-        : base(_name, _description)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IOpenCoverOutputOption openCoverOutputOption,
+            IOpenCoverReport openCoverReport)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-            _thresholdOption = thresholdOption;
             _openCoverOutputOption = openCoverOutputOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                _coverageLoadedFileOption,
-                _thresholdOption,
-                _openCoverOutputOption
-            };
+            _openCoverReport = openCoverReport;
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "opencoverreport";
+        public string CommandDescription => "Write an OpenCover-formatted XML report to file";
+        public IOption[] Options => new IOption[]
         {
-            OpenCoverReport.Execute(_coverageLoadedFileOption.Result, _openCoverOutputOption.Value, _thresholdOption.Value);
-            var result = CalcUtils.IsHigherThanThreshold(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(result);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _openCoverOutputOption
+        };
+
+        public Task<int> Execute()
+        {
+            _openCoverReport.Execute(_coverageLoadedFileOption.Result, _openCoverOutputOption.FileInfo);
+            return Task.FromResult(0);
         }
     }
 }

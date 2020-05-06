@@ -1,42 +1,49 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
-using MiniCover.Reports;
+using MiniCover.Reports.Html;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class HtmlReportCommand : BaseCommand
+    public class HtmlReportCommand : ICommand
     {
-        private const string _name = "htmlreport";
-        private const string _description = "Write html report to folder";
-
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly HtmlOutputFolderOption _htmlOutputFolderOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IHtmlOutputDirectoryOption _htmlOutputFolderOption;
+        private readonly IThresholdOption _thresholdOption;
+        private readonly IHtmlReport _htmlReport;
 
         public HtmlReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            HtmlOutputFolderOption htmlOutputFolderOption,
-            ThresholdOption thresholdOption)
-            : base(_name, _description)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IHtmlOutputDirectoryOption htmlOutputFolderOption,
+            IThresholdOption thresholdOption,
+            IHtmlReport htmlReport)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
+            _htmlReport = htmlReport;
             _htmlOutputFolderOption = htmlOutputFolderOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                thresholdOption,
-                htmlOutputFolderOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "htmlreport";
+        public string CommandDescription => "Write html report to folder";
+
+        public IOption[] Options => new IOption[]
         {
-            var consoleReport = new HtmlReport(_htmlOutputFolderOption.Value.FullName);
-            var result = consoleReport.Execute(_coverageLoadedFileOption.Result, _thresholdOption.Value);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _thresholdOption,
+            _htmlOutputFolderOption
+        };
+
+        public Task<int> Execute()
+        {
+            var result = _htmlReport.Execute(
+                _coverageLoadedFileOption.Result,
+                _htmlOutputFolderOption.DirectoryInfo,
+                _thresholdOption.Value);
+
             return Task.FromResult(result);
         }
     }

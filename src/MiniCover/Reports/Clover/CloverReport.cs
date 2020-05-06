@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -8,9 +9,9 @@ using MiniCover.Model;
 
 namespace MiniCover.Reports.Clover
 {
-    public static class CloverReport
+    public class CloverReport : ICloverReport
     {
-        public static void Execute(InstrumentationResult result, FileInfo output, float threshold)
+        public void Execute(InstrumentationResult result, IFileInfo output)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
@@ -70,11 +71,11 @@ namespace MiniCover.Reports.Clover
         {
             return assembly.SourceFiles.Select(file => new XElement(
                 XName.Get("file"),
-                new XAttribute(XName.Get("name"), Path.GetFileName(file.Key)),
-                new XAttribute(XName.Get("path"), file.Key),
-                CreateMetricsElement(CountFileMetrics(file.Value, hits)),
-                CreateClassesElement(file.Value.Sequences, hits),
-                CreateLinesElement(file.Value.Sequences, hits)
+                new XAttribute(XName.Get("name"), Path.GetFileName(file.Path)),
+                new XAttribute(XName.Get("path"), file.Path),
+                CreateMetricsElement(CountFileMetrics(file, hits)),
+                CreateClassesElement(file.Sequences, hits),
+                CreateLinesElement(file.Sequences, hits)
             ));
         }
 
@@ -151,7 +152,7 @@ namespace MiniCover.Reports.Clover
         private static CloverCounter CountPackageMetrics(InstrumentedAssembly assembly, HitsInfo hits)
         {
             return assembly.SourceFiles
-                .Select(t => CountFileMetrics(t.Value, hits))
+                .Select(t => CountFileMetrics(t, hits))
                 .Aggregate(new CloverCounter(), (counter, next) =>
                 {
                     counter.Add(next);

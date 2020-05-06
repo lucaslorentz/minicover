@@ -1,20 +1,16 @@
-﻿using System.IO;
+﻿using System.IO.Abstractions;
 
 namespace MiniCover.CommandLine.Options
 {
-    class ParentDirectoryOption : DirectoryOption
+    public class ParentDirectoryOption : DirectoryOption
     {
-        private const string _template = "--parentdir";
-        private static readonly string _description = "Set parent directory for assemblies and source directories (if not used, falls back to --workdir)";
-
-        public ParentDirectoryOption()
-            : base(_template, _description)
+        public ParentDirectoryOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return Directory.GetCurrentDirectory();
-        }
+        public override string Template => "--parentdir";
+        public override string Description => "Set parent directory for assemblies and source directories (if not used, falls back to --workdir)";
+        protected override string DefaultValue => "./";
     }
 }

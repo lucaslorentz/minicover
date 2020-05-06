@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -26,12 +26,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="3.1.3" />
     <PackageReference Include="Mono.Cecil" Version="0.11.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="11.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,8 +46,25 @@
     <Folder Include="Exceptions\" />
     <Folder Include="Infrastructure\FileSystem\" />
     <Folder Include="Instrumentation\Patterns\" />
+    <Folder Include="Reports\Html\" />
+    <Folder Include="Reports\Helpers\" />
+    <Folder Include="Reports\Cobertura\" />
+    <Folder Include="Reports\NCover\" />
+    <Folder Include="Reports\OpenCover\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Infrastructure\Verbosity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Reports\Html\SourceFile.css" />
+    <None Remove="Reports\Html\Summary.css" />
+    <None Remove="Reports\Html\Shared.css" />
+    <None Remove="Reports\Html\SourceFile.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\Html\SourceFile.css" />
+    <EmbeddedResource Include="Reports\Html\Summary.css" />
+    <EmbeddedResource Include="Reports\Html\Shared.css" />
+    <EmbeddedResource Include="Reports\Html\Shared.js" />
   </ItemGroup>
 </Project>

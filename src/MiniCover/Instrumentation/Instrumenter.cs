@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace MiniCover.Instrumentation
 
         private readonly ILogger<Instrumenter> _logger;
         private readonly AssemblyInstrumenter _assemblyInstrumenter;
+        private readonly DepsJsonUtils _depsJsonUtils;
 
         private readonly string[] _loadedAssemblyFiles = AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => !a.IsDynamic)
@@ -25,15 +27,17 @@ namespace MiniCover.Instrumentation
 
         public Instrumenter(
             ILogger<Instrumenter> logger,
-            AssemblyInstrumenter assemblyInstrumenter)
+            AssemblyInstrumenter assemblyInstrumenter,
+            DepsJsonUtils depsJsonUtils)
         {
             _logger = logger;
             _assemblyInstrumenter = assemblyInstrumenter;
+            _depsJsonUtils = depsJsonUtils;
         }
 
         public InstrumentationResult Execute(InstrumentationContext context)
         {
-            context.Workdir = context.Workdir.AddEndingDirectorySeparator();
+            context.Workdir = context.Workdir;
 
             var result = new InstrumentationResult
             {
@@ -57,7 +61,7 @@ namespace MiniCover.Instrumentation
             return result;
         }
 
-        private bool ShouldInstrumentAssemblyFile(FileInfo assemblyFile)
+        private bool ShouldInstrumentAssemblyFile(IFileInfo assemblyFile)
         {
             if (FileUtils.IsBackupFile(assemblyFile))
                 return false;
@@ -74,7 +78,7 @@ namespace MiniCover.Instrumentation
         private void VisitAssemblyGroup(
             InstrumentationContext context,
             InstrumentationResult result,
-            IEnumerable<FileInfo> assemblyFiles)
+            IEnumerable<IFileInfo> assemblyFiles)
         {
             using (_logger.BeginScope("Checking assembly files {assemblies}", assemblyFiles.Select(f => f.FullName), LogLevel.Information))
             {
@@ -123,7 +127,7 @@ namespace MiniCover.Instrumentation
                     var hitServicesAssemblyVersion = FileVersionInfo.GetVersionInfo(hitServicesAssembly.Location);
                     foreach (var depsJsonFile in assemblyDirectory.GetFiles("*.deps.json"))
                     {
-                        DepsJsonUtils.PatchDepsJson(depsJsonFile, hitServicesAssemblyVersion.ProductVersion);
+                        _depsJsonUtils.PatchDepsJson(depsJsonFile, hitServicesAssemblyVersion.ProductVersion);
                     }
                 }
 

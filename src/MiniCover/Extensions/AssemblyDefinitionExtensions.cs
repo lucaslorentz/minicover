@@ -11,7 +11,7 @@ namespace MiniCover.Extensions
         {
             return assemblyDefinition
                 .MainModule.GetTypes()
-                .SelectMany(t => t.GetAllDocuments())
+                .SelectMany(t => t.GetAllDocuments(false))
                 .Distinct()
                 .ToArray();
         }

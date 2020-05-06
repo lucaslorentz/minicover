@@ -5,33 +5,38 @@ using MiniCover.Instrumentation;
 
 namespace MiniCover.Commands
 {
-    class UninstrumentCommand : BaseCommand
+    public class UninstrumentCommand : ICommand
     {
-        private const string _name = "uninstrument";
-        private const string _description = "Uninstrument assemblies";
-
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IVerbosityOption _verbosityOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IUninstrumenter _uninstrumenter;
 
         public UninstrumentCommand(
-            VerbosityOption verbosityOption,
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption)
-            : base(_name, _description)
+            IVerbosityOption verbosityOption,
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IUninstrumenter uninstrumenter)
         {
+            _verbosityOption = verbosityOption;
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-
-            Options = new IOption[]
-            {
-                verbosityOption,
-                workingDirectoryOption,
-                coverageLoadedFileOption
-            };
+            _uninstrumenter = uninstrumenter;
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "uninstrument";
+        public string CommandDescription => "Uninstrument assemblies";
+        public IOption[] Options => new IOption[]
+        {
+            _verbosityOption,
+            _workingDirectoryOption,
+            _coverageLoadedFileOption
+        };
+
+        public Task<int> Execute()
         {
             var result = _coverageLoadedFileOption.Result;
-            Uninstrumenter.Execute(result);
+            _uninstrumenter.Execute(result);
             return Task.FromResult(0);
         }
     }

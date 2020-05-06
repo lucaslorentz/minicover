@@ -1,19 +1,16 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
-    class OpenCoverOutputOption : FileOption
+    public class OpenCoverOutputOption : FileOption, IOpenCoverOutputOption
     {
-        private const string _defaultValue = "./opencovercoverage.xml";
-        private const string _template = "--output";
-        private static readonly string _description = $"Output file for OpenCover report [default: {_defaultValue}]";
-
-        public OpenCoverOutputOption()
-            : base(_template, _description)
+        public OpenCoverOutputOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return _defaultValue;
-        }
+        public override string Template => "--output";
+        public override string Description => $"Output file for OpenCover report [default: {DefaultValue}]";
+        protected override string DefaultValue => "./opencovercoverage.xml";
     }
 }

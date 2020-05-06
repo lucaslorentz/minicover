@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,16 +10,20 @@ using MiniCover.Extensions;
 using MiniCover.Infrastructure.FileSystem;
 using MiniCover.Instrumentation;
 using MiniCover.Model;
+using MiniCover.Utils;
 using Mono.Cecil;
 
 namespace MiniCover.UnitTests.TestHelpers
 {
     public static class InstrumentationExtensions
     {
+        private static readonly IFileSystem _fileSystem = new FileSystem();
+
         public static AssemblyDefinition ToDefinition(this Assembly assembly)
         {
-            var assemblyFile = new FileInfo(assembly.Location);
-            var resolver = new CustomAssemblyResolver(assemblyFile.Directory, NullLogger<CustomAssemblyResolver>.Instance);
+            var assemblyFile = _fileSystem.FileInfo.FromFileName(assembly.Location);
+            var depsJsonUtils = new DepsJsonUtils(new FileSystem());
+            var resolver = new CustomAssemblyResolver(assemblyFile.Directory, NullLogger<CustomAssemblyResolver>.Instance, depsJsonUtils);
             var readerParameters = new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver };
             return AssemblyDefinition.ReadAssembly(assemblyFile.FullName, readerParameters);
         }
@@ -37,7 +42,7 @@ namespace MiniCover.UnitTests.TestHelpers
 
         public static InstrumentedAssembly Instrument(this TypeDefinition typeDefinition)
         {
-            var documentsUrls = typeDefinition.GetAllDocuments().Select(d => d.Url).Distinct().ToArray();
+            var documentsUrls = typeDefinition.GetAllDocuments(true).Select(d => d.Url).Distinct().ToArray();
             var instrumentationContext = CreateInstrumentationContext(documentsUrls);
             var instrumentedAssembly = new InstrumentedAssembly(typeDefinition.Module.Assembly.Name.Name);
             var methodInstrumenter = CreateMethodInstrumenter();
@@ -86,9 +91,9 @@ namespace MiniCover.UnitTests.TestHelpers
             return new InstrumentationContext
             {
                 HitsPath = "/tmp",
-                Workdir = new DirectoryInfo("/tmp"),
-                Sources = documents.Select(d => new FileInfo(d)).ToArray(),
-                Tests = new FileInfo[0]
+                Workdir = _fileSystem.DirectoryInfo.FromDirectoryName("/tmp"),
+                Sources = documents.Select(d => _fileSystem.FileInfo.FromFileName(d)).ToArray(),
+                Tests = new IFileInfo[0]
             };
         }
 

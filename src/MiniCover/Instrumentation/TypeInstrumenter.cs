@@ -19,20 +19,11 @@ namespace MiniCover.Instrumentation
             TypeDefinition typeDefinition,
             InstrumentedAssembly instrumentedAssembly)
         {
-            var typeDocumentsUrls = typeDefinition.GetAllDocuments()
-                .Select(d => d.Url)
-                .Distinct()
-                .ToArray();
-
-            if (!typeDocumentsUrls.Any(d => context.IsSource(d) || context.IsTest(d)))
+            foreach (var methodDefinition in typeDefinition.Methods)
             {
-                return;
-            }
+                if (!methodDefinition.HasBody || !methodDefinition.DebugInformation.HasSequencePoints)
+                    continue;
 
-            var methods = typeDefinition.GetAllMethods();
-
-            foreach (var methodDefinition in methods)
-            {
                 var methodDocuments = methodDefinition.GetAllDocuments();
 
                 var isSource = methodDocuments.Any(d => context.IsSource(d.Url));
@@ -47,6 +38,9 @@ namespace MiniCover.Instrumentation
                     methodDefinition,
                     instrumentedAssembly);
             }
+
+            foreach (var nestedType in typeDefinition.NestedTypes)
+                InstrumentType(context, nestedType, instrumentedAssembly);
         }
     }
 }

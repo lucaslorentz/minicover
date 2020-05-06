@@ -1,20 +1,21 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using MiniCover.Exceptions;
 using MiniCover.Infrastructure;
 
 namespace MiniCover.CommandLine.Options
 {
-    class VerbosityOption : SingleValueOption<LogLevel>
+    public class VerbosityOption : ISingleValueOption, IVerbosityOption
     {
-        private const string _template = "-v | --verbosity";
-
         private readonly IOutput _output;
 
         public VerbosityOption(IOutput output)
-            : base(_template, $"Change verbosity level ({GetPossibleValues()}) [default: {output.MinimumLevel}]")
         {
             _output = output;
         }
+
+        public string Template => "-v | --verbosity";
+        public string Description => $"Change verbosity level ({GetPossibleValues()}) [default: {_output.MinimumLevel}]";
 
         private static string GetPossibleValues()
         {
@@ -28,14 +29,15 @@ namespace MiniCover.CommandLine.Options
             });
         }
 
-        protected override LogLevel PrepareValue(string value)
+        public void ReceiveValue(string value)
         {
-            if (value != null && Enum.TryParse<LogLevel>(value, out var logLevel))
+            if (value != null)
             {
+                if (!Enum.TryParse<LogLevel>(value, true, out var logLevel))
+                    throw new ValidationException($"Invalid verbosity '{value}'");
+
                 _output.MinimumLevel = logLevel;
             }
-
-            return _output.MinimumLevel;
         }
     }
 }

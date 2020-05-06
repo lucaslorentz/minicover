@@ -1,19 +1,16 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
-    class HitsDirectoryOption : DirectoryOption
+    public class HitsDirectoryOption : DirectoryOption
     {
-        private const string _defaultValue = "./coverage-hits";
-        private const string _template = "--hits-directory";
-        private static readonly string _description = $"Directory to store hits files [default: {_defaultValue}]";
-
-        public HitsDirectoryOption()
-            : base(_template, _description)
+        public HitsDirectoryOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return _defaultValue;
-        }
+        public override string Template => "--hits-directory";
+        public override string Description => $"Directory to store hits files [default: {DefaultValue}]";
+        protected override string DefaultValue => "./coverage-hits";
     }
 }

@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="11.0.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\MiniCover\MiniCover.csproj" />
@@ -20,6 +21,9 @@
   <ItemGroup>
     <Folder Include="TestHelpers\" />
     <Folder Include="Extensions\" />
+    <Folder Include="CommandLine\" />
+    <Folder Include="CommandLine\Options\" />
+    <Folder Include="CommandLine\Commands\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Reports\Sample\SomeClass.cs" />

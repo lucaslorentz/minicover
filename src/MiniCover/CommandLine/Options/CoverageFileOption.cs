@@ -1,19 +1,16 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.IO.Abstractions;
+
+namespace MiniCover.CommandLine.Options
 {
-    class CoverageFileOption :  FileOption
+    public class CoverageFileOption : FileOption
     {
-        private const string _defaultValue = "./coverage.json";
-        private const string _template = "--coverage-file";
-        private static readonly string _description = $"Coverage file name [default: {_defaultValue}]";
-
-        public CoverageFileOption()
-            : base(_template, _description)
+        public CoverageFileOption(IFileSystem fileSystem)
+            : base(fileSystem)
         {
         }
 
-        protected override string GetDefaultValue()
-        {
-            return _defaultValue;
-        }
+        public override string Template => "--coverage-file";
+        public override string Description => $"Coverage file name [default: {DefaultValue}]";
+        protected override string DefaultValue => "./coverage.json";
     }
 }

@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.IO.Abstractions.TestingHelpers;
+using FluentAssertions;
+using MiniCover.UnitTests.TestHelpers;
 using MiniCover.Utils;
 using Xunit;
 
@@ -6,35 +8,65 @@ namespace MiniCover.UnitTests.Utils
 {
     public class DepsJsonUtilsTests
     {
+        private readonly MockFileSystem _mockFileSystem;
+        private readonly DepsJsonUtils _sut;
+
+        public DepsJsonUtilsTests()
+        {
+            _mockFileSystem = new MockFileSystem();
+
+            _sut = new DepsJsonUtils(_mockFileSystem);
+        }
+
         [Fact]
         public void ShouldPatchDepsJson()
         {
+            var fileName = @"c:\source\deps.json";
             var originalContent = GetOriginalDepsJsonContent();
+
+            _mockFileSystem.AddFile(fileName, new MockFileData(originalContent));
+
             var expectedResult = GetPatchedDepsJsonContent();
-            var result = DepsJsonUtils.PatchDepsJsonContent(originalContent, "1.0.0");
-            NormalizeLineEnding(result).Should().Be(NormalizeLineEnding(expectedResult));
+            _sut.PatchDepsJson(_mockFileSystem.FileInfo.FromFileName(fileName), "1.0.0");
+
+            var result = _mockFileSystem.GetFile(fileName).TextContents;
+            result.ToOSLineEnding().Should().Be(expectedResult.ToOSLineEnding());
         }
 
         [Fact]
         public void ShouldUnpatchDepsJson()
         {
+            var fileName = @"c:\source\deps.json";
             var patchedContent = GetPatchedDepsJsonContent();
+
+            var mockFileData = new MockFileData(patchedContent);
+            _mockFileSystem.AddFile(fileName, mockFileData);
+
             var expectedResult = GetOriginalDepsJsonContent();
-            var result = DepsJsonUtils.UnpatchDepsJsonContent(patchedContent);
-            NormalizeLineEnding(result).Should().Be(NormalizeLineEnding(expectedResult));
+            _sut.UnpatchDepsJson(_mockFileSystem.FileInfo.FromFileName(fileName));
+
+            var result = _mockFileSystem.GetFile(fileName).TextContents;
+            result.ToOSLineEnding().Should().Be(expectedResult.ToOSLineEnding());
         }
 
         [Fact]
         public void GetAdditionalPaths_EmptyRuntimeConfigContext_NoError()
         {
-            var result = DepsJsonUtils.GetAdditionalPaths(string.Empty);
+            var result = _sut.GetAdditionalPaths(string.Empty);
+            result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void GetAdditionalPaths_NullRuntimeConfigContext_NoError()
+        {
+            var result = _sut.GetAdditionalPaths("null");
             result.Should().BeEmpty();
         }
 
         [Fact]
         public void GetAdditionalPaths_EmptyObject_NoError()
         {
-            var result = DepsJsonUtils.GetAdditionalPaths(@"{}");
+            var result = _sut.GetAdditionalPaths(@"{}");
             result.Should().BeEmpty();
         }
 
@@ -51,16 +83,21 @@ namespace MiniCover.UnitTests.Utils
     }
 }";
 
-            var result = DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent);
+            var result = _sut.GetAdditionalPaths(runtimeConfigContent);
             result.Should().NotBeEmpty();
             result.Count.Should().Be(2);
             result.Should().Contain("/api/.nuget/packages");
             result.Should().Contain("/usr/share/dotnet/sdk/NuGetFallbackFolder");
         }
 
-        public string NormalizeLineEnding(string text)
+        [Fact]
+        public void LoadDependencyContext_NoFile_ReturnsNull()
         {
-            return text.Replace("\r\n", "\n");
+            var directory = @"c:\test";
+            _mockFileSystem.AddDirectory(directory);
+            var directoryInfo = _mockFileSystem.DirectoryInfo.FromDirectoryName(directory);
+            var result = _sut.LoadDependencyContext(directoryInfo);
+            result.Should().BeNull();
         }
 
         private static string GetOriginalDepsJsonContent()

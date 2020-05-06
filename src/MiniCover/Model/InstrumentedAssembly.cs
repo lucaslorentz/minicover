@@ -1,22 +1,43 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace MiniCover.Model
 {
     public class InstrumentedAssembly
     {
-        [JsonConstructor]
+        private readonly HashSet<InstrumentedMethod> _methods;
+        private readonly List<AssemblyLocation> _locations;
+        private readonly SortedDictionary<string, SourceFile> _sourceFiles;
+
         public InstrumentedAssembly(string name)
         {
             Name = name;
+            _methods = new HashSet<InstrumentedMethod>();
+            _locations = new List<AssemblyLocation>();
+            _sourceFiles = new SortedDictionary<string, SourceFile>();
+        }
+
+        [JsonConstructor]
+        protected InstrumentedAssembly(
+            string name,
+            InstrumentedMethod[] methods,
+            AssemblyLocation[] locations,
+            SourceFile[] sourceFiles)
+        {
+            Name = name;
+            _methods = methods.ToHashSet();
+            _locations = locations.ToList();
+            _sourceFiles = new SortedDictionary<string, SourceFile>(
+                sourceFiles.ToDictionary(sf => sf.Path, sf => sf));
         }
 
         [JsonProperty(Order = -2)]
         public string Name { get; }
 
-        public HashSet<InstrumentedMethod> Methods = new HashSet<InstrumentedMethod>();
-        public List<AssemblyLocation> Locations = new List<AssemblyLocation>();
-        public SortedDictionary<string, SourceFile> SourceFiles = new SortedDictionary<string, SourceFile>();
+        public IEnumerable<InstrumentedMethod> Methods => _methods;
+        public IEnumerable<AssemblyLocation> Locations => _locations;
+        public IEnumerable<SourceFile> SourceFiles => _sourceFiles.Values;
 
         [JsonIgnore]
         public string TempAssemblyFile { get; set; }
@@ -26,21 +47,21 @@ namespace MiniCover.Model
 
         public InstrumentedMethod AddMethod(InstrumentedMethod method)
         {
-            if (Methods.TryGetValue(method, out var existingValue))
+            if (_methods.TryGetValue(method, out var existingValue))
                 return existingValue;
 
-            Methods.Add(method);
+            _methods.Add(method);
             return method;
         }
 
         public void AddSequence(string file, InstrumentedSequence instruction)
         {
-            if (!SourceFiles.ContainsKey(file))
+            if (!_sourceFiles.ContainsKey(file))
             {
-                SourceFiles[file] = new SourceFile();
+                _sourceFiles[file] = new SourceFile(file);
             }
 
-            SourceFiles[file].Sequences.Add(instruction);
+            _sourceFiles[file].Sequences.Add(instruction);
         }
 
         public void AddLocation(string file, string backupFile, string pdbFile, string backupPdbFile)
@@ -53,7 +74,7 @@ namespace MiniCover.Model
                 BackupPdbFile = backupPdbFile
             };
 
-            Locations.Add(assemblyLocation);
+            _locations.Add(assemblyLocation);
         }
     }
 }

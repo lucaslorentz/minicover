@@ -1,44 +1,42 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
-using MiniCover.Reports;
-using MiniCover.Utils;
+using MiniCover.Reports.NCover;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class NCoverReportCommand : BaseCommand
+    public class NCoverReportCommand : ICommand
     {
-        private const string _name = "xmlreport";
-        private const string _description = "Write an NCover-formatted XML report to file";
-
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly NCoverOutputOption _nCoverOutputOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly INCoverOutputOption _nCoverOutputOption;
+        private readonly INCoverReport _nCoverReport;
 
         public NCoverReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            NCoverOutputOption nCoverOutputOption,
-            ThresholdOption thresholdOption)
-        : base(_name, _description)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            INCoverOutputOption nCoverOutputOption,
+            INCoverReport nCoverReport)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-            _thresholdOption = thresholdOption;
             _nCoverOutputOption = nCoverOutputOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                _coverageLoadedFileOption,
-                _thresholdOption,
-                _nCoverOutputOption
-            };
+            _nCoverReport = nCoverReport;
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "xmlreport";
+        public string CommandDescription => "Write an NCover-formatted XML report to file";
+
+        public IOption[] Options => new IOption[]
         {
-            NCoverReport.Execute(_coverageLoadedFileOption.Result, _nCoverOutputOption.Value, _thresholdOption.Value);
-            var result = CalcUtils.IsHigherThanThreshold(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(result);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _nCoverOutputOption
+        };
+
+        public Task<int> Execute()
+        {
+            _nCoverReport.Execute(_coverageLoadedFileOption.Result, _nCoverOutputOption.FileInfo);
+            return Task.FromResult(0);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,10 @@ namespace MiniCover.Instrumentation
         private readonly DependencyContext _dependencyContext;
         private readonly ILogger _logger;
 
-        public CustomAssemblyResolver(DirectoryInfo assemblyDirectory, ILogger logger)
+        public CustomAssemblyResolver(
+            IDirectoryInfo assemblyDirectory,
+            ILogger logger,
+            DepsJsonUtils depsJsonUtils)
         {
             _logger = logger;
 
@@ -23,7 +27,7 @@ namespace MiniCover.Instrumentation
 
             AddSearchDirectory(assemblyDirectory.FullName);
 
-            _dependencyContext = DepsJsonUtils.LoadDependencyContext(assemblyDirectory);
+            _dependencyContext = depsJsonUtils.LoadDependencyContext(assemblyDirectory);
 
             var runtimeConfigPath = assemblyDirectory.GetFiles("*.runtimeconfig.dev.json", SearchOption.TopDirectoryOnly)
                 .Concat(assemblyDirectory.GetFiles("*.runtimeconfig.json", SearchOption.TopDirectoryOnly))
@@ -32,7 +36,7 @@ namespace MiniCover.Instrumentation
             if (runtimeConfigPath != null)
             {
                 var runtimeConfigContent = File.ReadAllText(runtimeConfigPath.FullName);
-                foreach (var path in DepsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
+                foreach (var path in depsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
                 {
                     AddSearchDirectory(path);
                 }

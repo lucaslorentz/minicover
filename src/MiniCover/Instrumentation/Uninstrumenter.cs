@@ -1,12 +1,24 @@
 ﻿using System.IO;
+using System.IO.Abstractions;
 using MiniCover.Model;
 using MiniCover.Utils;
 
 namespace MiniCover.Instrumentation
 {
-    public static class Uninstrumenter
+    public class Uninstrumenter : IUninstrumenter
     {
-        public static void Execute(InstrumentationResult result)
+        private readonly DepsJsonUtils _depsJsonUtils;
+        private readonly IFileSystem _fileSystem;
+
+        public Uninstrumenter(
+            DepsJsonUtils depsJsonUtils,
+            IFileSystem fileSystem)
+        {
+            _depsJsonUtils = depsJsonUtils;
+            _fileSystem = fileSystem;
+        }
+
+        public void Execute(InstrumentationResult result)
         {
             foreach (var assembly in result.Assemblies)
             {
@@ -24,10 +36,10 @@ namespace MiniCover.Instrumentation
                         File.Delete(assemblyLocation.BackupPdbFile);
                     }
 
-                    var assemblyDirectory = new FileInfo(assemblyLocation.File).Directory;
+                    var assemblyDirectory = _fileSystem.FileInfo.FromFileName(assemblyLocation.File).Directory;
                     foreach (var depsJsonFile in assemblyDirectory.GetFiles("*.deps.json"))
                     {
-                        DepsJsonUtils.UnpatchDepsJson(depsJsonFile);
+                        _depsJsonUtils.UnpatchDepsJson(depsJsonFile);
                     }
                 }
             }

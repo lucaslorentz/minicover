@@ -4,35 +4,37 @@ using MiniCover.Reports;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class ConsoleReportCommand : BaseCommand
+    public class ConsoleReportCommand : ICommand
     {
-        private const string _name = "report";
-        private const string _description = "Outputs coverage report";
-
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly IThresholdOption _thresholdOption;
+        private readonly IConsoleReport _consoleReport;
 
         public ConsoleReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            ThresholdOption thresholdOption)
-            : base(_name, _description)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            IThresholdOption thresholdOption,
+            IConsoleReport consoleReport)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                coverageLoadedFileOption,
-                thresholdOption
-            };
+            _consoleReport = consoleReport;
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "report";
+        public string CommandDescription => "Outputs coverage report";
+        public IOption[] Options => new IOption[]
         {
-            var consoleReport = new ConsoleReport();
-            var result = consoleReport.Execute(_coverageLoadedFileOption.Result, _thresholdOption.Value);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _thresholdOption
+        };
+
+        public Task<int> Execute()
+        {
+            var result = _consoleReport.Execute(_coverageLoadedFileOption.Result, _thresholdOption.Value);
             return Task.FromResult(result);
         }
     }

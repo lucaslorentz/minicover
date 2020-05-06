@@ -1,44 +1,41 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine.Options;
-using MiniCover.Reports;
-using MiniCover.Utils;
+using MiniCover.Reports.Cobertura;
 
 namespace MiniCover.CommandLine.Commands
 {
-    class CoberturaReportCommand : BaseCommand
+    public class CoberturaReportCommand : ICommand
     {
-        private const string _name = "coberturareport";
-        private const string _description = "Write a Cobertura-formatted XML report to file";
-
-        private readonly CoverageLoadedFileOption _coverageLoadedFileOption;
-        private readonly CoberturaOutputOption _coberturaOutputOption;
-        private readonly ThresholdOption _thresholdOption;
+        private readonly IWorkingDirectoryOption _workingDirectoryOption;
+        private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
+        private readonly ICoberturaOutputOption _coberturaOutputOption;
+        private readonly ICoberturaReport _coberturaReport;
 
         public CoberturaReportCommand(
-            WorkingDirectoryOption workingDirectoryOption,
-            CoverageLoadedFileOption coverageLoadedFileOption,
-            CoberturaOutputOption coberturaOutputOption,
-            ThresholdOption thresholdOption)
-        : base(_name, _description)
+            IWorkingDirectoryOption workingDirectoryOption,
+            ICoverageLoadedFileOption coverageLoadedFileOption,
+            ICoberturaOutputOption coberturaOutputOption,
+            ICoberturaReport coberturaReport)
         {
+            _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
-            _thresholdOption = thresholdOption;
             _coberturaOutputOption = coberturaOutputOption;
-
-            Options = new IOption[]
-            {
-                workingDirectoryOption,
-                _coverageLoadedFileOption,
-                _thresholdOption,
-                _coberturaOutputOption
-            };
+            _coberturaReport = coberturaReport;
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "coberturareport";
+        public string CommandDescription => "Write a Cobertura-formatted XML report to file";
+        public IOption[] Options => new IOption[]
         {
-            new CoberturaReport().Execute(_coverageLoadedFileOption.Result, _coberturaOutputOption.Value);
-            var result = CalcUtils.IsHigherThanThreshold(_coverageLoadedFileOption.Result, _thresholdOption.Value);
-            return Task.FromResult(result);
+            _workingDirectoryOption,
+            _coverageLoadedFileOption,
+            _coberturaOutputOption
+        };
+
+        public Task<int> Execute()
+        {
+            _coberturaReport.Execute(_coverageLoadedFileOption.Result, _coberturaOutputOption.FileInfo);
+            return Task.FromResult(0);
         }
     }
 }

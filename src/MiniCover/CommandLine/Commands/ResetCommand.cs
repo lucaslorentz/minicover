@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,42 +9,45 @@ using MiniCover.Infrastructure;
 
 namespace MiniCover.Commands
 {
-    class ResetCommand : BaseCommand
+    class ResetCommand : ICommand
     {
-        private const string _name = "reset";
-        private const string _description = "Reset hits count";
-
         private readonly HitsDirectoryOption _hitsDirectoryOption;
 
         private readonly IOutput _console;
+        private readonly VerbosityOption _verbosityOption;
+        private readonly WorkingDirectoryOption _workingDirectoryOption;
 
         public ResetCommand(
             IOutput console,
             VerbosityOption verbosityOption,
             WorkingDirectoryOption workingDirectoryOption,
             HitsDirectoryOption hitsDirectoryOption)
-            : base(_name, _description)
         {
             _console = console;
+            _verbosityOption = verbosityOption;
+            _workingDirectoryOption = workingDirectoryOption;
             _hitsDirectoryOption = hitsDirectoryOption;
-
-            Options = new IOption[]
-            {
-                verbosityOption,
-                workingDirectoryOption,
-                hitsDirectoryOption
-            };
         }
 
-        protected override Task<int> Execute()
+        public string CommandName => "reset";
+        public string CommandDescription => "Reset hits count";
+
+        public IOption[] Options => new IOption[]
         {
-            var hitsDirectory = _hitsDirectoryOption.Value;
+            _verbosityOption,
+            _workingDirectoryOption,
+            _hitsDirectoryOption
+        };
+
+        public Task<int> Execute()
+        {
+            var hitsDirectory = _hitsDirectoryOption.DirectoryInfo;
 
             _console.WriteLine($"Resetting hit directory '{hitsDirectory.FullName}'", LogLevel.Information);
 
             var hitsFiles = hitsDirectory.Exists
                 ? hitsDirectory.GetFiles("*.hits")
-                : new FileInfo[0];
+                : new IFileInfo[0];
 
             if (!hitsFiles.Any())
             {

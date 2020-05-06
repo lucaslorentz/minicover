@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using MiniCover.Extensions;
 using MiniCover.Model;
 
-namespace MiniCover.Reports
+namespace MiniCover.Reports.Cobertura
 {
-    public class CoberturaReport
+    public class CoberturaReport : ICoberturaReport
     {
-        public void Execute(InstrumentationResult result, FileInfo output)
+        public void Execute(InstrumentationResult result, IFileInfo output)
         {
             var hits = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
@@ -40,26 +40,26 @@ namespace MiniCover.Reports
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             var allLines = result.GetSourceFiles()
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
             var coveredLines = result.GetSourceFiles()
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .Where(h => hitsInfo.WasHit(h.HitId))
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
             var allBranches = result.GetSourceFiles()
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .SelectMany(i => i.Conditions)
                 .SelectMany(c => c.Branches)
                 .Count();
 
             var coveredBranches = result.GetSourceFiles()
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .SelectMany(i => i.Conditions)
                 .SelectMany(c => c.Branches)
                 .Where(b => hitsInfo.WasHit(b.HitId))
@@ -99,7 +99,7 @@ namespace MiniCover.Reports
             return new XElement(
                 XName.Get("packages"),
                 result.Assemblies
-                    .Where(a => a.SourceFiles.Count > 0)
+                    .Where(a => a.SourceFiles.Any())
                     .Select(a => CreatePackageElement(a, hitsInfo))
             );
         }
@@ -107,26 +107,26 @@ namespace MiniCover.Reports
         private static XElement CreatePackageElement(InstrumentedAssembly assembly, HitsInfo hitsInfo)
         {
             var allLines = assembly.SourceFiles
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
             var coveredLines = assembly.SourceFiles
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .Where(h => hitsInfo.WasHit(h.HitId))
                 .SelectMany(i => i.GetLines())
                 .Distinct()
                 .Count();
 
             var allBranches = assembly.SourceFiles
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .SelectMany(i => i.Conditions)
                 .SelectMany(c => c.Branches)
                 .Count();
 
             var coveredBranches = assembly.SourceFiles
-                .SelectMany(kvFile => kvFile.Value.Sequences)
+                .SelectMany(file => file.Sequences)
                 .SelectMany(i => i.Conditions)
                 .SelectMany(c => c.Branches)
                 .Where(b => hitsInfo.WasHit(b.HitId))
@@ -150,11 +150,11 @@ namespace MiniCover.Reports
             return new XElement(
                 XName.Get("classes"),
                 assembly.SourceFiles
-                    .Select(kv => CreateClassElement(kv.Key, kv.Value, hitsInfo))
+                    .Select(file => CreateClassElement(file, hitsInfo))
             );
         }
 
-        private static XElement CreateClassElement(string fileName, SourceFile sourceFile, HitsInfo hitsInfo)
+        private static XElement CreateClassElement(SourceFile sourceFile, HitsInfo hitsInfo)
         {
             var allLines = sourceFile.Sequences
                 .SelectMany(i => i.GetLines())
@@ -184,8 +184,8 @@ namespace MiniCover.Reports
             return new XElement(
 
                 XName.Get("class"),
-                new XAttribute(XName.Get("name"), fileName),
-                new XAttribute(XName.Get("filename"), fileName),
+                new XAttribute(XName.Get("name"), sourceFile.Path),
+                new XAttribute(XName.Get("filename"), sourceFile.Path),
                 new XAttribute(XName.Get("line-rate"), lineRate),
                 new XAttribute(XName.Get("branch-rate"), branchRate),
                 new XAttribute(XName.Get("complexity"), 0),
