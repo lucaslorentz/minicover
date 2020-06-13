@@ -7,7 +7,10 @@ namespace MiniCover.Reports
 {
     public class ConsoleReport : IConsoleReport
     {
-        public int Execute(InstrumentationResult result, float threshold)
+        public int Execute(
+            InstrumentationResult result,
+            float threshold,
+            bool noFail)
         {
             var hitsInfo = HitsInfo.TryReadFromDirectory(result.HitsPath);
 
@@ -26,7 +29,7 @@ namespace MiniCover.Reports
 
             consoleTable.WriteTable();
 
-            return summary.LinesCoveragePass ? 0 : 1;
+            return noFail || summary.LinesCoveragePass ? 0 : 1;
         }
 
         private ConsoleRow CreateHeader()

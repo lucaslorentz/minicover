@@ -16,6 +16,7 @@ namespace MiniCover.UnitTests.CommandLine.Commands
         private readonly Mock<ICoverageLoadedFileOption> _coverageLoadedFileOption;
         private readonly Mock<IHtmlOutputDirectoryOption> _htmlOutputDirectoryOption;
         private readonly Mock<IThresholdOption> _thresholdOption;
+        private readonly Mock<INoFailOption> _noFailOption;
         private readonly Mock<IHtmlReport> _htmlReport;
 
         public HtmlReportCommandTests()
@@ -24,6 +25,7 @@ namespace MiniCover.UnitTests.CommandLine.Commands
             _coverageLoadedFileOption = MockFor<ICoverageLoadedFileOption>();
             _htmlOutputDirectoryOption = MockFor<IHtmlOutputDirectoryOption>();
             _thresholdOption = MockFor<IThresholdOption>();
+            _noFailOption = MockFor<INoFailOption>();
             _htmlReport = MockFor<IHtmlReport>();
 
             Sut = new HtmlReportCommand(
@@ -31,21 +33,24 @@ namespace MiniCover.UnitTests.CommandLine.Commands
                 _coverageLoadedFileOption.Object,
                 _htmlOutputDirectoryOption.Object,
                 _thresholdOption.Object,
+                _noFailOption.Object,
                 _htmlReport.Object
             );
         }
 
-        [Fact]
-        public async Task Execute()
+        [InlineData(50f, false)]
+        [InlineData(75f, true)]
+        [Theory]
+        public async Task Execute(float threshold, bool noFail)
         {
             var result = new InstrumentationResult();
             var output = MockFor<IDirectoryInfo>();
-            var threshold = 50f;
 
             _coverageLoadedFileOption.SetupGet(x => x.Result).Returns(result);
             _htmlOutputDirectoryOption.SetupGet(x => x.DirectoryInfo).Returns(output.Object);
             _thresholdOption.SetupGet(x => x.Value).Returns(threshold);
-            _htmlReport.Setup(x => x.Execute(result, output.Object, threshold))
+            _noFailOption.SetupGet(x => x.Value).Returns(noFail);
+            _htmlReport.Setup(x => x.Execute(result, output.Object, threshold, noFail))
                 .Returns(0);
 
             var exitCode = await Sut.Execute();

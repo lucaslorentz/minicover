@@ -10,6 +10,7 @@ namespace MiniCover.CommandLine.Commands
         private readonly ICoverageLoadedFileOption _coverageLoadedFileOption;
         private readonly IHtmlOutputDirectoryOption _htmlOutputFolderOption;
         private readonly IThresholdOption _thresholdOption;
+        private readonly INoFailOption _noFailOption;
         private readonly IHtmlReport _htmlReport;
 
         public HtmlReportCommand(
@@ -17,11 +18,13 @@ namespace MiniCover.CommandLine.Commands
             ICoverageLoadedFileOption coverageLoadedFileOption,
             IHtmlOutputDirectoryOption htmlOutputFolderOption,
             IThresholdOption thresholdOption,
+            INoFailOption noFailOption,
             IHtmlReport htmlReport)
         {
             _workingDirectoryOption = workingDirectoryOption;
             _coverageLoadedFileOption = coverageLoadedFileOption;
             _thresholdOption = thresholdOption;
+            _noFailOption = noFailOption;
             _htmlReport = htmlReport;
             _htmlOutputFolderOption = htmlOutputFolderOption;
         }
@@ -34,6 +37,7 @@ namespace MiniCover.CommandLine.Commands
             _workingDirectoryOption,
             _coverageLoadedFileOption,
             _thresholdOption,
+            _noFailOption,
             _htmlOutputFolderOption
         };
 
@@ -42,7 +46,8 @@ namespace MiniCover.CommandLine.Commands
             var result = _htmlReport.Execute(
                 _coverageLoadedFileOption.Result,
                 _htmlOutputFolderOption.DirectoryInfo,
-                _thresholdOption.Value);
+                _thresholdOption.Value,
+                _noFailOption.Value);
 
             return Task.FromResult(result);
         }
