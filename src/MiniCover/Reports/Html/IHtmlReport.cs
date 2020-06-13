@@ -5,6 +5,6 @@ namespace MiniCover.Reports.Html
 {
     public interface IHtmlReport
     {
-        int Execute(InstrumentationResult result, IDirectoryInfo output, float threshold);
+        int Execute(InstrumentationResult result, IDirectoryInfo output, float threshold, bool noFail);
     }
 }

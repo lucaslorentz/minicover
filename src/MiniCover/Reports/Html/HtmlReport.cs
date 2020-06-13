@@ -12,7 +12,7 @@ namespace MiniCover.Reports.Html
 {
     public class HtmlReport : IHtmlReport
     {
-        public virtual int Execute(InstrumentationResult result, IDirectoryInfo output, float threshold)
+        public virtual int Execute(InstrumentationResult result, IDirectoryInfo output, float threshold, bool noFail)
         {
             Directory.CreateDirectory(output.FullName);
 
@@ -128,7 +128,7 @@ namespace MiniCover.Reports.Html
                 htmlWriter.WriteLine("</html>");
             }
 
-            return isHigherThanThreshold ? 0 : 1;
+            return noFail || isHigherThanThreshold ? 0 : 1;
         }
 
         private string GetIndexRelativeHtmlFileName(string fileName)

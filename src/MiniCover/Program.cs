@@ -19,6 +19,7 @@ using MiniCover.Reports;
 using MiniCover.Reports.Clover;
 using MiniCover.Reports.Cobertura;
 using MiniCover.Reports.Coveralls;
+using MiniCover.Reports.Helpers;
 using MiniCover.Reports.Html;
 using MiniCover.Reports.NCover;
 using MiniCover.Reports.OpenCover;
@@ -110,6 +111,11 @@ namespace MiniCover
                         var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.SingleValue);
                         return () => singleValueOption.ReceiveValue(option.Value());
                     }
+                case INoValueOption noValueOptions:
+                    {
+                        var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.NoValue);
+                        return () => noValueOptions.ReceiveValue(option.HasValue());
+                    }
                 default:
                     throw new NotImplementedException();
             }
@@ -147,6 +153,7 @@ namespace MiniCover
             services.AddTransient<IHtmlOutputDirectoryOption, HtmlOutputDirectoryOption>();
             services.AddTransient<IThresholdOption, ThresholdOption>();
             services.AddTransient<IVerbosityOption, VerbosityOption>();
+            services.AddTransient<INoFailOption, NoFailOption>();
 
             services.AddTransient<WorkingDirectoryOption>();
             services.AddTransient<ParentDirectoryOption>();
@@ -179,6 +186,7 @@ namespace MiniCover
             services.AddSingleton<DepsJsonUtils>();
             services.AddSingleton<IFileReader, CachedFileReader>();
             services.AddSingleton<IFileSystem, FileSystem>();
+            services.AddSingleton<ISummaryFactory, SummaryFactory>();
 
             return services.BuildServiceProvider();
         }
