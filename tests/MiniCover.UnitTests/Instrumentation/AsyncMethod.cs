@@ -33,7 +33,7 @@ namespace MiniCover.UnitTests.Instrumentation
 {
     .method public System.Threading.Tasks.Task`1<System.Int32> Method
     {
-        .locals init (MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0 V_0, System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> V_1)
+        .locals init (MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0 V_0)
         IL_0000: newobj System.Void MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::.ctor()
         IL_0005: stloc.0
         IL_0006: ldloc.0
@@ -46,15 +46,13 @@ namespace MiniCover.UnitTests.Instrumentation
         IL_0019: ldc.i4.m1
         IL_001a: stfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>1__state
         IL_001f: ldloc.0
-        IL_0020: ldfld System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>t__builder
-        IL_0025: stloc.1
-        IL_0026: ldloca.s V_1
-        IL_0028: ldloca.s V_0
-        IL_002a: call System.Void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32>::Start<MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0>(!!0&)
-        IL_002f: ldloc.0
-        IL_0030: ldflda System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>t__builder
-        IL_0035: call System.Threading.Tasks.Task`1<!0> System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32>::get_Task()
-        IL_003a: ret
+        IL_0020: ldflda System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>t__builder
+        IL_0025: ldloca.s V_0
+        IL_0027: call System.Void System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32>::Start<MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0>(!!0&)
+        IL_002c: ldloc.0
+        IL_002d: ldflda System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>t__builder
+        IL_0032: call System.Threading.Tasks.Task`1<!0> System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32>::get_Task()
+        IL_0037: ret
     }
     .method public System.Void .ctor
     {

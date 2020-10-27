@@ -1,4 +1,6 @@
-﻿namespace MiniCover.CommandLine.Options
+﻿using System.Globalization;
+
+namespace MiniCover.CommandLine.Options
 {
     class ThresholdOption : ISingleValueOption, IThresholdOption
     {
@@ -10,7 +12,7 @@
 
         public void ReceiveValue(string value)
         {
-            if (!float.TryParse(value, out var threshold))
+            if (!float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var threshold))
             {
                 threshold = _defaultValue;
             }
