@@ -18,10 +18,10 @@ namespace MiniCover.Instrumentation
     public class MethodInstrumenter
     {
         private static readonly Type hitServiceType = typeof(HitService);
-        private static readonly Type methodContextType = typeof(HitService.MethodContext);
-        private static readonly MethodInfo hitMethodInfo = methodContextType.GetMethod(nameof(HitService.MethodContext.Hit));
+        private static readonly Type methodScopeType = typeof(MethodScope);
+        private static readonly MethodInfo hitMethodInfo = methodScopeType.GetMethod(nameof(MethodScope.Hit));
         private static readonly MethodInfo enterMethodInfo = hitServiceType.GetMethod(nameof(HitService.EnterMethod));
-        private static readonly MethodInfo disposeMethodInfo = methodContextType.GetMethod(nameof(IDisposable.Dispose));
+        private static readonly MethodInfo disposeMethodInfo = methodScopeType.GetMethod(nameof(IDisposable.Dispose));
 
         private readonly ILogger<MethodInstrumenter> _logger;
         private readonly IFileReader _fileReader;
@@ -49,7 +49,7 @@ namespace MiniCover.Instrumentation
                 FullName = originalMethod.FullName,
             });
 
-            var methodContextClassReference = methodDefinition.Module.GetOrImportReference(methodContextType);
+            var methodContextClassReference = methodDefinition.Module.GetOrImportReference(methodScopeType);
             var enterMethodReference = methodDefinition.Module.GetOrImportReference(enterMethodInfo);
             var disposeMethodReference = methodDefinition.Module.GetOrImportReference(disposeMethodInfo);
 

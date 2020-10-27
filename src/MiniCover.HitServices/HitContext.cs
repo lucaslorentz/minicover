@@ -18,6 +18,8 @@ namespace MiniCover.HitServices
 
         private readonly object _lock = new object();
 
+        private int _refCount;
+
         public HitContext(
             string assemblyName,
             string className,
@@ -34,6 +36,15 @@ namespace MiniCover.HitServices
         public string ClassName { get; }
         public string MethodName { get; }
         public IDictionary<int, int> Hits { get; }
+
+        public int IncrementRef()
+        {
+            return Interlocked.Increment(ref _refCount);
+        }
+        public int DecrementRef()
+        {
+            return Interlocked.Decrement(ref _refCount);
+        }
 
         public void RecordHit(int id)
         {

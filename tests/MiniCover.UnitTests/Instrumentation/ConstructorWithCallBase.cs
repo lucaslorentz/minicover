@@ -37,19 +37,19 @@ namespace MiniCover.UnitTests.Instrumentation
             result.BaseWasCalled.Should().BeTrue();
         }
 
-        public override string ExpectedIL => @".locals init (MiniCover.HitServices.HitService/MethodContext V_0)
+        public override string ExpectedIL => @".locals init (MiniCover.HitServices.MethodScope V_0)
 IL_0000: ldstr ""/tmp""
 IL_0005: ldstr ""MiniCover.UnitTests""
 IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.ConstructorWithCallBase/Class""
 IL_000f: ldstr "".ctor""
-IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
+IL_0014: call MiniCover.HitServices.MethodScope MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
 IL_0019: stloc.0
 IL_001a: nop
 .try
 {
     IL_001b: ldloc.0
     IL_001c: ldc.i4.1
-    IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_001d: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_0022: ldarg.0 // this
     IL_0023: ldarg.1
     IL_0024: call System.Void MiniCover.UnitTests.Instrumentation.ConstructorWithCallBase/BaseClass::.ctor(System.Int32)
@@ -57,7 +57,7 @@ IL_001a: nop
     IL_002a: nop
     IL_002b: ldloc.0
     IL_002c: ldc.i4.2
-    IL_002d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_002d: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_0032: ldarg.0 // this
     IL_0033: ldc.i4.1
     IL_0034: stfld System.Boolean MiniCover.UnitTests.Instrumentation.ConstructorWithCallBase/Class::WasCalled
@@ -67,7 +67,7 @@ finally
 {
     IL_003b: nop
     IL_003c: ldloc.0
-    IL_003d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+    IL_003d: callvirt System.Void MiniCover.HitServices.MethodScope::Dispose()
     IL_0042: endfinally
 }
 IL_0043: ret

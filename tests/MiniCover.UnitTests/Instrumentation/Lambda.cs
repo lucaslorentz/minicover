@@ -28,12 +28,12 @@ namespace MiniCover.UnitTests.Instrumentation
 {
     .method public System.Int32 Method
     {
-        .locals init (System.Int32 V_0, MiniCover.HitServices.HitService/MethodContext V_1, System.Int32 V_2)
+        .locals init (System.Int32 V_0, MiniCover.HitServices.MethodScope V_1, System.Int32 V_2)
         IL_0000: ldstr ""/tmp""
         IL_0005: ldstr ""MiniCover.UnitTests""
         IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.Lambda/Class""
         IL_000f: ldstr ""Method""
-        IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
+        IL_0014: call MiniCover.HitServices.MethodScope MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
         IL_0019: stloc.1
         IL_001a: nop
         .try
@@ -41,7 +41,7 @@ namespace MiniCover.UnitTests.Instrumentation
             IL_001b: nop
             IL_001c: ldloc.1
             IL_001d: ldc.i4.1
-            IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+            IL_001e: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
             IL_0023: ldarg.1
             IL_0024: ldsfld System.Func`2<System.Int32,System.Int32> MiniCover.UnitTests.Instrumentation.Lambda/Class/<>c::<>9__0_0
             IL_0029: dup
@@ -64,7 +64,7 @@ namespace MiniCover.UnitTests.Instrumentation
         {
             IL_0054: nop
             IL_0055: ldloc.1
-            IL_0056: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+            IL_0056: callvirt System.Void MiniCover.HitServices.MethodScope::Dispose()
             IL_005b: endfinally
         }
         IL_005c: ldloc.2
@@ -97,19 +97,19 @@ namespace MiniCover.UnitTests.Instrumentation
         }
         .method System.Int32 <Method>b__0_0
         {
-            .locals init (MiniCover.HitServices.HitService/MethodContext V_0, System.Int32 V_1)
+            .locals init (MiniCover.HitServices.MethodScope V_0, System.Int32 V_1)
             IL_0000: ldstr ""/tmp""
             IL_0005: ldstr ""MiniCover.UnitTests""
             IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.Lambda/Class""
             IL_000f: ldstr ""Method""
-            IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
+            IL_0014: call MiniCover.HitServices.MethodScope MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
             IL_0019: stloc.0
             IL_001a: nop
             .try
             {
                 IL_001b: ldloc.0
                 IL_001c: ldc.i4.2
-                IL_001d: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+                IL_001d: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
                 IL_0022: ldarg.1
                 IL_0023: ldc.i4.2
                 IL_0024: mul
@@ -120,7 +120,7 @@ namespace MiniCover.UnitTests.Instrumentation
             {
                 IL_0028: nop
                 IL_0029: ldloc.0
-                IL_002a: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+                IL_002a: callvirt System.Void MiniCover.HitServices.MethodScope::Dispose()
                 IL_002f: endfinally
             }
             IL_0030: ldloc.1

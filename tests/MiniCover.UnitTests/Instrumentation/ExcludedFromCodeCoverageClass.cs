@@ -25,12 +25,12 @@ namespace MiniCover.UnitTests.Instrumentation
             new Class().Method(5).Should().Be(10);
         }
 
-        public override string ExpectedIL => @".locals init (System.Int32 V_0, MiniCover.HitServices.HitService/MethodContext V_1, System.Int32 V_2)
+        public override string ExpectedIL => @".locals init (System.Int32 V_0, MiniCover.HitServices.MethodScope V_1, System.Int32 V_2)
 IL_0000: ldstr ""/tmp""
 IL_0005: ldstr ""MiniCover.UnitTests""
 IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.ExcludedFromCodeCoverageClass/Class""
 IL_000f: ldstr ""Method""
-IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
+IL_0014: call MiniCover.HitServices.MethodScope MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
 IL_0019: stloc.1
 IL_001a: nop
 .try
@@ -49,7 +49,7 @@ finally
 {
     IL_0026: nop
     IL_0027: ldloc.1
-    IL_0028: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+    IL_0028: callvirt System.Void MiniCover.HitServices.MethodScope::Dispose()
     IL_002d: endfinally
 }
 IL_002e: ldloc.2
