@@ -7,7 +7,7 @@ namespace MiniCover.HitServices
     {
         private readonly HitContext _hitContext;
         private readonly string _hitsPath;
-        private readonly bool _createdHitContext;
+        private readonly bool _isEntryMethod;
 
         public MethodScope(
             string hitsPath,
@@ -20,38 +20,54 @@ namespace MiniCover.HitServices
             if (_hitContext == null)
             {
                 _hitContext = new HitContext(assemblyName, className, methodName);
-                _createdHitContext = true;
+                _isEntryMethod = true;
                 HitContext.Current = _hitContext;
             }
 
             _hitsPath = hitsPath;
-            _hitContext.IncrementRef();
+
+            lock (_hitContext)
+            {
+                _hitContext.EnterMethod();
+            }
         }
 
         public void Hit(int id)
         {
-            _hitContext.RecordHit(id);
+            lock (_hitContext)
+            {
+                _hitContext.RecordHit(id);
+            }
         }
 
         public void Dispose()
         {
-            if (_hitContext.DecrementRef() == 0)
-                SaveHitContext();
-
-            if (_createdHitContext)
+            if (_isEntryMethod)
                 HitContext.Current = null;
+
+            lock (_hitContext)
+            {
+                if (_hitContext.ExitMethod() == 0)
+                    SaveHitContext();
+            }
         }
 
         private void SaveHitContext()
         {
-            Directory.CreateDirectory(_hitsPath);
-
-            var fileName = Path.Combine(_hitsPath, $"{Guid.NewGuid()}.hits");
-
-            using (var fileStream = File.Open(fileName, FileMode.OpenOrCreate))
+            lock (_hitContext)
             {
-                _hitContext.Serialize(fileStream);
-                fileStream.Flush();
+                if (_hitContext.Hits.Count == 0)
+                    return;
+
+                Directory.CreateDirectory(_hitsPath);
+
+                var fileName = Path.Combine(_hitsPath, $"{_hitContext.Id}.hits");
+
+                using (var fileStream = File.Open(fileName, FileMode.Create))
+                {
+                    _hitContext.Serialize(fileStream);
+                    fileStream.Flush();
+                }
             }
         }
     }

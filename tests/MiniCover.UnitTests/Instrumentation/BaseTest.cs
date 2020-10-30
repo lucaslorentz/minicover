@@ -68,6 +68,7 @@ namespace MiniCover.UnitTests.Instrumentation
             var functionalTestMethod = instrumentedTestType.GetMethod(nameof(FunctionalTest));
 
             HitContext.Current = new HitContext("Assembly", "Class", "Method");
+            HitContext.Current.EnterMethod();
             var instrumentedTest = Activator.CreateInstance(instrumentedTestType);
             functionalTestMethod.Invoke(instrumentedTest, new object[0]);
 
