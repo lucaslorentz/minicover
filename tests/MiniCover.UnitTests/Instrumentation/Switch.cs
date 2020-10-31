@@ -36,12 +36,12 @@ namespace MiniCover.UnitTests.Instrumentation
             new Class().Method(4).Should().Be(0);
         }
 
-        public override string ExpectedIL => @".locals init (System.Int32 V_0, System.Int32 V_1, System.Int32 V_2, MiniCover.HitServices.HitService/MethodContext V_3, System.Int32 V_4)
+        public override string ExpectedIL => @".locals init (System.Int32 V_0, System.Int32 V_1, System.Int32 V_2, MiniCover.HitServices.MethodScope V_3, System.Int32 V_4)
 IL_0000: ldstr ""/tmp""
 IL_0005: ldstr ""MiniCover.UnitTests""
 IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.Switch/Class""
 IL_000f: ldstr ""Method""
-IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
+IL_0014: call MiniCover.HitServices.MethodScope MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
 IL_0019: stloc.3
 IL_001a: nop
 .try
@@ -49,7 +49,7 @@ IL_001a: nop
     IL_001b: nop
     IL_001c: ldloc.3
     IL_001d: ldc.i4.1
-    IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_001e: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_0023: ldarg.1
     IL_0024: stloc.1
     IL_0025: ldloc.1
@@ -61,25 +61,25 @@ IL_001a: nop
     IL_003b: br.s IL_005e
     IL_003d: ldloc.3
     IL_003e: ldc.i4.3
-    IL_003f: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_003f: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_0044: ldc.i4.1
     IL_0045: stloc.2
     IL_0046: br.s IL_0069
     IL_0048: ldloc.3
     IL_0049: ldc.i4.4
-    IL_004a: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_004a: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_004f: ldc.i4.2
     IL_0050: stloc.2
     IL_0051: br.s IL_0069
     IL_0053: ldloc.3
     IL_0054: ldc.i4.5
-    IL_0055: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_0055: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_005a: ldc.i4.3
     IL_005b: stloc.2
     IL_005c: br.s IL_0069
     IL_005e: ldloc.3
     IL_005f: ldc.i4.2
-    IL_0060: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_0060: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_0065: ldc.i4.0
     IL_0066: stloc.2
     IL_0067: br.s IL_0069
@@ -91,7 +91,7 @@ finally
 {
     IL_006e: nop
     IL_006f: ldloc.3
-    IL_0070: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+    IL_0070: callvirt System.Void MiniCover.HitServices.MethodScope::Dispose()
     IL_0075: endfinally
 }
 IL_0076: ldloc.s V_4

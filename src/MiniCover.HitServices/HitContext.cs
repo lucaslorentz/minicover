@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace MiniCover.HitServices
             set => _currentAsyncLocal.Value = value;
         }
 
-        private readonly object _lock = new object();
+        private int _methodCount;
 
         public HitContext(
             string assemblyName,
@@ -24,12 +25,16 @@ namespace MiniCover.HitServices
             string methodName,
             IDictionary<int, int> hits = null)
         {
+            Id = Guid.NewGuid().ToString();
             AssemblyName = assemblyName;
             ClassName = className;
             MethodName = methodName;
-            Hits = hits ?? new Dictionary<int, int>();
+            Hits = hits != null
+                ? new Dictionary<int, int>(hits)
+                : new Dictionary<int, int>();
         }
 
+        public string Id { get; }
         public string AssemblyName { get; }
         public string ClassName { get; }
         public string MethodName { get; }
@@ -37,16 +42,13 @@ namespace MiniCover.HitServices
 
         public void RecordHit(int id)
         {
-            lock (_lock)
+            if (Hits.TryGetValue(id, out var count))
             {
-                if (Hits.TryGetValue(id, out var count))
-                {
-                    Hits[id] = count + 1;
-                }
-                else
-                {
-                    Hits[id] = 1;
-                }
+                Hits[id] = count + 1;
+            }
+            else
+            {
+                Hits[id] = 1;
             }
         }
 
@@ -72,21 +74,28 @@ namespace MiniCover.HitServices
                 )).ToArray();
         }
 
+        public int EnterMethod()
+        {
+            return Interlocked.Increment(ref _methodCount);
+        }
+
+        public int ExitMethod()
+        {
+            return Interlocked.Decrement(ref _methodCount);
+        }
+
         public void Serialize(Stream stream)
         {
-            lock (_lock)
+            using (var binaryWriter = new BinaryWriter(stream, Encoding.UTF8, true))
             {
-                using (var binaryWriter = new BinaryWriter(stream, Encoding.UTF8, true))
+                binaryWriter.Write(ClassName);
+                binaryWriter.Write(MethodName);
+                binaryWriter.Write(AssemblyName);
+                binaryWriter.Write(Hits.Count);
+                foreach (var hitedInstruction in Hits)
                 {
-                    binaryWriter.Write(ClassName);
-                    binaryWriter.Write(MethodName);
-                    binaryWriter.Write(AssemblyName);
-                    binaryWriter.Write(Hits.Count);
-                    foreach (var hitedInstruction in Hits)
-                    {
-                        binaryWriter.Write(hitedInstruction.Key);
-                        binaryWriter.Write(hitedInstruction.Value);
-                    }
+                    binaryWriter.Write(hitedInstruction.Key);
+                    binaryWriter.Write(hitedInstruction.Value);
                 }
             }
         }

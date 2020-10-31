@@ -27,12 +27,12 @@ namespace MiniCover.UnitTests.Instrumentation
             new Class().Method().Should().BeEquivalentTo(new byte[] { 0x00 });
         }
 
-        public override string ExpectedIL => @".locals init (System.IO.MemoryStream stream, System.Byte[] V_1, MiniCover.HitServices.HitService/MethodContext V_2, System.Byte[] V_3)
+        public override string ExpectedIL => @".locals init (System.IO.MemoryStream stream, System.Byte[] V_1, MiniCover.HitServices.MethodScope V_2, System.Byte[] V_3)
 IL_0000: ldstr ""/tmp""
 IL_0005: ldstr ""MiniCover.UnitTests""
 IL_000a: ldstr ""MiniCover.UnitTests.Instrumentation.Using/Class""
 IL_000f: ldstr ""Method""
-IL_0014: call MiniCover.HitServices.HitService/MethodContext MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
+IL_0014: call MiniCover.HitServices.MethodScope MiniCover.HitServices.HitService::EnterMethod(System.String,System.String,System.String,System.String)
 IL_0019: stloc.2
 IL_001a: nop
 .try
@@ -40,7 +40,7 @@ IL_001a: nop
     IL_001b: nop
     IL_001c: ldloc.2
     IL_001d: ldc.i4.1
-    IL_001e: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+    IL_001e: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
     IL_0023: newobj System.Void System.IO.MemoryStream::.ctor()
     IL_0028: stloc.0
     .try
@@ -48,14 +48,14 @@ IL_001a: nop
         IL_0029: nop
         IL_002a: ldloc.2
         IL_002b: ldc.i4.2
-        IL_002c: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+        IL_002c: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
         IL_0031: ldloc.0
         IL_0032: ldc.i4.0
         IL_0033: callvirt System.Void System.IO.Stream::WriteByte(System.Byte)
         IL_0038: nop
         IL_0039: ldloc.2
         IL_003a: ldc.i4.3
-        IL_003b: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Hit(System.Int32)
+        IL_003b: callvirt System.Void MiniCover.HitServices.MethodScope::Hit(System.Int32)
         IL_0040: ldloc.0
         IL_0041: callvirt System.Byte[] System.IO.MemoryStream::ToArray()
         IL_0046: stloc.1
@@ -78,7 +78,7 @@ finally
 {
     IL_0058: nop
     IL_0059: ldloc.2
-    IL_005a: callvirt System.Void MiniCover.HitServices.HitService/MethodContext::Dispose()
+    IL_005a: callvirt System.Void MiniCover.HitServices.MethodScope::Dispose()
     IL_005f: endfinally
 }
 IL_0060: ldloc.3
