@@ -37,11 +37,11 @@ namespace MiniCover.UnitTests.Instrumentation
         IL_0000: newobj System.Void MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::.ctor()
         IL_0005: stloc.0
         IL_0006: ldloc.0
-        IL_0007: ldarg.0 // this
-        IL_0008: stfld MiniCover.UnitTests.Instrumentation.AsyncMethod/Class MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>4__this
-        IL_000d: ldloc.0
-        IL_000e: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<!0> System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32>::Create()
-        IL_0013: stfld System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>t__builder
+        IL_0007: call System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<!0> System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32>::Create()
+        IL_000c: stfld System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Int32> MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>t__builder
+        IL_0011: ldloc.0
+        IL_0012: ldarg.0 // this
+        IL_0013: stfld MiniCover.UnitTests.Instrumentation.AsyncMethod/Class MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>4__this
         IL_0018: ldloc.0
         IL_0019: ldc.i4.m1
         IL_001a: stfld System.Int32 MiniCover.UnitTests.Instrumentation.AsyncMethod/Class/<Method>d__0::<>1__state
