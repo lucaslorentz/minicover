@@ -76,10 +76,16 @@ namespace MiniCover.UnitTests.Instrumentation
             {
                 HitContext.Current.Hits.Should().BeEquivalentTo(ExpectedHits);
             }
+
+            if (ExpectedHitCount != null)
+            {
+                HitContext.Current.Hits.Sum(h => h.Value).Should().Be(ExpectedHitCount);
+            }
         }
 
         public virtual string ExpectedIL => null;
         public virtual IDictionary<int, int> ExpectedHits => null;
+        public virtual int? ExpectedHitCount => null;
         public virtual InstrumentedSequence[] ExpectedInstructions => null;
 
         public virtual void FunctionalTest() { }
