@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MiniCover.CommandLine;
 using MiniCover.CommandLine.Options;
-using MiniCover.Infrastructure;
+using MiniCover.Core.Hits;
+using MiniCover.IO;
 
 namespace MiniCover.Commands
 {
@@ -13,17 +14,17 @@ namespace MiniCover.Commands
     {
         private readonly HitsDirectoryOption _hitsDirectoryOption;
 
-        private readonly IOutput _console;
+        private readonly IHitsResetter _hitResetService;
         private readonly VerbosityOption _verbosityOption;
         private readonly WorkingDirectoryOption _workingDirectoryOption;
 
         public ResetCommand(
-            IOutput console,
+            IHitsResetter hitResetService,
             VerbosityOption verbosityOption,
             WorkingDirectoryOption workingDirectoryOption,
             HitsDirectoryOption hitsDirectoryOption)
         {
-            _console = console;
+            _hitResetService = hitResetService;
             _verbosityOption = verbosityOption;
             _workingDirectoryOption = workingDirectoryOption;
             _hitsDirectoryOption = hitsDirectoryOption;
@@ -43,42 +44,9 @@ namespace MiniCover.Commands
         {
             var hitsDirectory = _hitsDirectoryOption.DirectoryInfo;
 
-            _console.WriteLine($"Resetting hit directory '{hitsDirectory.FullName}'", LogLevel.Information);
-
-            var hitsFiles = hitsDirectory.Exists
-                ? hitsDirectory.GetFiles("*.hits")
-                : new IFileInfo[0];
-
-            if (!hitsFiles.Any())
-            {
-                _console.WriteLine("Directory is already cleared", LogLevel.Information);
-                return Task.FromResult(0);
-            }
-
-            _console.WriteLine($"Found {hitsFiles.Length} files to clear", LogLevel.Information);
-
-            var errorsCount = 0;
-            foreach (var hitsFile in hitsFiles)
-            {
-                try
-                {
-                    hitsFile.Delete();
-                    _console.WriteLine($"{hitsFile.FullName} - removed", LogLevel.Trace);
-                }
-                catch (Exception e)
-                {
-                    errorsCount++;
-                    _console.WriteLine($"{hitsFile.FullName} - error: {e.Message}", LogLevel.Error);
-                }
-            }
-
-            if (errorsCount != 0)
-            {
-                _console.WriteLine($"Reset operation completed with {errorsCount} errors", LogLevel.Error);
+            if (!_hitResetService.ResetHits(hitsDirectory))
                 return Task.FromResult(1);
-            }
 
-            _console.WriteLine("Reset operation completed without errors", LogLevel.Information);
             return Task.FromResult(0);
         }
     }

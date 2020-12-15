@@ -1,6 +1,6 @@
 ﻿using System.IO.Abstractions;
+using MiniCover.Core.Model;
 using MiniCover.Exceptions;
-using MiniCover.Model;
 using Newtonsoft.Json;
 
 namespace MiniCover.CommandLine.Options

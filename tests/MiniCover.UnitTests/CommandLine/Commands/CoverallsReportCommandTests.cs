@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MiniCover.CommandLine.Commands;
 using MiniCover.CommandLine.Options;
-using MiniCover.Model;
+using MiniCover.Core.Model;
 using MiniCover.Reports.Coveralls;
-using MiniCover.UnitTests.TestHelpers;
+using MiniCover.TestHelpers;
 using Moq;
 using Xunit;
 

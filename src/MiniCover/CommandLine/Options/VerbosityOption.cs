@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using MiniCover.Exceptions;
-using MiniCover.Infrastructure;
+using MiniCover.IO;
 
 namespace MiniCover.CommandLine.Options
 {

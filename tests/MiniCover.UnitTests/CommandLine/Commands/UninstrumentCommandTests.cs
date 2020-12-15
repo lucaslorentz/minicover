@@ -2,8 +2,8 @@
 using FluentAssertions;
 using MiniCover.CommandLine.Options;
 using MiniCover.Commands;
-using MiniCover.Instrumentation;
-using MiniCover.Model;
+using MiniCover.Core.Instrumentation;
+using MiniCover.Core.Model;
 using Moq;
 using Xunit;
 

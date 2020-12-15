@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using MiniCover.CommandLine;
+using MiniCover.TestHelpers;
 using Xunit;
 
 namespace MiniCover.UnitTests.CommandLine

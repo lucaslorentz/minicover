@@ -1,6 +1,5 @@
-﻿using System.IO.Abstractions.TestingHelpers;
-using MiniCover.CommandLine.Options;
-using MiniCover.UnitTests.TestHelpers;
+﻿using MiniCover.CommandLine.Options;
+using MiniCover.TestHelpers;
 
 namespace MiniCover.UnitTests.CommandLine.Options
 {

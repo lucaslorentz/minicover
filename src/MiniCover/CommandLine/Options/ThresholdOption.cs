@@ -2,7 +2,7 @@
 
 namespace MiniCover.CommandLine.Options
 {
-    class ThresholdOption : ISingleValueOption, IThresholdOption
+    public class ThresholdOption : ISingleValueOption, IThresholdOption
     {
         private const float _defaultValue = 90;
 

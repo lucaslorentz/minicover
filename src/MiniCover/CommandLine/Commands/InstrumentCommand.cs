@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MiniCover.CommandLine;
 using MiniCover.CommandLine.Options;
+using MiniCover.Core.Instrumentation;
+using MiniCover.Core.Model;
 using MiniCover.Exceptions;
-using MiniCover.Instrumentation;
-using MiniCover.Model;
 using Newtonsoft.Json;
 
 namespace MiniCover.Commands

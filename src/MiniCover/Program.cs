@@ -10,20 +10,20 @@ using MiniCover.CommandLine;
 using MiniCover.CommandLine.Commands;
 using MiniCover.CommandLine.Options;
 using MiniCover.Commands;
+using MiniCover.Core.FileSystem;
+using MiniCover.Core.Hits;
+using MiniCover.Core.Instrumentation;
+using MiniCover.Core.Utils;
 using MiniCover.Exceptions;
-using MiniCover.Infrastructure;
-using MiniCover.Infrastructure.Console;
-using MiniCover.Infrastructure.FileSystem;
-using MiniCover.Instrumentation;
-using MiniCover.Reports;
+using MiniCover.IO;
 using MiniCover.Reports.Clover;
 using MiniCover.Reports.Cobertura;
+using MiniCover.Reports.Console;
 using MiniCover.Reports.Coveralls;
 using MiniCover.Reports.Helpers;
 using MiniCover.Reports.Html;
 using MiniCover.Reports.NCover;
 using MiniCover.Reports.OpenCover;
-using MiniCover.Utils;
 
 namespace MiniCover
 {
@@ -169,24 +169,28 @@ namespace MiniCover
             services.AddTransient<HtmlOutputDirectoryOption>();
             services.AddTransient<VerbosityOption>();
 
+            services.AddSingleton<IHitsResetter, HitsResetter>();
+            services.AddSingleton<IHitsReader, HitsReader>();
+
             services.AddSingleton<Instrumenter>();
             services.AddSingleton<IUninstrumenter, Uninstrumenter>();
             services.AddSingleton<AssemblyInstrumenter>();
             services.AddSingleton<TypeInstrumenter>();
             services.AddSingleton<MethodInstrumenter>();
 
+            services.AddSingleton<ISummaryFactory, SummaryFactory>();
             services.AddSingleton<ICloverReport, CloverReport>();
             services.AddSingleton<ICoberturaReport, CoberturaReport>();
             services.AddSingleton<INCoverReport, NCoverReport>();
             services.AddSingleton<IOpenCoverReport, OpenCoverReport>();
             services.AddSingleton<IHtmlReport, HtmlReport>();
+            services.AddSingleton<IHtmlSourceFileReport, HtmlSourceFileReport>();
             services.AddSingleton<IConsoleReport, ConsoleReport>();
             services.AddSingleton<ICoverallsReport, CoverallsReport>();
 
             services.AddSingleton<DepsJsonUtils>();
             services.AddSingleton<IFileReader, CachedFileReader>();
             services.AddSingleton<IFileSystem, FileSystem>();
-            services.AddSingleton<ISummaryFactory, SummaryFactory>();
 
             return services.BuildServiceProvider();
         }

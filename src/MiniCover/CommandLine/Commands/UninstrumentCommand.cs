@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MiniCover.CommandLine;
 using MiniCover.CommandLine.Options;
-using MiniCover.Instrumentation;
+using MiniCover.Core.Instrumentation;
 
 namespace MiniCover.Commands
 {

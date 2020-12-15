@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using MiniCover.CommandLine.Options;
 using MiniCover.Exceptions;
-using MiniCover.Infrastructure;
+using MiniCover.IO;
 using Moq;
 using Xunit;
 
