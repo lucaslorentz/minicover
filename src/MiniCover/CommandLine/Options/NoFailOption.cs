@@ -1,6 +1,6 @@
 ﻿namespace MiniCover.CommandLine.Options
 {
-    class NoFailOption : INoValueOption, INoFailOption
+    public class NoFailOption : INoValueOption, INoFailOption
     {
         public bool Value { get; private set; }
         public string Template => "--no-fail";

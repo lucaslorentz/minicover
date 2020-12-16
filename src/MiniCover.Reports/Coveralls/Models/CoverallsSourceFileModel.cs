@@ -2,7 +2,7 @@
 
 namespace MiniCover.Reports.Coveralls.Models
 {
-    class CoverallsSourceFileModel
+    public class CoverallsSourceFileModel
     {
         [JsonProperty("name")]
         public string Name { get; set; }

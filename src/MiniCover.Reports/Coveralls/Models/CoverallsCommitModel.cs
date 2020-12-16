@@ -2,7 +2,7 @@
 
 namespace MiniCover.Reports.Coveralls.Models
 {
-    class CoverallsCommitModel
+    public class CoverallsCommitModel
     {
         [JsonProperty("id")]
         public string Id { get; set; }

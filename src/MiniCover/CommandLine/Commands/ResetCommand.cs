@@ -10,7 +10,7 @@ using MiniCover.IO;
 
 namespace MiniCover.Commands
 {
-    class ResetCommand : ICommand
+    public class ResetCommand : ICommand
     {
         private readonly HitsDirectoryOption _hitsDirectoryOption;
 

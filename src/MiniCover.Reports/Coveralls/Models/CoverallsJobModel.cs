@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MiniCover.Reports.Coveralls.Models
 {
-    class CoverallsJobModel
+    public class CoverallsJobModel
     {
         [JsonProperty("service_job_id")]
         public string ServiceJobId { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MiniCover.Reports.Coveralls.Models
 {
-    class CoverallsGitModel
+    public class CoverallsGitModel
     {
         [JsonProperty("head")]
         public CoverallsCommitModel Head { get; set; }

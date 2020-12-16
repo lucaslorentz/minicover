@@ -2,7 +2,7 @@
 
 namespace MiniCover.Reports.Coveralls.Models
 {
-    class CoverallsRemote
+    public class CoverallsRemote
     {
         [JsonProperty("name")]
         public string Name { get; set; }

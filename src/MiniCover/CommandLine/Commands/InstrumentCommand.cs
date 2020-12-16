@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace MiniCover.Commands
 {
-    class InstrumentCommand : ICommand
+    public class InstrumentCommand : ICommand
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly VerbosityOption _verbosityOption;
