@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Net;
 using MiniCover.Core.Hits;
@@ -13,10 +14,14 @@ namespace MiniCover.Reports.Html
     public class HtmlSourceFileReport : IHtmlSourceFileReport
     {
         private readonly ISummaryFactory _summaryFactory;
+        private readonly IFileSystem _fileSystem;
 
-        public HtmlSourceFileReport(ISummaryFactory summaryFactory)
+        public HtmlSourceFileReport(
+            ISummaryFactory summaryFactory,
+            IFileSystem fileSystem)
         {
             _summaryFactory = summaryFactory;
+            _fileSystem = fileSystem;
         }
 
         public void Generate(
@@ -28,7 +33,7 @@ namespace MiniCover.Reports.Html
         {
             var lines = File.ReadAllLines(Path.Combine(result.SourcePath, sourceFile.Path));
 
-            Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
+            _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
 
             var summary = _summaryFactory.CalculateFilesSummary(new[] { sourceFile }, hitsInfo, threshold);
 

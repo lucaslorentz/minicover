@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -21,10 +22,14 @@ namespace MiniCover.Reports.Coveralls
         private const string coverallsJobsUrl = "https://coveralls.io/api/v1/jobs";
 
         private readonly IHitsReader _hitsReader;
+        private readonly IFileSystem _fileSystem;
 
-        public CoverallsReport(IHitsReader hitsReader)
+        public CoverallsReport(
+            IHitsReader hitsReader,
+            IFileSystem fileSystem)
         {
             _hitsReader = hitsReader;
+            _fileSystem = fileSystem;
         }
 
         public virtual async Task<int> Execute(InstrumentationResult result,
@@ -86,13 +91,13 @@ namespace MiniCover.Reports.Coveralls
             {
                 var sourceFile = Path.Combine(result.SourcePath, file.Path);
 
-                if (!File.Exists(sourceFile))
+                if (!_fileSystem.File.Exists(sourceFile))
                 {
                     System.Console.WriteLine($"File not found: {sourceFile}");
                     continue;
                 }
 
-                var sourceLines = File.ReadAllLines(sourceFile);
+                var sourceLines = _fileSystem.File.ReadAllLines(sourceFile);
 
                 var hitsPerLine = file.Sequences
                     .GroupByMany(f => f.GetLines())
@@ -122,17 +127,17 @@ namespace MiniCover.Reports.Coveralls
 
             if (!string.IsNullOrWhiteSpace(output))
             {
-                File.WriteAllText(output, coverallsJson);
+                _fileSystem.File.WriteAllText(output, coverallsJson);
             }
 
             return await Post(coverallsJson);
         }
 
-        private static string ComputeSourceDigest(string sourceFile)
+        private string ComputeSourceDigest(string sourceFile)
         {
             using (var md5 = MD5.Create())
             {
-                using (var stream = File.OpenRead(sourceFile))
+                using (var stream = _fileSystem.File.OpenRead(sourceFile))
                 {
                     var hash = md5.ComputeHash(stream);
                     return Convert.ToBase64String(hash);

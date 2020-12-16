@@ -22,8 +22,8 @@ namespace MiniCover.UnitTests.TestHelpers
         public static AssemblyDefinition ToDefinition(this Assembly assembly)
         {
             var assemblyFile = _fileSystem.FileInfo.FromFileName(assembly.Location);
-            var depsJsonUtils = new DepsJsonUtils(new FileSystem());
-            var resolver = new CustomAssemblyResolver(assemblyFile.Directory, NullLogger<CustomAssemblyResolver>.Instance, depsJsonUtils);
+            var depsJsonUtils = new DepsJsonUtils(_fileSystem);
+            var resolver = new CustomAssemblyResolver(assemblyFile.Directory, depsJsonUtils, _fileSystem, NullLogger<CustomAssemblyResolver>.Instance);
             var readerParameters = new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver };
             return AssemblyDefinition.ReadAssembly(assemblyFile.FullName, readerParameters);
         }
@@ -100,7 +100,7 @@ namespace MiniCover.UnitTests.TestHelpers
         private static MethodInstrumenter CreateMethodInstrumenter()
         {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var fileReader = new CachedFileReader(memoryCache);
+            var fileReader = new CachedFileReader(memoryCache, _fileSystem);
             var methodInstrumenter = new MethodInstrumenter(NullLogger<MethodInstrumenter>.Instance, fileReader);
             return methodInstrumenter;
         }

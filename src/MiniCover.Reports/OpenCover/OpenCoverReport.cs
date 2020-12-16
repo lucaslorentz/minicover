@@ -12,10 +12,14 @@ namespace MiniCover.Reports.OpenCover
     public class OpenCoverReport : IOpenCoverReport
     {
         private readonly IHitsReader _hitsReader;
+        private readonly IFileSystem _fileSystem;
 
-        public OpenCoverReport(IHitsReader hitsReader)
+        public OpenCoverReport(
+            IHitsReader hitsReader,
+            IFileSystem fileSystem)
         {
             _hitsReader = hitsReader;
+            _fileSystem = fileSystem;
         }
 
         public void Execute(InstrumentationResult result, IFileInfo output)
@@ -148,7 +152,7 @@ namespace MiniCover.Reports.OpenCover
             document.Add(coverageElement);
 
             output.Directory.Create();
-            File.WriteAllText(output.FullName, document.ToString());
+            _fileSystem.File.WriteAllText(output.FullName, document.ToString());
         }
     }
 }

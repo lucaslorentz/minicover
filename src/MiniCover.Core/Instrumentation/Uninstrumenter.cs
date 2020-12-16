@@ -24,16 +24,16 @@ namespace MiniCover.Core.Instrumentation
             {
                 foreach (var assemblyLocation in assembly.Locations)
                 {
-                    if (File.Exists(assemblyLocation.BackupFile))
+                    if (_fileSystem.File.Exists(assemblyLocation.BackupFile))
                     {
-                        File.Copy(assemblyLocation.BackupFile, assemblyLocation.File, true);
-                        File.Delete(assemblyLocation.BackupFile);
+                        _fileSystem.File.Copy(assemblyLocation.BackupFile, assemblyLocation.File, true);
+                        _fileSystem.File.Delete(assemblyLocation.BackupFile);
                     }
 
-                    if (File.Exists(assemblyLocation.BackupPdbFile))
+                    if (_fileSystem.File.Exists(assemblyLocation.BackupPdbFile))
                     {
-                        File.Copy(assemblyLocation.BackupPdbFile, assemblyLocation.PdbFile, true);
-                        File.Delete(assemblyLocation.BackupPdbFile);
+                        _fileSystem.File.Copy(assemblyLocation.BackupPdbFile, assemblyLocation.PdbFile, true);
+                        _fileSystem.File.Delete(assemblyLocation.BackupPdbFile);
                     }
 
                     var assemblyDirectory = _fileSystem.FileInfo.FromFileName(assemblyLocation.File).Directory;
@@ -46,9 +46,9 @@ namespace MiniCover.Core.Instrumentation
 
             foreach (var extraAssembly in result.ExtraAssemblies)
             {
-                if (File.Exists(extraAssembly))
+                if (_fileSystem.File.Exists(extraAssembly))
                 {
-                    File.Delete(extraAssembly);
+                    _fileSystem.File.Delete(extraAssembly);
                 }
             }
         }

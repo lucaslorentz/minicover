@@ -11,10 +11,14 @@ namespace MiniCover.Reports.NCover
     public class NCoverReport : INCoverReport
     {
         private readonly IHitsReader _hitsReader;
+        private readonly IFileSystem _fileSystem;
 
-        public NCoverReport(IHitsReader hitsReader)
+        public NCoverReport(
+            IHitsReader hitsReader,
+            IFileSystem fileSystem)
         {
             _hitsReader = hitsReader;
+            _fileSystem = fileSystem;
         }
 
         public void Execute(InstrumentationResult result, IFileInfo output)
@@ -92,7 +96,7 @@ namespace MiniCover.Reports.NCover
             document.Add(coverageElement);
 
             output.Directory.Create();
-            File.WriteAllText(output.FullName, document.ToString());
+            _fileSystem.File.WriteAllText(output.FullName, document.ToString());
         }
     }
 }

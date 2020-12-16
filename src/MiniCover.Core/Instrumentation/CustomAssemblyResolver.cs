@@ -14,12 +14,15 @@ namespace MiniCover.Core.Instrumentation
     {
         private readonly DependencyContext _dependencyContext;
         private readonly ILogger _logger;
+        private readonly IFileSystem _fileSystem;
 
         public CustomAssemblyResolver(
             IDirectoryInfo assemblyDirectory,
-            ILogger logger,
-            DepsJsonUtils depsJsonUtils)
+            DepsJsonUtils depsJsonUtils,
+            IFileSystem fileSystem,
+            ILogger logger)
         {
+            _fileSystem = fileSystem;
             _logger = logger;
 
             foreach (var searchDirectory in GetSearchDirectories())
@@ -35,7 +38,7 @@ namespace MiniCover.Core.Instrumentation
 
             if (runtimeConfigPath != null)
             {
-                var runtimeConfigContent = File.ReadAllText(runtimeConfigPath.FullName);
+                var runtimeConfigContent = _fileSystem.File.ReadAllText(runtimeConfigPath.FullName);
                 foreach (var path in depsJsonUtils.GetAdditionalPaths(runtimeConfigContent))
                 {
                     AddSearchDirectory(path);

@@ -16,20 +16,23 @@ namespace MiniCover.Reports.Html
         private readonly IHitsReader _hitsReader;
         private readonly ISummaryFactory _summaryFactory;
         private readonly IHtmlSourceFileReport _htmlSourceFileReport;
+        private readonly IFileSystem _fileSystem;
 
         public HtmlReport(
             IHitsReader hitsReader,
             ISummaryFactory summaryFactory,
-            IHtmlSourceFileReport htmlSourceFileReport)
+            IHtmlSourceFileReport htmlSourceFileReport,
+            IFileSystem fileSystem)
         {
             _hitsReader = hitsReader;
             _summaryFactory = summaryFactory;
             _htmlSourceFileReport = htmlSourceFileReport;
+            _fileSystem = fileSystem;
         }
 
         public virtual int Execute(InstrumentationResult result, IDirectoryInfo output, float threshold, bool noFail)
         {
-            Directory.CreateDirectory(output.FullName);
+            _fileSystem.Directory.CreateDirectory(output.FullName);
 
             var hitsInfo = _hitsReader.TryReadFromDirectory(result.HitsPath);
 

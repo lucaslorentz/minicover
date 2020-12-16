@@ -42,7 +42,7 @@ namespace MiniCover.Core.Instrumentation
         {
             var assemblyDirectory = assemblyFile.Directory;
 
-            var resolver = new CustomAssemblyResolver(assemblyDirectory, _assemblyResolverLogger, _depsJsonUtils);
+            var resolver = new CustomAssemblyResolver(assemblyDirectory, _depsJsonUtils, _fileSystem, _assemblyResolverLogger);
 
             _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
 
@@ -125,11 +125,11 @@ namespace MiniCover.Core.Instrumentation
             return instrumentedAssembly;
         }
 
-        private static string GetMiniCoverTempPath()
+        private string GetMiniCoverTempPath()
         {
             var path = Path.Combine(Path.GetTempPath(), "minicover");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            if (!_fileSystem.Directory.Exists(path))
+                _fileSystem.Directory.CreateDirectory(path);
             return path;
         }
     }

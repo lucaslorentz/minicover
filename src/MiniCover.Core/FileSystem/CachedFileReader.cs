@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace MiniCover.Core.FileSystem
@@ -6,10 +7,14 @@ namespace MiniCover.Core.FileSystem
     public class CachedFileReader : IFileReader
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly IFileSystem _fileSystem;
 
-        public CachedFileReader(IMemoryCache memoryCache)
+        public CachedFileReader(
+            IMemoryCache memoryCache,
+            IFileSystem fileSystem)
         {
             _memoryCache = memoryCache;
+            _fileSystem = fileSystem;
         }
 
         public string[] ReadAllLines(FileInfo file)
@@ -17,7 +22,7 @@ namespace MiniCover.Core.FileSystem
             return _memoryCache.GetOrCreate<string[]>(file.FullName, entry =>
             {
                 entry.Priority = CacheItemPriority.Low;
-                return File.ReadAllLines(file.FullName);
+                return _fileSystem.File.ReadAllLines(file.FullName);
             });
         }
     }

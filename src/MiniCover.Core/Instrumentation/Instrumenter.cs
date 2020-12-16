@@ -16,9 +16,10 @@ namespace MiniCover.Core.Instrumentation
     {
         private static readonly Assembly hitServicesAssembly = typeof(HitService).Assembly;
 
-        private readonly ILogger<Instrumenter> _logger;
         private readonly AssemblyInstrumenter _assemblyInstrumenter;
         private readonly DepsJsonUtils _depsJsonUtils;
+        private readonly IFileSystem _fileSystem;
+        private readonly ILogger<Instrumenter> _logger;
 
         private readonly string[] _loadedAssemblyFiles = AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => !a.IsDynamic)
@@ -26,13 +27,15 @@ namespace MiniCover.Core.Instrumentation
             .ToArray();
 
         public Instrumenter(
-            ILogger<Instrumenter> logger,
             AssemblyInstrumenter assemblyInstrumenter,
-            DepsJsonUtils depsJsonUtils)
+            DepsJsonUtils depsJsonUtils,
+            IFileSystem fileSystem,
+            ILogger<Instrumenter> logger)
         {
-            _logger = logger;
             _assemblyInstrumenter = assemblyInstrumenter;
             _depsJsonUtils = depsJsonUtils;
+            _fileSystem = fileSystem;
+            _logger = logger;
         }
 
         public InstrumentationResult Execute(InstrumentationContext context)
@@ -102,19 +105,19 @@ namespace MiniCover.Core.Instrumentation
                     var pdbBackupFile = FileUtils.GetBackupFile(pdbFile);
 
                     //Backup
-                    File.Copy(assemblyFile.FullName, assemblyBackupFile.FullName, true);
-                    File.Copy(pdbFile.FullName, pdbBackupFile.FullName, true);
+                    _fileSystem.File.Copy(assemblyFile.FullName, assemblyBackupFile.FullName, true);
+                    _fileSystem.File.Copy(pdbFile.FullName, pdbBackupFile.FullName, true);
 
                     //Override assembly
-                    File.Copy(instrumentedAssembly.TempAssemblyFile, assemblyFile.FullName, true);
-                    File.Copy(instrumentedAssembly.TempPdbFile, pdbFile.FullName, true);
+                    _fileSystem.File.Copy(instrumentedAssembly.TempAssemblyFile, assemblyFile.FullName, true);
+                    _fileSystem.File.Copy(instrumentedAssembly.TempPdbFile, pdbFile.FullName, true);
 
                     //Copy instrumentation dependencies
                     var assemblyDirectory = assemblyFile.Directory;
 
                     var hitServicesPath = Path.GetFileName(hitServicesAssembly.Location);
                     var newHitServicesPath = Path.Combine(assemblyDirectory.FullName, hitServicesPath);
-                    File.Copy(hitServicesAssembly.Location, newHitServicesPath, true);
+                    _fileSystem.File.Copy(hitServicesAssembly.Location, newHitServicesPath, true);
                     result.AddExtraAssembly(newHitServicesPath);
 
                     instrumentedAssembly.AddLocation(
@@ -133,8 +136,8 @@ namespace MiniCover.Core.Instrumentation
 
                 result.AddInstrumentedAssembly(instrumentedAssembly);
 
-                File.Delete(instrumentedAssembly.TempAssemblyFile);
-                File.Delete(instrumentedAssembly.TempPdbFile);
+                _fileSystem.File.Delete(instrumentedAssembly.TempAssemblyFile);
+                _fileSystem.File.Delete(instrumentedAssembly.TempPdbFile);
             }
         }
     }
