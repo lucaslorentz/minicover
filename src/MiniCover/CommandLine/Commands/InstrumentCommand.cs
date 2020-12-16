@@ -28,6 +28,7 @@ namespace MiniCover.Commands
         private readonly ExcludeTestsPatternOption _excludeTestsOption;
         private readonly HitsDirectoryOption _hitsDirectoryOption;
         private readonly CoverageFileOption _coverageFileOption;
+        private readonly IInstrumenter _instrumenter;
 
         public InstrumentCommand(IServiceProvider serviceProvider,
             VerbosityOption verbosityOption,
@@ -40,7 +41,8 @@ namespace MiniCover.Commands
             IncludeTestsPatternOption includeTestsOption,
             ExcludeTestsPatternOption excludeTestsOption,
             HitsDirectoryOption hitsDirectoryOption,
-            CoverageFileOption coverageFileOption)
+            CoverageFileOption coverageFileOption,
+            IInstrumenter instrumenter)
         {
             _serviceProvider = serviceProvider;
             _verbosityOption = verbosityOption;
@@ -54,6 +56,7 @@ namespace MiniCover.Commands
             _excludeTestsOption = excludeTestsOption;
             _hitsDirectoryOption = hitsDirectoryOption;
             _coverageFileOption = coverageFileOption;
+            _instrumenter = instrumenter;
         }
 
         public string CommandName => "instrument";
@@ -94,8 +97,7 @@ namespace MiniCover.Commands
                 Workdir = _workingDirectoryOption.DirectoryInfo
             };
 
-            var instrumenter = _serviceProvider.GetService<Instrumenter>();
-            var result = instrumenter.Execute(instrumentationContext);
+            var result = _instrumenter.Instrument(instrumentationContext);
 
             var coverageFile = _coverageFileOption.FileInfo;
             SaveCoverageFile(coverageFile, result);

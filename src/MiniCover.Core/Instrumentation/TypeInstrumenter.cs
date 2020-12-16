@@ -5,11 +5,11 @@ using Mono.Cecil;
 
 namespace MiniCover.Core.Instrumentation
 {
-    public class TypeInstrumenter
+    public class TypeInstrumenter : ITypeInstrumenter
     {
-        private readonly MethodInstrumenter _methodInstrumenter;
+        private readonly IMethodInstrumenter _methodInstrumenter;
 
-        public TypeInstrumenter(MethodInstrumenter methodInstrumenter)
+        public TypeInstrumenter(IMethodInstrumenter methodInstrumenter)
         {
             _methodInstrumenter = methodInstrumenter;
         }

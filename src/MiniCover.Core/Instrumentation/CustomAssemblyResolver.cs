@@ -13,14 +13,14 @@ namespace MiniCover.Core.Instrumentation
     public class CustomAssemblyResolver : DefaultAssemblyResolver
     {
         private readonly DependencyContext _dependencyContext;
-        private readonly ILogger _logger;
         private readonly IFileSystem _fileSystem;
+        private readonly ILogger<CustomAssemblyResolver> _logger;
 
         public CustomAssemblyResolver(
             IDirectoryInfo assemblyDirectory,
             DepsJsonUtils depsJsonUtils,
             IFileSystem fileSystem,
-            ILogger logger)
+            ILogger<CustomAssemblyResolver> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;

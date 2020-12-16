@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.CommandLineUtils;
@@ -10,20 +9,8 @@ using MiniCover.CommandLine;
 using MiniCover.CommandLine.Commands;
 using MiniCover.CommandLine.Options;
 using MiniCover.Commands;
-using MiniCover.Core.FileSystem;
-using MiniCover.Core.Hits;
-using MiniCover.Core.Instrumentation;
-using MiniCover.Core.Utils;
 using MiniCover.Exceptions;
 using MiniCover.IO;
-using MiniCover.Reports.Clover;
-using MiniCover.Reports.Cobertura;
-using MiniCover.Reports.Console;
-using MiniCover.Reports.Coveralls;
-using MiniCover.Reports.Helpers;
-using MiniCover.Reports.Html;
-using MiniCover.Reports.NCover;
-using MiniCover.Reports.OpenCover;
 
 namespace MiniCover
 {
@@ -125,13 +112,14 @@ namespace MiniCover
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<IOutput>(output);
+            services.AddSingleton(output);
 
             services.AddLogging(l => l
                 .SetMinimumLevel(LogLevel.Trace)
                 .AddProvider(new OutputLoggerProvider(output)));
 
-            services.AddMemoryCache();
+            services.AddMiniCoverCore();
+            services.AddMiniCoverReports();
 
             services.AddTransient<ICommand, InstrumentCommand>();
             services.AddTransient<ICommand, UninstrumentCommand>();
@@ -168,29 +156,6 @@ namespace MiniCover
             services.AddTransient<CoverageLoadedFileOption>();
             services.AddTransient<HtmlOutputDirectoryOption>();
             services.AddTransient<VerbosityOption>();
-
-            services.AddSingleton<IHitsResetter, HitsResetter>();
-            services.AddSingleton<IHitsReader, HitsReader>();
-
-            services.AddSingleton<Instrumenter>();
-            services.AddSingleton<IUninstrumenter, Uninstrumenter>();
-            services.AddSingleton<AssemblyInstrumenter>();
-            services.AddSingleton<TypeInstrumenter>();
-            services.AddSingleton<MethodInstrumenter>();
-
-            services.AddSingleton<ISummaryFactory, SummaryFactory>();
-            services.AddSingleton<ICloverReport, CloverReport>();
-            services.AddSingleton<ICoberturaReport, CoberturaReport>();
-            services.AddSingleton<INCoverReport, NCoverReport>();
-            services.AddSingleton<IOpenCoverReport, OpenCoverReport>();
-            services.AddSingleton<IHtmlReport, HtmlReport>();
-            services.AddSingleton<IHtmlSourceFileReport, HtmlSourceFileReport>();
-            services.AddSingleton<IConsoleReport, ConsoleReport>();
-            services.AddSingleton<ICoverallsReport, CoverallsReport>();
-
-            services.AddSingleton<DepsJsonUtils>();
-            services.AddSingleton<IFileReader, CachedFileReader>();
-            services.AddSingleton<IFileSystem, FileSystem>();
 
             return services.BuildServiceProvider();
         }

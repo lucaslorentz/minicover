@@ -18,7 +18,7 @@ namespace MiniCover.Core.Instrumentation
             _fileSystem = fileSystem;
         }
 
-        public void Execute(InstrumentationResult result)
+        public void Uninstrument(InstrumentationResult result)
         {
             foreach (var assembly in result.Assemblies)
             {

@@ -37,7 +37,7 @@ namespace MiniCover.UnitTests.CommandLine.Commands
             var result = new InstrumentationResult();
 
             _coverageLoadedFileOption.SetupGet(x => x.Result).Returns(result);
-            _uninstrumenter.Setup(x => x.Execute(result));
+            _uninstrumenter.Setup(x => x.Uninstrument(result));
 
             var exitCode = await Sut.Execute();
             exitCode.Should().Be(0);

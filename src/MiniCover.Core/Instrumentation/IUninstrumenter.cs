@@ -4,6 +4,6 @@ namespace MiniCover.Core.Instrumentation
 {
     public interface IUninstrumenter
     {
-        void Execute(InstrumentationResult result);
+        void Uninstrument(InstrumentationResult result);
     }
 }

@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using MiniCover.Core.Extensions;
 using MiniCover.Core.Hits;
 using MiniCover.Core.Model;
+using MiniCover.Core.Utils;
 using MiniCover.Reports.Coveralls.Models;
-using MiniCover.Reports.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

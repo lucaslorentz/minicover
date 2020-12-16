@@ -8,6 +8,7 @@ using MiniCover.Core.Extensions;
 using MiniCover.Core.FileSystem;
 using MiniCover.Core.Instrumentation.Patterns;
 using MiniCover.Core.Model;
+using MiniCover.Core.Utils;
 using MiniCover.HitServices;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -15,7 +16,7 @@ using Mono.Cecil.Rocks;
 
 namespace MiniCover.Core.Instrumentation
 {
-    public class MethodInstrumenter
+    public class MethodInstrumenter : IMethodInstrumenter
     {
         private static readonly Type hitServiceType = typeof(HitService);
         private static readonly Type methodScopeType = typeof(MethodScope);
@@ -240,15 +241,7 @@ namespace MiniCover.Core.Instrumentation
 
         private static string GetSourceRelativePath(InstrumentationContext context, string path)
         {
-            var file = new Uri(path);
-            var folder = new Uri(context.Workdir.FullName);
-            string relativePath =
-                Uri.UnescapeDataString(
-                    folder.MakeRelativeUri(file)
-                        .ToString()
-                        .Replace('/', Path.DirectorySeparatorChar)
-                );
-            return relativePath;
+            return PathUtils.GetRelativePath(context.Workdir.FullName, path);
         }
     }
 }

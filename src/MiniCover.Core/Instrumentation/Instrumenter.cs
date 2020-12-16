@@ -12,11 +12,11 @@ using MiniCover.HitServices;
 
 namespace MiniCover.Core.Instrumentation
 {
-    public class Instrumenter
+    public class Instrumenter : IInstrumenter
     {
         private static readonly Assembly hitServicesAssembly = typeof(HitService).Assembly;
 
-        private readonly AssemblyInstrumenter _assemblyInstrumenter;
+        private readonly IAssemblyInstrumenter _assemblyInstrumenter;
         private readonly DepsJsonUtils _depsJsonUtils;
         private readonly IFileSystem _fileSystem;
         private readonly ILogger<Instrumenter> _logger;
@@ -27,7 +27,7 @@ namespace MiniCover.Core.Instrumentation
             .ToArray();
 
         public Instrumenter(
-            AssemblyInstrumenter assemblyInstrumenter,
+            IAssemblyInstrumenter assemblyInstrumenter,
             DepsJsonUtils depsJsonUtils,
             IFileSystem fileSystem,
             ILogger<Instrumenter> logger)
@@ -38,7 +38,7 @@ namespace MiniCover.Core.Instrumentation
             _logger = logger;
         }
 
-        public InstrumentationResult Execute(InstrumentationContext context)
+        public InstrumentationResult Instrument(InstrumentationContext context)
         {
             context.Workdir = context.Workdir;
 

@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MiniCover.Core.Extensions;
 using MiniCover.Core.Model;
@@ -12,28 +13,25 @@ using Mono.Cecil;
 
 namespace MiniCover.Core.Instrumentation
 {
-    public class AssemblyInstrumenter
+    public class AssemblyInstrumenter : IAssemblyInstrumenter
     {
         private static readonly ConstructorInfo instrumentedAttributeConstructor = typeof(InstrumentedAttribute).GetConstructors().First();
 
-        private readonly TypeInstrumenter _typeInstrumenter;
-        private readonly ILogger<AssemblyInstrumenter> _logger;
-        private readonly ILogger<CustomAssemblyResolver> _assemblyResolverLogger;
-        private readonly DepsJsonUtils _depsJsonUtils;
+        private readonly ITypeInstrumenter _typeInstrumenter;
         private readonly IFileSystem _fileSystem;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<AssemblyInstrumenter> _logger;
 
         public AssemblyInstrumenter(
-            TypeInstrumenter typeInstrumenter,
-            ILogger<AssemblyInstrumenter> logger,
-            ILogger<CustomAssemblyResolver> assemblyResolverLogger,
-            DepsJsonUtils depsJsonUtils,
-            IFileSystem fileSystem)
+            ITypeInstrumenter typeInstrumenter,
+            IFileSystem fileSystem,
+            IServiceProvider serviceProvider,
+            ILogger<AssemblyInstrumenter> logger)
         {
             _typeInstrumenter = typeInstrumenter;
-            _logger = logger;
-            _assemblyResolverLogger = assemblyResolverLogger;
-            _depsJsonUtils = depsJsonUtils;
             _fileSystem = fileSystem;
+            _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         public InstrumentedAssembly InstrumentAssemblyFile(
@@ -42,7 +40,7 @@ namespace MiniCover.Core.Instrumentation
         {
             var assemblyDirectory = assemblyFile.Directory;
 
-            var resolver = new CustomAssemblyResolver(assemblyDirectory, _depsJsonUtils, _fileSystem, _assemblyResolverLogger);
+            var resolver = ActivatorUtilities.CreateInstance<CustomAssemblyResolver>(_serviceProvider, assemblyDirectory);
 
             _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
 

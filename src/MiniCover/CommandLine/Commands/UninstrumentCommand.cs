@@ -36,7 +36,7 @@ namespace MiniCover.Commands
         public Task<int> Execute()
         {
             var result = _coverageLoadedFileOption.Result;
-            _uninstrumenter.Execute(result);
+            _uninstrumenter.Uninstrument(result);
             return Task.FromResult(0);
         }
     }
