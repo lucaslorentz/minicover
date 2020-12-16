@@ -2,7 +2,7 @@
 using FluentAssertions;
 using MiniCover.CommandLine.Options;
 using MiniCover.Exceptions;
-using MiniCover.UnitTests.TestHelpers;
+using MiniCover.TestHelpers;
 using Xunit;
 
 namespace MiniCover.UnitTests.CommandLine.Options

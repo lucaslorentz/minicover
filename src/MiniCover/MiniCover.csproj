@@ -5,7 +5,6 @@
     <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp3.0;netcoreapp2.2;netcoreapp2.1</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>minicover</ToolCommandName>
-    <PackageOutputPath>../../nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -23,6 +22,7 @@
     <StartArguments>instrument --workdir ../../../../../</StartArguments>
     <ExternalConsole>false</ExternalConsole>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
@@ -30,41 +30,17 @@
     <PackageReference Include="Mono.Cecil" Version="0.11.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="13.0.1" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniCover.HitServices\MiniCover.HitServices.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\MiniCover.Core\MiniCover.Core.csproj" />
+    <ProjectReference Include="..\MiniCover.Reports\MiniCover.Reports.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CommandLine\Commands\" />
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Infrastructure\IO\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Infrastructure\FileSystem\" />
-    <Folder Include="Instrumentation\Patterns\" />
-    <Folder Include="Reports\Html\" />
-    <Folder Include="Reports\Helpers\" />
-    <Folder Include="Reports\Cobertura\" />
-    <Folder Include="Reports\NCover\" />
-    <Folder Include="Reports\OpenCover\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Infrastructure\Verbosity.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Reports\Html\SourceFile.css" />
-    <None Remove="Reports\Html\Summary.css" />
-    <None Remove="Reports\Html\Shared.css" />
-    <None Remove="Reports\Html\SourceFile.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Reports\Html\SourceFile.css" />
-    <EmbeddedResource Include="Reports\Html\Summary.css" />
-    <EmbeddedResource Include="Reports\Html\Shared.css" />
-    <EmbeddedResource Include="Reports\Html\Shared.js" />
+    <Folder Include="IO\" />
   </ItemGroup>
 </Project>

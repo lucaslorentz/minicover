@@ -128,3 +128,47 @@ coverage-html
 coverage-hits
 coverage.json
 ```
+
+## Libraries
+
+When using MiniCover libraries:
+
+- use dependency injection to create instances
+- use only the main interfaces listed on each package below
+
+By doing that, you reduce the risk of being impacted by future MiniCover changes.
+
+### MiniCover.Core
+
+Main MiniCover operations.
+
+Dependency injection configuration:
+```C#
+services.AddMiniCoverCore();
+```
+
+Main interfaces:
+- IInstrumenter
+- IUninstrumenter
+- IHitsReader
+- IHitsResetter
+
+### MiniCover.Reports
+
+MiniCover reports.
+
+Dependency injection configuration:
+```C#
+services.AddMiniCoverCore();
+services.AddMiniCoverReports();
+```
+
+Main interfaces:
+- ICloverReport
+- ICoberturaReport
+- IConsoleReport
+- ICoverallsReport
+- IHtmlReport
+- IHtmlSourceFileReport
+- INCoverReport
+- IOpenCoverReport

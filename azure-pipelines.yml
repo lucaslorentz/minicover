@@ -111,8 +111,8 @@ jobs:
       useGlobalJson: true
   - bash: |
       export Version=${TagName:1}
-      dotnet pack -c Release
-      dotnet nuget push nupkg/*.nupkg -k $NUGET_KEY -s https://api.nuget.org/v3/index.json
+      dotnet pack -c Release -o nupkg
+      dotnet nuget push "nupkg/*.nupkg" -k $NUGET_KEY -s https://api.nuget.org/v3/index.json
     env:
       TagName: '$(Build.SourceBranchName)'
       NUGET_KEY: '$(NUGET_KEY)'

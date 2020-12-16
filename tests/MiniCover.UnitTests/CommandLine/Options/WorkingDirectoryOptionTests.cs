@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using MiniCover.CommandLine.Options;
-using MiniCover.UnitTests.TestHelpers;
+using MiniCover.TestHelpers;
 
 namespace MiniCover.UnitTests.CommandLine.Options
 {

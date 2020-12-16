@@ -2,8 +2,8 @@
 using FluentAssertions;
 using MiniCover.CommandLine.Options;
 using MiniCover.Commands;
-using MiniCover.Instrumentation;
-using MiniCover.Model;
+using MiniCover.Core.Instrumentation;
+using MiniCover.Core.Model;
 using Moq;
 using Xunit;
 
@@ -37,7 +37,7 @@ namespace MiniCover.UnitTests.CommandLine.Commands
             var result = new InstrumentationResult();
 
             _coverageLoadedFileOption.SetupGet(x => x.Result).Returns(result);
-            _uninstrumenter.Setup(x => x.Execute(result));
+            _uninstrumenter.Setup(x => x.Uninstrument(result));
 
             var exitCode = await Sut.Execute();
             exitCode.Should().Be(0);

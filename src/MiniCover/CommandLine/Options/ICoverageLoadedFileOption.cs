@@ -1,4 +1,4 @@
-﻿using MiniCover.Model;
+﻿using MiniCover.Core.Model;
 
 namespace MiniCover.CommandLine.Options
 {

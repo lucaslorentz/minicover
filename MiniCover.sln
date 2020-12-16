@@ -3,15 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover", "src\MiniCover\MiniCover.csproj", "{CE06DCCF-32DB-44F2-B6D8-37DD0395C406}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover", "src\MiniCover\MiniCover.csproj", "{CE06DCCF-32DB-44F2-B6D8-37DD0395C406}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.UnitTests", "tests\MiniCover.UnitTests\MiniCover.UnitTests.csproj", "{7373D72F-D0A7-4D74-BA48-39E4CA7679DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.UnitTests", "tests\MiniCover.UnitTests\MiniCover.UnitTests.csproj", "{7373D72F-D0A7-4D74-BA48-39E4CA7679DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.HitServices", "src\MiniCover.HitServices\MiniCover.HitServices.csproj", "{0A895434-3E4B-4BA7-BA90-C4894BECEECA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCover.HitServices.UnitTests", "tests\MiniCover.HitServices.UnitTests\MiniCover.HitServices.UnitTests.csproj", "{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.Core", "src\MiniCover.Core\MiniCover.Core.csproj", "{F3CF9511-1A18-44E5-96D1-F7330C7A7C1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.Reports", "src\MiniCover.Reports\MiniCover.Reports.csproj", "{FEC52983-15CF-4420-8700-0E0B6E16B101}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.Core.UnitTests", "tests\MiniCover.Core.UnitTests\MiniCover.Core.UnitTests.csproj", "{6610CDC4-7860-4D3D-BCE3-B8B6383A9CFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.Reports.UnitTests", "tests\MiniCover.Reports.UnitTests\MiniCover.Reports.UnitTests.csproj", "{2000A3C7-504B-4760-9DC1-167B96C04E77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniCover.TestHelpers", "tests\MiniCover.TestHelpers\MiniCover.TestHelpers.csproj", "{21EEDEA8-B073-4868-9E29-D0574547B884}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +45,26 @@ Global
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3CF9511-1A18-44E5-96D1-F7330C7A7C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3CF9511-1A18-44E5-96D1-F7330C7A7C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3CF9511-1A18-44E5-96D1-F7330C7A7C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3CF9511-1A18-44E5-96D1-F7330C7A7C1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEC52983-15CF-4420-8700-0E0B6E16B101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEC52983-15CF-4420-8700-0E0B6E16B101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEC52983-15CF-4420-8700-0E0B6E16B101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEC52983-15CF-4420-8700-0E0B6E16B101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6610CDC4-7860-4D3D-BCE3-B8B6383A9CFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6610CDC4-7860-4D3D-BCE3-B8B6383A9CFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6610CDC4-7860-4D3D-BCE3-B8B6383A9CFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6610CDC4-7860-4D3D-BCE3-B8B6383A9CFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2000A3C7-504B-4760-9DC1-167B96C04E77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2000A3C7-504B-4760-9DC1-167B96C04E77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2000A3C7-504B-4760-9DC1-167B96C04E77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2000A3C7-504B-4760-9DC1-167B96C04E77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21EEDEA8-B073-4868-9E29-D0574547B884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21EEDEA8-B073-4868-9E29-D0574547B884}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21EEDEA8-B073-4868-9E29-D0574547B884}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21EEDEA8-B073-4868-9E29-D0574547B884}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +72,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7373D72F-D0A7-4D74-BA48-39E4CA7679DE} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
 		{AF2FD8B1-8CF7-46FB-B94D-6D892B5A33C9} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
+		{6610CDC4-7860-4D3D-BCE3-B8B6383A9CFB} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
+		{2000A3C7-504B-4760-9DC1-167B96C04E77} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
+		{21EEDEA8-B073-4868-9E29-D0574547B884} = {32DDAE15-CEC4-4D44-9561-AF82BE1C2DA9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9809608-5E38-4E98-80B5-7CD7859FF4E8}
