@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using MiniCover.Core.Extensions;
-using MiniCover.Core.Model;
+﻿using MiniCover.Core.Model;
 using Mono.Cecil;
 
 namespace MiniCover.Core.Instrumentation
@@ -14,21 +12,20 @@ namespace MiniCover.Core.Instrumentation
             _methodInstrumenter = methodInstrumenter;
         }
 
-        public void InstrumentType(
-            InstrumentationContext context,
+        public bool InstrumentType(
+            IInstrumentationContext context,
             TypeDefinition typeDefinition,
             InstrumentedAssembly instrumentedAssembly)
         {
+            var instrumented = false;
+            
             foreach (var methodDefinition in typeDefinition.Methods)
             {
                 if (!methodDefinition.HasBody || !methodDefinition.DebugInformation.HasSequencePoints)
                     continue;
 
-                var methodDocuments = methodDefinition.GetAllDocuments();
-
-                var isSource = methodDocuments.Any(d => context.IsSource(d.Url));
-                var isTest = methodDocuments.Any(d => context.IsTest(d.Url));
-
+                var isTest = context.IsTest(methodDefinition);
+                var isSource = context.IsSource(methodDefinition);
                 if (!isSource && !isTest)
                     continue;
 
@@ -37,10 +34,16 @@ namespace MiniCover.Core.Instrumentation
                     isSource,
                     methodDefinition,
                     instrumentedAssembly);
+
+                instrumented = true;
             }
 
-            foreach (var nestedType in typeDefinition.NestedTypes)
-                InstrumentType(context, nestedType, instrumentedAssembly);
+            foreach (var nestedType in typeDefinition.NestedTypes) {
+                if (InstrumentType(context, nestedType, instrumentedAssembly))
+                    instrumented = true;
+            }
+
+            return instrumented;
         }
     }
 }

@@ -5,6 +5,6 @@ namespace MiniCover.Core.Instrumentation
 {
     public interface ITypeInstrumenter
     {
-        void InstrumentType(InstrumentationContext context, TypeDefinition typeDefinition, InstrumentedAssembly instrumentedAssembly);
+        bool InstrumentType(IInstrumentationContext context, TypeDefinition typeDefinition, InstrumentedAssembly instrumentedAssembly);
     }
 }

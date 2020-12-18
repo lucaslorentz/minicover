@@ -5,6 +5,6 @@ namespace MiniCover.Core.Instrumentation
 {
     public interface IAssemblyInstrumenter
     {
-        InstrumentedAssembly InstrumentAssemblyFile(InstrumentationContext context, IFileInfo assemblyFile);
+        InstrumentedAssembly InstrumentAssemblyFile(IInstrumentationContext context, IFileInfo assemblyFile);
     }
 }
