@@ -12,13 +12,11 @@ namespace MiniCover.Core.Instrumentation
             _methodInstrumenter = methodInstrumenter;
         }
 
-        public bool InstrumentType(
+        public void InstrumentType(
             IInstrumentationContext context,
             TypeDefinition typeDefinition,
             InstrumentedAssembly instrumentedAssembly)
         {
-            var instrumented = false;
-            
             foreach (var methodDefinition in typeDefinition.Methods)
             {
                 if (!methodDefinition.HasBody || !methodDefinition.DebugInformation.HasSequencePoints)
@@ -34,16 +32,10 @@ namespace MiniCover.Core.Instrumentation
                     isSource,
                     methodDefinition,
                     instrumentedAssembly);
-
-                instrumented = true;
             }
 
-            foreach (var nestedType in typeDefinition.NestedTypes) {
-                if (InstrumentType(context, nestedType, instrumentedAssembly))
-                    instrumented = true;
-            }
-
-            return instrumented;
+            foreach (var nestedType in typeDefinition.NestedTypes)
+                InstrumentType(context, nestedType, instrumentedAssembly);
         }
     }
 }

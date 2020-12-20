@@ -85,8 +85,6 @@ namespace MiniCover.Core.Instrumentation
                 return null;
             }
 
-            var isInstrumented = false;
-
             var instrumentedAssembly = new InstrumentedAssembly(assemblyDefinition.Name.Name);
             var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
             assemblyDefinition.CustomAttributes.Add(new CustomAttribute(instrumentedAttributeReference));
@@ -98,17 +96,16 @@ namespace MiniCover.Core.Instrumentation
                     || typeDefinition.DeclaringType != null)
                     continue;
 
-                if (_typeInstrumenter.InstrumentType(
+                _typeInstrumenter.InstrumentType(
                     context,
                     typeDefinition,
-                    instrumentedAssembly))
-                {
-                    isInstrumented = true;
-                }
+                    instrumentedAssembly);
             }
 
-            if (!isInstrumented)
+            if (!instrumentedAssembly.Methods.Any()) {
+                _logger.LogInformation("Nothing to instrument");
                 return null;
+            }
 
             _logger.LogInformation("Assembly instrumented");
 
