@@ -35,7 +35,7 @@ namespace MiniCover.Core.Instrumentation
         }
 
         public InstrumentedAssembly InstrumentAssemblyFile(
-            InstrumentationContext context,
+            IInstrumentationContext context,
             IFileInfo assemblyFile)
         {
             var assemblyDirectory = assemblyFile.Directory;
@@ -59,7 +59,7 @@ namespace MiniCover.Core.Instrumentation
         }
 
         private InstrumentedAssembly InstrumentAssemblyDefinition(
-            InstrumentationContext context,
+            IInstrumentationContext context,
             AssemblyDefinition assemblyDefinition)
         {
             if (assemblyDefinition.CustomAttributes.Any(a => a.AttributeType.Name == "InstrumentedAttribute"))
@@ -69,12 +69,6 @@ namespace MiniCover.Core.Instrumentation
             }
 
             var assemblyDocuments = assemblyDefinition.GetAllDocuments();
-
-            if (!assemblyDocuments.Any(d => context.IsSource(d.Url) || context.IsTest(d.Url)))
-            {
-                _logger.LogInformation("No link to source files or test files");
-                return null;
-            }
 
             var changedDocuments = assemblyDocuments.Where(d => d.FileHasChanged()).ToArray();
             if (changedDocuments.Any())
@@ -90,8 +84,6 @@ namespace MiniCover.Core.Instrumentation
                 }
                 return null;
             }
-
-            _logger.LogInformation("Instrumenting");
 
             var instrumentedAssembly = new InstrumentedAssembly(assemblyDefinition.Name.Name);
             var instrumentedAttributeReference = assemblyDefinition.MainModule.ImportReference(instrumentedAttributeConstructor);
@@ -109,6 +101,13 @@ namespace MiniCover.Core.Instrumentation
                     typeDefinition,
                     instrumentedAssembly);
             }
+
+            if (!instrumentedAssembly.Methods.Any()) {
+                _logger.LogInformation("Nothing to instrument");
+                return null;
+            }
+
+            _logger.LogInformation("Assembly instrumented");
 
             var miniCoverTempPath = GetMiniCoverTempPath();
 

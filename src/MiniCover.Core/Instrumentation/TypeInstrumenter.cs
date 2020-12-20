@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using MiniCover.Core.Extensions;
-using MiniCover.Core.Model;
+﻿using MiniCover.Core.Model;
 using Mono.Cecil;
 
 namespace MiniCover.Core.Instrumentation
@@ -15,7 +13,7 @@ namespace MiniCover.Core.Instrumentation
         }
 
         public void InstrumentType(
-            InstrumentationContext context,
+            IInstrumentationContext context,
             TypeDefinition typeDefinition,
             InstrumentedAssembly instrumentedAssembly)
         {
@@ -24,11 +22,8 @@ namespace MiniCover.Core.Instrumentation
                 if (!methodDefinition.HasBody || !methodDefinition.DebugInformation.HasSequencePoints)
                     continue;
 
-                var methodDocuments = methodDefinition.GetAllDocuments();
-
-                var isSource = methodDocuments.Any(d => context.IsSource(d.Url));
-                var isTest = methodDocuments.Any(d => context.IsTest(d.Url));
-
+                var isTest = context.IsTest(methodDefinition);
+                var isSource = context.IsSource(methodDefinition);
                 if (!isSource && !isTest)
                     continue;
 

@@ -86,9 +86,9 @@ namespace MiniCover.UnitTests.TestHelpers
             return type.GetMembers().OfType<MethodBase>().First(m => m.Name == methodDefinition.Name);
         }
 
-        private static InstrumentationContext CreateInstrumentationContext(IEnumerable<string> documents)
+        private static FileBasedInstrumentationContext CreateInstrumentationContext(IEnumerable<string> documents)
         {
-            return new InstrumentationContext
+            return new FileBasedInstrumentationContext
             {
                 HitsPath = "/tmp",
                 Workdir = _fileSystem.DirectoryInfo.FromDirectoryName("/tmp"),

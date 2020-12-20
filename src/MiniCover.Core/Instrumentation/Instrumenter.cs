@@ -38,10 +38,8 @@ namespace MiniCover.Core.Instrumentation
             _logger = logger;
         }
 
-        public InstrumentationResult Instrument(InstrumentationContext context)
+        public InstrumentationResult Instrument(IInstrumentationContext context)
         {
-            context.Workdir = context.Workdir;
-
             var result = new InstrumentationResult
             {
                 SourcePath = context.Workdir.FullName,
@@ -79,7 +77,7 @@ namespace MiniCover.Core.Instrumentation
         }
 
         private void VisitAssemblyGroup(
-            InstrumentationContext context,
+            IInstrumentationContext context,
             InstrumentationResult result,
             IEnumerable<IFileInfo> assemblyFiles)
         {

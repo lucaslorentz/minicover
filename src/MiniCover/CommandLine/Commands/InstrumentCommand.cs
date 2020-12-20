@@ -88,7 +88,7 @@ namespace MiniCover.Commands
 
             var testFiles = GetFiles(_includeTestsOption.Value, _excludeTestsOption.Value, _parentDirOption.DirectoryInfo);
 
-            var instrumentationContext = new InstrumentationContext
+            var instrumentationContext = new FileBasedInstrumentationContext
             {
                 Assemblies = assemblies,
                 HitsPath = _hitsDirectoryOption.DirectoryInfo.FullName,

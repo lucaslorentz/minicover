@@ -36,7 +36,7 @@ namespace MiniCover.Core.Instrumentation
         }
 
         public void InstrumentMethod(
-            InstrumentationContext context,
+            IInstrumentationContext context,
             bool instrumentInstructions,
             MethodDefinition methodDefinition,
             InstrumentedAssembly instrumentedAssembly)
@@ -96,10 +96,11 @@ namespace MiniCover.Core.Instrumentation
         }
 
         private void InstrumentInstructions(
-            InstrumentationContext context,
+            IInstrumentationContext context,
             MethodDefinition methodDefinition,
             InstrumentedAssembly instrumentedAssembly,
-            IList<(SequencePoint sequencePoint, Instruction instruction)> sequencePointsInstructions,
+            IList<(SequencePoint sequencePoint,
+            Instruction instruction)> sequencePointsInstructions,
             ILProcessor ilProcessor,
             VariableDefinition methodContextVariable,
             InstrumentedMethod instrumentedMethod)
@@ -219,11 +220,11 @@ namespace MiniCover.Core.Instrumentation
             ILProcessor ilProcessor,
             VariableDefinition methodContextVariable,
             MethodReference hitMethodReference,
-            InstrumentationContext context)
+            IInstrumentationContext context)
         {
             return instruction.GetOrAddExtension("Id", () =>
             {
-                var id = ++context.UniqueId;
+                var id = context.NewInstructionId();
                 ilProcessor.InsertBefore(instruction, new[]
                 {
                     ilProcessor.Create(OpCodes.Ldloc, methodContextVariable),
@@ -239,7 +240,7 @@ namespace MiniCover.Core.Instrumentation
             return LambdaInitPattern.FindInstructions(instructions);
         }
 
-        private static string GetSourceRelativePath(InstrumentationContext context, string path)
+        private static string GetSourceRelativePath(IInstrumentationContext context, string path)
         {
             return PathUtils.GetRelativePath(context.Workdir.FullName, path);
         }
