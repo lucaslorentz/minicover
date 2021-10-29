@@ -12,9 +12,6 @@ jobs:
   steps:
   - task: UseDotNet@2
     inputs:
-      useGlobalJson: true
-  - task: UseDotNet@2
-    inputs:
       version: '3.1.x'
       packageType: runtime
   - task: UseDotNet@2
@@ -25,6 +22,9 @@ jobs:
     inputs:
       version: '2.2.x'
       packageType: runtime
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
   - bash: |
       ./build.sh
     displayName: 'Build'
@@ -45,9 +45,6 @@ jobs:
   steps:
   - task: UseDotNet@2
     inputs:
-      useGlobalJson: true
-  - task: UseDotNet@2
-    inputs:
       version: '3.1.x'
       packageType: runtime
   - task: UseDotNet@2
@@ -58,6 +55,9 @@ jobs:
     inputs:
       version: '2.2.x'
       packageType: runtime
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
   - bash: |
       ./build.sh
     displayName: 'Build'
@@ -68,9 +68,6 @@ jobs:
   steps:
   - task: UseDotNet@2
     inputs:
-      useGlobalJson: true
-  - task: UseDotNet@2
-    inputs:
       version: '3.1.x'
       packageType: runtime
   - task: UseDotNet@2
@@ -81,6 +78,9 @@ jobs:
     inputs:
       version: '2.2.x'
       packageType: runtime
+  - task: UseDotNet@2
+    inputs:
+      useGlobalJson: true
   - bash: |
       ./build.sh
     displayName: 'Build'
