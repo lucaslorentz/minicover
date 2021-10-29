@@ -70,38 +70,10 @@ jobs:
       ./build.sh
     displayName: 'Build'
 
-- job: Build_MacOS
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - task: UseDotNet@2
-    inputs:
-      useGlobalJson: true
-  - task: UseDotNet@2
-    inputs:
-      version: '3.1.x'
-      packageType: runtime
-  - task: UseDotNet@2
-    inputs:
-      version: '3.0.x'
-      packageType: runtime
-  - task: UseDotNet@2
-    inputs:
-      version: '2.2.x'
-      packageType: runtime
-  - task: UseDotNet@2
-    inputs:
-      version: '2.1.x'
-      packageType: runtime
-  - bash: |
-      ./build.sh
-    displayName: 'Build'
-
 - job: Push_Package
   dependsOn:
     - Build_Windows
     - Build_Linux
-    - Build_MacOS
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
   pool:
     vmImage: 'ubuntu-latest'
