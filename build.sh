@@ -40,6 +40,6 @@ if [ -n "${BUILD_BUILDID}" ] && [ -n "${COVERALLS_REPO_TOKEN}" ]; then
 		--commit-message "$BUILD_SOURCEVERSIONMESSAGE" \
 		--branch "$BUILD_SOURCEBRANCHNAME" \
 		--remote "origin" \
-		--remote-url "${BUILD_REPOSITORY_URI}"
+		--remote-url "${BUILD_REPOSITORY_URI}" || echo "Coverage report failed"
 	echo "# End Coveralls Report"
 fi
