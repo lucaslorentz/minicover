@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Lucas Lorentz</Authors>
     <Description>MiniCover code coverage measurement core implementation</Description>
     <PackageProjectUrl>https://github.com/lucaslorentz/minicover</PackageProjectUrl>
