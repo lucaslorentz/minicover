@@ -56,7 +56,7 @@ namespace MiniCover.Core.Instrumentation
                 VisitAssemblyGroup(
                     context,
                     result,
-                    assemblyGroup);
+                    assemblyGroup.ToArray());
             }
 
             return result;
@@ -79,9 +79,9 @@ namespace MiniCover.Core.Instrumentation
         private void VisitAssemblyGroup(
             IInstrumentationContext context,
             InstrumentationResult result,
-            IEnumerable<IFileInfo> assemblyFiles)
+            IReadOnlyCollection<IFileInfo> assemblyFiles)
         {
-            using (_logger.BeginScope("Checking assembly files {assemblies}", assemblyFiles.Select(f => f.FullName), LogLevel.Information))
+            using (_logger.BeginScope("Checking assembly files {assemblies}", assemblyFiles.Select(f => f.FullName)))
             {
                 var instrumentedAssembly = _assemblyInstrumenter.InstrumentAssemblyFile(
                     context,
@@ -89,9 +89,14 @@ namespace MiniCover.Core.Instrumentation
 
                 if (instrumentedAssembly == null)
                     return;
+                
+                _logger.LogTrace("Temporary assembly file: {tempAssemblyFile}", instrumentedAssembly.TempAssemblyFile);
+                _logger.LogTrace("Temporary PDB file: {tempPdbFile}", instrumentedAssembly.TempPdbFile);
 
                 foreach (var assemblyFile in assemblyFiles)
                 {
+                    _logger.LogDebug("Instrumenting assembly file {assemblyFile}", assemblyFile.FullName);
+                    
                     if (_loadedAssemblyFiles.Contains(assemblyFile.FullName))
                     {
                         _logger.LogInformation("Skipping loaded assembly {assemblyFile}", assemblyFile.FullName);
@@ -101,6 +106,10 @@ namespace MiniCover.Core.Instrumentation
                     var pdbFile = FileUtils.GetPdbFile(assemblyFile);
                     var assemblyBackupFile = FileUtils.GetBackupFile(assemblyFile);
                     var pdbBackupFile = FileUtils.GetBackupFile(pdbFile);
+                    
+                    _logger.LogTrace("PDB file: {pdbFileName}", pdbFile.FullName);
+                    _logger.LogTrace("Assembly backup file: {assemblyBackupFileName}", assemblyBackupFile.FullName);
+                    _logger.LogTrace("PDB backup file: {pdbBackupFileName}", pdbBackupFile.FullName);
 
                     //Backup
                     _fileSystem.File.Copy(assemblyFile.FullName, assemblyBackupFile.FullName, true);
@@ -112,6 +121,7 @@ namespace MiniCover.Core.Instrumentation
 
                     //Copy instrumentation dependencies
                     var assemblyDirectory = assemblyFile.Directory;
+                    _logger.LogTrace("Assembly directory: {assemblyDirectory}", assemblyDirectory.FullName);
 
                     var hitServicesPath = Path.GetFileName(hitServicesAssembly.Location);
                     var newHitServicesPath = Path.Combine(assemblyDirectory.FullName, hitServicesPath);
