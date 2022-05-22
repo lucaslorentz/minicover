@@ -76,6 +76,9 @@ namespace MiniCover.Core.Instrumentation
             return true;
         }
 
+        /// <summary>
+        /// An assembly group is a set of assemblies that are identical (the same file hash). This method makes sure we only instrument the first assembly in the group, to avoid unnecessary overhead.
+        /// </summary>
         private void VisitAssemblyGroup(
             IInstrumentationContext context,
             InstrumentationResult result,
