@@ -40,6 +40,8 @@ namespace MiniCover.Core.Instrumentation
 
         public InstrumentationResult Instrument(IInstrumentationContext context)
         {
+            _logger.LogTrace("Hit services assembly location: {assemblyLocation}", hitServicesAssembly.Location);
+            
             var result = new InstrumentationResult
             {
                 SourcePath = context.Workdir.FullName,
