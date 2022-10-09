@@ -151,8 +151,13 @@ namespace MiniCover.Reports.Coveralls
 
             using (var client = new HttpClient())
             {
-                using (var formData = new MultipartFormDataContent())
+                var boundary = Guid.NewGuid().ToString();
+
+                using (var formData = new MultipartFormDataContent(boundary))
                 {
+                    formData.Headers.Remove("Content-Type");
+                    formData.Headers.TryAddWithoutValidation("Content-Type", $"multipart/form-data; boundary={boundary}");
+
                     formData.Add(stringContent, "json_file", "coverage.json");
 
                     var response = await client.PostAsync(coverallsJobsUrl, formData);
