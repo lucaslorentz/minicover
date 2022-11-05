@@ -43,6 +43,11 @@ namespace MiniCover.Core.Instrumentation
         {
             var originalMethod = methodDefinition.ResolveOriginalMethod();
 
+            if (methodDefinition.MethodReturnType.ReturnType.IsRequiredModifier)
+            {
+                return;
+            }
+
             var instrumentedMethod = instrumentedAssembly.GetOrAddMethod(
                 originalMethod.DeclaringType.FullName,
                 originalMethod.Name,
