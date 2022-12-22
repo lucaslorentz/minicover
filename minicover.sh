@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-dotnet run -p src/MiniCover/MiniCover.csproj -f net6.0 -- "$@"
+dotnet run -p src/MiniCover/MiniCover.csproj -f net7.0 -- "$@"
