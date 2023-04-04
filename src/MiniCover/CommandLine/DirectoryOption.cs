@@ -18,7 +18,7 @@ namespace MiniCover.CommandLine.Options
 
         public virtual void ReceiveValue(string value)
         {
-            DirectoryInfo = _fileSystem.DirectoryInfo.FromDirectoryName(value ?? DefaultValue);
+            DirectoryInfo = _fileSystem.DirectoryInfo.New(value ?? DefaultValue);
         }
     }
 }

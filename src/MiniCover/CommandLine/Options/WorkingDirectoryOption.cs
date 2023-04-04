@@ -25,7 +25,7 @@ namespace MiniCover.CommandLine.Options
         {
             base.ReceiveValue(value);
 
-            var currentDirectory = _fileSystem.DirectoryInfo.FromDirectoryName(_fileSystem.Directory.GetCurrentDirectory());
+            var currentDirectory = _fileSystem.DirectoryInfo.New(_fileSystem.Directory.GetCurrentDirectory());
             if (DirectoryInfo.FullName != currentDirectory.FullName)
             {
                 DirectoryInfo.Create();

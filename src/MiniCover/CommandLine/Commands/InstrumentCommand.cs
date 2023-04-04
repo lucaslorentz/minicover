@@ -125,7 +125,7 @@ namespace MiniCover.Commands
             var fileMatchResult = matcher.Execute(new Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper(new DirectoryInfo(parentDir.FullName)));
 
             return fileMatchResult.Files
-                .Select(f => parentDir.FileSystem.FileInfo.FromFileName(Path.GetFullPath(Path.Combine(parentDir.ToString(), f.Path))))
+                .Select(f => parentDir.FileSystem.FileInfo.New(Path.GetFullPath(Path.Combine(parentDir.ToString(), f.Path))))
                 .ToArray();
         }
 
