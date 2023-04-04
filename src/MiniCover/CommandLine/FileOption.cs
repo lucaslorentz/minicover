@@ -18,7 +18,7 @@ namespace MiniCover.CommandLine.Options
 
         public virtual void ReceiveValue(string value)
         {
-            FileInfo = _fileSystem.FileInfo.FromFileName(value ?? DefaultValue);
+            FileInfo = _fileSystem.FileInfo.New(value ?? DefaultValue);
         }
     }
 }
