@@ -52,11 +52,15 @@ namespace MiniCover.Core.Extensions
 
         public static MethodDefinition ResolveOriginalMethod(this MethodDefinition methodDefinition)
         {
-            var originalMethodName = ExtractOriginalMethodName(methodDefinition.Name)
-                ?? ExtractOriginalMethodName(methodDefinition.DeclaringType.Name);
+            var originalMethodName = ExtractOriginalMethodName(methodDefinition.Name);
+
+            if (originalMethodName == null && methodDefinition.DeclaringType != null)
+                originalMethodName = ExtractOriginalMethodName(methodDefinition.DeclaringType.Name);
 
             if (!string.IsNullOrEmpty(originalMethodName)
-                && methodDefinition.DeclaringType.IsCompilerGenerated())
+                && methodDefinition.DeclaringType != null
+                && methodDefinition.DeclaringType.IsCompilerGenerated()
+                && methodDefinition.DeclaringType.DeclaringType != null)
             {
                 var originalMethod = methodDefinition.DeclaringType.DeclaringType.Methods
                     .FirstOrDefault(m => m.Name == originalMethodName);
