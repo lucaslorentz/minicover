@@ -10,6 +10,7 @@ Code Coverage Tool for .NET Core
 - 5.0 (Global tool or local tool)
 - 6.0 (Global tool or local tool)
 - 7.0 (Global tool or local tool)
+- 8.0 (Global tool or local tool)
 
 ## Installation
 MiniCover can be installed as a global tool:
