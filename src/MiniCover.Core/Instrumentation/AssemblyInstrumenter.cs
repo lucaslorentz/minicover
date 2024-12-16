@@ -46,7 +46,8 @@ namespace MiniCover.Core.Instrumentation
 
             try
             {
-                using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
+                using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName,
+                           new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
                 {
                     return InstrumentAssemblyDefinition(context, assemblyDefinition);
                 }
@@ -55,6 +56,10 @@ namespace MiniCover.Core.Instrumentation
             {
                 _logger.LogInformation("Invalid assembly format");
                 return null;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"{assemblyFile.FullName} instrumentation failed.", ex);
             }
         }
 

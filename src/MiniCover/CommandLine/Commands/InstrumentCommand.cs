@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MiniCover.CommandLine;
 using MiniCover.CommandLine.Options;
 using MiniCover.Core.Instrumentation;
@@ -29,6 +31,7 @@ namespace MiniCover.Commands
         private readonly HitsDirectoryOption _hitsDirectoryOption;
         private readonly CoverageFileOption _coverageFileOption;
         private readonly IInstrumenter _instrumenter;
+        private readonly ILogger _logger;
 
         public InstrumentCommand(IServiceProvider serviceProvider,
             VerbosityOption verbosityOption,
@@ -42,7 +45,8 @@ namespace MiniCover.Commands
             ExcludeTestsPatternOption excludeTestsOption,
             HitsDirectoryOption hitsDirectoryOption,
             CoverageFileOption coverageFileOption,
-            IInstrumenter instrumenter)
+            IInstrumenter instrumenter,
+            ILogger<InstrumentCommand> logger)
         {
             _serviceProvider = serviceProvider;
             _verbosityOption = verbosityOption;
@@ -57,6 +61,7 @@ namespace MiniCover.Commands
             _hitsDirectoryOption = hitsDirectoryOption;
             _coverageFileOption = coverageFileOption;
             _instrumenter = instrumenter;
+            _logger = logger;
         }
 
         public string CommandName => "instrument";
@@ -78,15 +83,21 @@ namespace MiniCover.Commands
 
         public Task<int> Execute()
         {
+            var discoveryWatch = Stopwatch.StartNew();
             var assemblies = GetFiles(_includeAssembliesOption.Value, _excludeAssembliesOption.Value, _parentDirOption.DirectoryInfo);
             if (assemblies.Length == 0)
                 throw new ValidationException("No assemblies found");
+            _logger.LogInformation("Found {assembliesCount} assemblies.", assemblies.Length);
 
             var sourceFiles = GetFiles(_includeSourceOption.Value, _excludeSourceOption.Value, _parentDirOption.DirectoryInfo);
             if (sourceFiles.Length == 0)
                 throw new ValidationException("No source files found");
+            _logger.LogInformation("Found {sourceFilesCount} source files.", sourceFiles.Length);
 
             var testFiles = GetFiles(_includeTestsOption.Value, _excludeTestsOption.Value, _parentDirOption.DirectoryInfo);
+            _logger.LogInformation("Found {testFilesCount} test files.", testFiles.Length);
+            discoveryWatch.Stop();
+            _logger.LogInformation("Discovery done in {discoveryTime} ms.", discoveryWatch.ElapsedMilliseconds);
 
             var instrumentationContext = new FileBasedInstrumentationContext
             {
@@ -97,8 +108,12 @@ namespace MiniCover.Commands
                 Workdir = _workingDirectoryOption.DirectoryInfo
             };
 
+            var instrumentationWatch = Stopwatch.StartNew();
             var result = _instrumenter.Instrument(instrumentationContext);
+            instrumentationWatch.Stop();
+            _logger.LogInformation("Instrumentation done in {instrumentationTime} ms.", instrumentationWatch.ElapsedMilliseconds);
 
+            _logger.LogInformation("Writing coverage file {coverageFile}", _coverageFileOption.FileInfo.FullName);
             var coverageFile = _coverageFileOption.FileInfo;
             SaveCoverageFile(coverageFile, result);
 

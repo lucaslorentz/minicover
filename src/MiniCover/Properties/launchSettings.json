@@ -2,7 +2,7 @@
   "profiles": {
     "MiniCover": {
       "commandName": "Project",
-      "commandLineArgs": "instrument --workdir ../../../../../sample --parentdir ../"
+      "commandLineArgs": "instrument --workdir D:/mews/mews/src --assemblies Tests/Mews.Tests.Integration.Runner/bin/Debug/net8.0/win-x64/publish/**/*.dll --sources **/*.cs --tests Tests/**/*.cs"
     }
   }
 }
