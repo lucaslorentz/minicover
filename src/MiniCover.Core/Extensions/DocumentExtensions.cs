@@ -9,6 +9,9 @@ namespace MiniCover.Core.Extensions
     {
         public static bool FileHasChanged(this Document document)
         {
+            if (document.Url.EndsWith(".g.cs"))
+                return false;
+
             if (!File.Exists(document.Url))
                 return true;
 
