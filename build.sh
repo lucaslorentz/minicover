@@ -8,7 +8,7 @@ rm -r coverage || true
 dotnet build
 
 echo "# Start Instrument"
-./minicover.sh instrument --assemblies "**/net8.0/**/*.dll" --tests ""
+./minicover.sh instrument --assemblies "**/net9.0/**/*.dll" --tests ""
 echo "# End Instrument"
 
 ./minicover.sh reset
