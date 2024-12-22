@@ -21,12 +21,12 @@ namespace MiniCover.Core.Utils
 
         public static IFileInfo GetPdbFile(IFileInfo assemblyFile)
         {
-            return assemblyFile.FileSystem.FileInfo.FromFileName(Path.ChangeExtension(assemblyFile.FullName, "pdb"));
+            return assemblyFile.FileSystem.FileInfo.New(Path.ChangeExtension(assemblyFile.FullName, "pdb"));
         }
 
         public static IFileInfo GetBackupFile(IFileInfo file)
         {
-            return file.FileSystem.FileInfo.FromFileName(Path.ChangeExtension(file.FullName, $"uninstrumented{file.Extension}"));
+            return file.FileSystem.FileInfo.New(Path.ChangeExtension(file.FullName, $"uninstrumented{file.Extension}"));
         }
 
         public static bool IsBackupFile(IFileInfo file)

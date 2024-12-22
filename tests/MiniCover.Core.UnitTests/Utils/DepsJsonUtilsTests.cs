@@ -27,7 +27,7 @@ namespace MiniCover.UnitTests.Utils
             _mockFileSystem.AddFile(fileName, new MockFileData(originalContent));
 
             var expectedResult = GetPatchedDepsJsonContent();
-            _sut.PatchDepsJson(_mockFileSystem.FileInfo.FromFileName(fileName), "1.0.0");
+            _sut.PatchDepsJson(_mockFileSystem.FileInfo.New(fileName), "1.0.0");
 
             var result = _mockFileSystem.GetFile(fileName).TextContents;
             result.ToOSLineEnding().Should().Be(expectedResult.ToOSLineEnding());
@@ -43,7 +43,7 @@ namespace MiniCover.UnitTests.Utils
             _mockFileSystem.AddFile(fileName, mockFileData);
 
             var expectedResult = GetOriginalDepsJsonContent();
-            _sut.UnpatchDepsJson(_mockFileSystem.FileInfo.FromFileName(fileName));
+            _sut.UnpatchDepsJson(_mockFileSystem.FileInfo.New(fileName));
 
             var result = _mockFileSystem.GetFile(fileName).TextContents;
             result.ToOSLineEnding().Should().Be(expectedResult.ToOSLineEnding());
@@ -95,7 +95,7 @@ namespace MiniCover.UnitTests.Utils
         {
             var directory = @"c:\test";
             _mockFileSystem.AddDirectory(directory);
-            var directoryInfo = _mockFileSystem.DirectoryInfo.FromDirectoryName(directory);
+            var directoryInfo = _mockFileSystem.DirectoryInfo.New(directory);
             var result = _sut.LoadDependencyContext(directoryInfo);
             result.Should().BeNull();
         }
