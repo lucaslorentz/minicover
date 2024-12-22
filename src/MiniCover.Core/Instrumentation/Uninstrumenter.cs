@@ -36,7 +36,7 @@ namespace MiniCover.Core.Instrumentation
                         _fileSystem.File.Delete(assemblyLocation.BackupPdbFile);
                     }
 
-                    var assemblyDirectory = _fileSystem.FileInfo.FromFileName(assemblyLocation.File).Directory;
+                    var assemblyDirectory = _fileSystem.FileInfo.New(assemblyLocation.File).Directory;
                     foreach (var depsJsonFile in assemblyDirectory.GetFiles("*.deps.json"))
                     {
                         _depsJsonUtils.UnpatchDepsJson(depsJsonFile);

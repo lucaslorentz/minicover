@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net9.0;net8.0;net7.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>minicover</ToolCommandName>
   </PropertyGroup>
@@ -27,12 +27,12 @@
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
-    <PackageReference Include="Mono.Cecil" Version="0.11.5" />
+    <PackageReference Include="Mono.Cecil" Version="0.11.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="19.2.87" />
+    <PackageReference Include="System.IO.Abstractions" Version="21.1.7" />
   </ItemGroup>
 
   <ItemGroup>

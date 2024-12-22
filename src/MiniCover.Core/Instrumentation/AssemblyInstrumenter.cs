@@ -111,7 +111,7 @@ namespace MiniCover.Core.Instrumentation
 
             var miniCoverTempPath = GetMiniCoverTempPath();
 
-            var instrumentedAssemblyFile = _fileSystem.FileInfo.FromFileName(Path.Combine(miniCoverTempPath, $"{Guid.NewGuid()}.dll"));
+            var instrumentedAssemblyFile = _fileSystem.FileInfo.New(Path.Combine(miniCoverTempPath, $"{Guid.NewGuid()}.dll"));
             var instrumentedPdbFile = FileUtils.GetPdbFile(instrumentedAssemblyFile);
 
             assemblyDefinition.Write(instrumentedAssemblyFile.FullName, new WriterParameters { WriteSymbols = true });

@@ -6,8 +6,6 @@ Code Coverage Tool for .NET Core
 [![Coverage Status](https://coveralls.io/repos/github/lucaslorentz/minicover/badge.svg?branch=master)](https://coveralls.io/github/lucaslorentz/minicover?branch=master)
 
 ## Supported .NET Core SDKs
-- 6.0 (Global tool or local tool)
-- 7.0 (Global tool or local tool)
 - 8.0 (Global tool or local tool)
 - 9.0 (Global tool or local tool)
 

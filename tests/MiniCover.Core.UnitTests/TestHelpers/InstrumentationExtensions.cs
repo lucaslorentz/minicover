@@ -21,7 +21,7 @@ namespace MiniCover.UnitTests.TestHelpers
 
         public static AssemblyDefinition ToDefinition(this Assembly assembly)
         {
-            var assemblyFile = _fileSystem.FileInfo.FromFileName(assembly.Location);
+            var assemblyFile = _fileSystem.FileInfo.New(assembly.Location);
             var depsJsonUtils = new DepsJsonUtils(_fileSystem);
             var resolver = new CustomAssemblyResolver(assemblyFile.Directory, depsJsonUtils, _fileSystem, NullLogger<CustomAssemblyResolver>.Instance);
             var readerParameters = new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver };
@@ -91,8 +91,8 @@ namespace MiniCover.UnitTests.TestHelpers
             return new FileBasedInstrumentationContext
             {
                 HitsPath = "/tmp",
-                Workdir = _fileSystem.DirectoryInfo.FromDirectoryName("/tmp"),
-                Sources = documents.Select(d => _fileSystem.FileInfo.FromFileName(d)).ToArray(),
+                Workdir = _fileSystem.DirectoryInfo.New("/tmp"),
+                Sources = documents.Select(d => _fileSystem.FileInfo.New(d)).ToArray(),
                 Tests = new IFileInfo[0]
             };
         }

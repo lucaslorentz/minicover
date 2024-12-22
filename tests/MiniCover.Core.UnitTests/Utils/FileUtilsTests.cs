@@ -16,7 +16,7 @@ namespace MiniCover.UnitTests.Utils
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName, new MockFileData(new byte[] { 1, 2, 3, 4, 5 }));
 
-            var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName);
+            var fileInfo = mockFileSystem.FileInfo.New(fileName);
             var hash = FileUtils.GetFileHash(fileInfo);
 
             hash.Should().Be("7CFDD07889B3295D6A550914AB35E068");
@@ -30,7 +30,7 @@ namespace MiniCover.UnitTests.Utils
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName, new MockFileData(new byte[5]));
 
-            var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName);
+            var fileInfo = mockFileSystem.FileInfo.New(fileName);
             var pdbInfo = FileUtils.GetPdbFile(fileInfo);
 
             pdbInfo.FullName.Should().Be(@"/test/ACME.Something.pdb".ToOSPath());
@@ -44,7 +44,7 @@ namespace MiniCover.UnitTests.Utils
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName, new MockFileData(new byte[5]));
 
-            var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName);
+            var fileInfo = mockFileSystem.FileInfo.New(fileName);
             var backupInfo = FileUtils.GetBackupFile(fileInfo);
 
             backupInfo.FullName.Should().Be(@"/test/ACME.Something.uninstrumented.dll".ToOSPath());
@@ -58,7 +58,7 @@ namespace MiniCover.UnitTests.Utils
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.AddFile(fileName.ToOSPath(), new MockFileData(new byte[5]));
 
-            var fileInfo = mockFileSystem.FileInfo.FromFileName(fileName.ToOSPath());
+            var fileInfo = mockFileSystem.FileInfo.New(fileName.ToOSPath());
             var result = FileUtils.IsBackupFile(fileInfo);
 
             result.Should().Be(isBackup);
