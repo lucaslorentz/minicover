@@ -31,9 +31,9 @@ namespace MiniCover.Core.Extensions
         {
             switch (algorithm)
             {
-                case DocumentHashAlgorithm.SHA1: return new SHA1Managed();
-                case DocumentHashAlgorithm.SHA256: return new SHA256Managed();
-                case DocumentHashAlgorithm.MD5: return new MD5CryptoServiceProvider();
+                case DocumentHashAlgorithm.SHA1: return SHA1.Create();
+                case DocumentHashAlgorithm.SHA256: return SHA256.Create();
+                case DocumentHashAlgorithm.MD5: return MD5.Create();
                 default: return null;
             }
         }
