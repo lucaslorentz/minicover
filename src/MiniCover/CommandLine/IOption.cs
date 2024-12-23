@@ -4,7 +4,8 @@ namespace MiniCover.CommandLine
 {
     public interface IOption
     {
-        string Template { get; }
+        string Name { get; }
+        string ShortName => null;
         string Description { get; }
     }
 

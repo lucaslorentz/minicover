@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Reflection;
 using System.Text;
-using Microsoft.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MiniCover.CommandLine;
@@ -16,66 +18,50 @@ namespace MiniCover
 {
     class Program
     {
-        private static int Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             var output = new ConsoleOutput();
 
             var serviceProvider = ConfigureServices(output);
 
-            System.Console.OutputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
 
-            var commandLineApplication = new CommandLineApplication();
-            commandLineApplication.Name = "minicover";
-            commandLineApplication.FullName = "MiniCover";
-            commandLineApplication.Description = "MiniCover - Code coverage for .NET Core via assembly instrumentation";
+            var rootCommand = new RootCommand("MiniCover - Code coverage for .NET Core via assembly instrumentation")
+            {
+                Name = "minicover"
+            };
 
             var commands = serviceProvider.GetServices<ICommand>();
             foreach (var command in commands)
             {
-                commandLineApplication
-                    .Command(command.CommandName, commandConfig =>
-                    {
-                        commandConfig.Description = command.CommandDescription;
-                        commandConfig.HelpOption("-h | --help");
+                var cmd = new Command(command.CommandName, command.CommandDescription);
 
-                        var prepareOptions = new List<Action>();
+                Action<InvocationContext> prepareOptions = null;
 
-                        foreach (var option in command.Options)
-                            prepareOptions.Add(AddOption(commandConfig, option));
+                foreach (var option in command.Options)
+                {
+                    var (opt, prepare) = CreateOption(option);
+                    prepareOptions += prepare;
 
-                        commandConfig.OnExecute(() =>
-                        {
-                            foreach (var prepare in prepareOptions)
-                                prepare();
+                    if (option.ShortName != null)
+                        opt.AddAlias(option.ShortName);
 
-                            return command.Execute();
-                        });
-                    });
+                    cmd.Add(opt);
+                }
+
+                cmd.SetHandler((InvocationContext context) =>
+                {
+                    prepareOptions?.Invoke(context);
+
+                    return command.Execute();
+                });
+
+                rootCommand.AddCommand(cmd);
             }
-
-            commandLineApplication.HelpOption("-h | --help");
-
-            commandLineApplication.VersionOption("--version", () =>
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                var informationalVersionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-                return informationalVersionAttribute.InformationalVersion;
-            });
-
-            commandLineApplication.OnExecute(() =>
-            {
-                commandLineApplication.ShowHelp();
-                return 0;
-            });
 
             try
             {
-                return commandLineApplication.Execute(args);
-            }
-            catch (CommandParsingException ex)
-            {
-                output.WriteLine(ex.Message, LogLevel.Error);
-                return 1;
+                return await rootCommand.InvokeAsync(args);
             }
             catch (ValidationException ex)
             {
@@ -84,24 +70,24 @@ namespace MiniCover
             }
         }
 
-        private static Action AddOption(CommandLineApplication command, IOption baseOption)
+        private static (Option, Action<InvocationContext>) CreateOption(IOption baseOption)
         {
             switch (baseOption)
             {
                 case IMultiValueOption multiValueOption:
                     {
-                        var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.MultipleValue);
-                        return () => multiValueOption.ReceiveValue(option.Values);
+                        var option = new Option<string[]>(baseOption.Name, baseOption.Description);
+                        return (option, (context) => multiValueOption.ReceiveValue(context.ParseResult.GetValueForOption(option)));
                     }
                 case ISingleValueOption singleValueOption:
                     {
-                        var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.SingleValue);
-                        return () => singleValueOption.ReceiveValue(option.Value());
+                        var option = new Option<string>(baseOption.Name, baseOption.Description);
+                        return (option, (context) => singleValueOption.ReceiveValue(context.ParseResult.GetValueForOption(option)));
                     }
                 case INoValueOption noValueOptions:
                     {
-                        var option = command.Option(baseOption.Template, baseOption.Description, CommandOptionType.NoValue);
-                        return () => noValueOptions.ReceiveValue(option.HasValue());
+                        var option = new Option<bool>(baseOption.Name, baseOption.Description);
+                        return (option, (context) => noValueOptions.ReceiveValue(context.ParseResult.GetValueForOption(option)));
                     }
                 default:
                     throw new NotImplementedException();

@@ -7,7 +7,7 @@ namespace MiniCover.CommandLine.Options
         private const float _defaultValue = 90;
 
         public float Value { get; private set; }
-        public string Template => "--threshold";
+        public string Name => "--threshold";
         public string Description => $"Coverage percentage threshold [default: {_defaultValue}]";
 
         public void ReceiveValue(string value)

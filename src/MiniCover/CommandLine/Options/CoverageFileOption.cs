@@ -9,7 +9,7 @@ namespace MiniCover.CommandLine.Options
         {
         }
 
-        public override string Template => "--coverage-file";
+        public override string Name => "--coverage-file";
         public override string Description => $"Coverage file name [default: {DefaultValue}]";
         protected override string DefaultValue => "./coverage.json";
     }

@@ -3,14 +3,15 @@ namespace MiniCover.CommandLine
 {
     public class StringOption : ISingleValueOption
     {
-        public StringOption(string template, string description)
+        public StringOption(string name, string description)
         {
-            Template = template;
+            Name = name;
             Description = description;
         }
 
         public string Value { get; private set; }
-        public string Template { get; }
+        public string Name { get; }
+        public string ShortName { get; set; }
         public string Description { get; }
 
         public void ReceiveValue(string value)

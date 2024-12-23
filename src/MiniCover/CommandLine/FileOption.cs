@@ -12,7 +12,8 @@ namespace MiniCover.CommandLine.Options
         }
 
         public IFileInfo FileInfo { get; private set; }
-        public abstract string Template { get; }
+        public abstract string Name { get; }
+        public virtual string ShortName => null;
         public abstract string Description { get; }
         protected abstract string DefaultValue { get; }
 

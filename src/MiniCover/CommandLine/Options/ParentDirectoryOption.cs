@@ -9,7 +9,7 @@ namespace MiniCover.CommandLine.Options
         {
         }
 
-        public override string Template => "--parentdir";
+        public override string Name => "--parentdir";
         public override string Description => "Set parent directory for assemblies and source directories (if not used, falls back to --workdir)";
         protected override string DefaultValue => "./";
     }

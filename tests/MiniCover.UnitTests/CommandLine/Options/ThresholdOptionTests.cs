@@ -10,7 +10,7 @@ namespace MiniCover.UnitTests.CommandLine.Options
         public void ShouldHaveProperties()
         {
             var sut = new ThresholdOption();
-            sut.Template.Should().NotBeEmpty();
+            sut.Name.Should().NotBeEmpty();
             sut.Description.Should().NotBeEmpty();
         }
 
