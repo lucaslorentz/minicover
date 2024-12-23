@@ -10,7 +10,13 @@ namespace MiniCover.Core.Extensions
         public static bool FileHasChanged(this Document document)
         {
             if (!File.Exists(document.Url))
+            {
+                // Ignore not found source generated files because they might be in memory
+                if (document.Url.EndsWith(".g.cs"))
+                    return false;
+
                 return true;
+            }
 
             using (var stream = File.OpenRead(document.Url))
             {
