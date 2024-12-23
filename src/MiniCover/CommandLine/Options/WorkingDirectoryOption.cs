@@ -17,7 +17,7 @@ namespace MiniCover.CommandLine.Options
             _fileSystem = fileSystem;
         }
 
-        public override string Template => "--workdir";
+        public override string Name => "--workdir";
         public override string Description => $"Change working directory [default: {DefaultValue}]";
         protected override string DefaultValue => "./";
 

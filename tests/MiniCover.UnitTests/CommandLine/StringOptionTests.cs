@@ -10,7 +10,8 @@ namespace MiniCover.UnitTests.CommandLine
         public void ShouldHaveProperties()
         {
             var sut = Create();
-            sut.Template.Should().Be("-t | --template");
+            sut.Name.Should().Be("--template");
+            sut.ShortName.Should().Be("-t");
             sut.Description.Should().Be("Description");
         }
 
@@ -32,7 +33,10 @@ namespace MiniCover.UnitTests.CommandLine
 
         private static StringOption Create()
         {
-            return new StringOption("-t | --template", "Description");
+            return new StringOption("--template", "Description")
+            {
+                ShortName = "-t"
+            };
         }
     }
 }

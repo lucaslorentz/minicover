@@ -6,7 +6,8 @@ namespace MiniCover.CommandLine.Options
     public abstract class FilesPatternOption : IMultiValueOption
     {
         public IList<string> Value { get; private set; }
-        public abstract string Template { get; }
+        public abstract string Name { get; }
+        public virtual string ShortName => null;
         public abstract string Description { get; }
         protected abstract IList<string> DefaultValue { get; }
 

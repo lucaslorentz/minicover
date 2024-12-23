@@ -27,7 +27,7 @@ namespace MiniCover.UnitTests.CommandLine
         public void ShouldHaveProperties()
         {
             var sut = Create();
-            sut.Template.Should().NotBeEmpty();
+            sut.Name.Should().NotBeEmpty();
             sut.Description.Should().NotBeEmpty();
         }
 

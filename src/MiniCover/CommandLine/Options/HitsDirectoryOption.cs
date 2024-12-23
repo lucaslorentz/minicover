@@ -9,7 +9,7 @@ namespace MiniCover.CommandLine.Options
         {
         }
 
-        public override string Template => "--hits-directory";
+        public override string Name => "--hits-directory";
         public override string Description => $"Directory to store hits files [default: {DefaultValue}]";
         protected override string DefaultValue => "./coverage-hits";
     }

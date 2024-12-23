@@ -9,7 +9,7 @@ namespace MiniCover.CommandLine.Options
         {
         }
 
-        public override string Template => "--output";
+        public override string Name => "--output";
         public override string Description => $"Output file for Clover report [default: {DefaultValue}]";
         protected override string DefaultValue => "./clover.xml";
     }

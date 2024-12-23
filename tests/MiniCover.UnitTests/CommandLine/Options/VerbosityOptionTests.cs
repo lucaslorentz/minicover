@@ -16,7 +16,7 @@ namespace MiniCover.UnitTests.CommandLine.Options
         {
             var outputMock = new Mock<IOutput>();
             var sut = new VerbosityOption(outputMock.Object);
-            sut.Template.Should().NotBeEmpty();
+            sut.Name.Should().NotBeEmpty();
             sut.Description.Should().NotBeEmpty();
         }
 

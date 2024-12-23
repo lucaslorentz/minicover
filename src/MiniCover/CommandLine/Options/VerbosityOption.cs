@@ -14,7 +14,8 @@ namespace MiniCover.CommandLine.Options
             _output = output;
         }
 
-        public string Template => "-v | --verbosity";
+        public string Name => "--verbosity";
+        public string ShortName => "-v";
         public string Description => $"Change verbosity level ({GetPossibleValues()}) [default: {_output.MinimumLevel}]";
 
         private static string GetPossibleValues()
