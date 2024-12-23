@@ -9,14 +9,10 @@ namespace MiniCover.Core.Utils
     {
         public static string GetFileHash(IFileInfo file)
         {
-            using (var stream = file.OpenRead())
-            {
-                using (var hasher = new MD5CryptoServiceProvider())
-                {
-                    var hashBytes = hasher.ComputeHash(stream);
-                    return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
-                }
-            }
+            using var stream = file.OpenRead();
+            using var hasher = MD5.Create();
+            var hashBytes = hasher.ComputeHash(stream);
+            return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
         }
 
         public static IFileInfo GetPdbFile(IFileInfo assemblyFile)
