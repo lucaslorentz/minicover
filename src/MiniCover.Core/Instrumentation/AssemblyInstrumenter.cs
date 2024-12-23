@@ -42,14 +42,12 @@ namespace MiniCover.Core.Instrumentation
 
             var resolver = ActivatorUtilities.CreateInstance<CustomAssemblyResolver>(_serviceProvider, assemblyDirectory);
 
-            _logger.LogTrace("Assembly resolver search directories: {directories}", new object[] { resolver.GetSearchDirectories() });
+            _logger.LogTrace("Assembly resolver search directories: {directories}", [resolver.GetSearchDirectories()]);
 
             try
             {
-                using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver }))
-                {
-                    return InstrumentAssemblyDefinition(context, assemblyDefinition);
-                }
+                using var assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFile.FullName, new ReaderParameters { ReadSymbols = true, AssemblyResolver = resolver });
+                return InstrumentAssemblyDefinition(context, assemblyDefinition);
             }
             catch (BadImageFormatException)
             {
@@ -71,12 +69,12 @@ namespace MiniCover.Core.Instrumentation
             var assemblyDocuments = assemblyDefinition.GetAllDocuments();
 
             var changedDocuments = assemblyDocuments.Where(d => d.FileHasChanged()).ToArray();
-            if (changedDocuments.Any())
+            if (changedDocuments.Length != 0)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
                     var changedFiles = changedDocuments.Select(d => d.Url).Distinct().ToArray();
-                    _logger.LogDebug("Source files has changed: {changedFiles}", new object[] { changedFiles });
+                    _logger.LogDebug("Source files has changed: {changedFiles}", [changedFiles]);
                 }
                 else
                 {
