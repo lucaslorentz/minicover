@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>MiniCover</PackageId>
+    <PackageId>Mews.MiniCover</PackageId>
     <Title>MiniCover</Title>
     <Authors>Lucas Lorentz</Authors>
     <AssemblyTitle>MiniCover</AssemblyTitle>
