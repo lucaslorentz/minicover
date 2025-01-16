@@ -40,7 +40,7 @@ namespace MiniCover.Core.Instrumentation
         {
             var assemblyDirectory = assemblyFile.Directory;
 
-            var resolver = ActivatorUtilities.CreateInstance<CustomAssemblyResolver>(_serviceProvider, assemblyDirectory);
+            using var resolver = ActivatorUtilities.CreateInstance<CustomAssemblyResolver>(_serviceProvider, assemblyDirectory);
 
             _logger.LogTrace("Assembly resolver search directories: {directories}", [resolver.GetSearchDirectories()]);
 
