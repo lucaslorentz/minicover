@@ -59,15 +59,7 @@ namespace MiniCover.HitServices
                 if (_hitContext.Hits.Count == 0)
                     return;
 
-                Directory.CreateDirectory(_hitsPath);
-
-                var fileName = Path.Combine(_hitsPath, $"{_hitContext.Id}.hits");
-
-                using (var fileStream = File.Open(fileName, FileMode.Create))
-                {
-                    _hitContext.Serialize(fileStream);
-                    fileStream.Flush();
-                }
+                HitContextStorage.Save(_hitContext, _hitsPath);
             }
         }
     }
