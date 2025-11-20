@@ -8,6 +8,7 @@ Code Coverage Tool for .NET Core
 ## Supported .NET Core SDKs
 - 8.0 (Global tool or local tool)
 - 9.0 (Global tool or local tool)
+- 10.0 (Global tool or local tool)
 
 ## Installation
 MiniCover can be installed as a global tool:
