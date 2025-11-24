@@ -69,7 +69,10 @@ namespace MiniCover.Core.UnitTests.Instrumentation
         .method System.Void System.IDisposable.Dispose
         {
             .locals ()
-            IL_0000: ret
+            IL_0000: ldarg.0 // this
+            IL_0001: ldc.i4.s -2
+            IL_0003: stfld System.Int32 MiniCover.Core.UnitTests.Instrumentation.EnumerableMethod/Class/<Method>d__0::<>1__state
+            IL_0008: ret
         }
         .method System.Boolean MoveNext
         {
