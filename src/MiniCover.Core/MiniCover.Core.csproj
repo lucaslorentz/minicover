@@ -7,6 +7,7 @@
   <PropertyGroup>
     <Authors>Lucas Lorentz</Authors>
     <Description>MiniCover code coverage measurement core implementation</Description>
+    <PackageId>Mews.MiniCover.Core</PackageId>
     <PackageProjectUrl>https://github.com/lucaslorentz/minicover</PackageProjectUrl>
     <PackageTags>coverage,cover,minicover</PackageTags>
   </PropertyGroup>
