@@ -21,7 +21,7 @@ jobs:
   - bash: |
       ./build-sample.sh
     displayName: 'Build Sample'
-  - task: PublishCodeCoverageResults@1
+  - task: PublishCodeCoverageResults@2
     displayName: 'Publish code coverage'
     inputs:
       codeCoverageTool: Cobertura
