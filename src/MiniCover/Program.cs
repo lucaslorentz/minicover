@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,42 +23,37 @@ namespace MiniCover
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            var rootCommand = new RootCommand("MiniCover - Code coverage for .NET Core via assembly instrumentation")
-            {
-                Name = "minicover"
-            };
+            var rootCommand = new RootCommand("MiniCover - Code coverage for .NET Core via assembly instrumentation");
 
             var commands = serviceProvider.GetServices<ICommand>();
             foreach (var command in commands)
             {
                 var cmd = new Command(command.CommandName, command.CommandDescription);
 
-                Action<InvocationContext> prepareOptions = null;
+                Action<ParseResult> prepareOptions = null;
 
                 foreach (var option in command.Options)
                 {
                     var (opt, prepare) = CreateOption(option);
                     prepareOptions += prepare;
 
-                    if (option.ShortName != null)
-                        opt.AddAlias(option.ShortName);
-
                     cmd.Add(opt);
                 }
 
-                cmd.SetHandler((InvocationContext context) =>
+                cmd.SetAction((ParseResult parseResult) =>
                 {
-                    prepareOptions?.Invoke(context);
+                    prepareOptions?.Invoke(parseResult);
 
                     return command.Execute();
                 });
 
-                rootCommand.AddCommand(cmd);
+                rootCommand.Add(cmd);
             }
 
             try
             {
-                return await rootCommand.InvokeAsync(args);
+                var parseResult = rootCommand.Parse(args);
+                return await parseResult.InvokeAsync();
             }
             catch (ValidationException ex)
             {
@@ -70,24 +62,31 @@ namespace MiniCover
             }
         }
 
-        private static (Option, Action<InvocationContext>) CreateOption(IOption baseOption)
+        private static (Option, Action<ParseResult>) CreateOption(IOption baseOption)
         {
+            var aliases = baseOption.ShortName != null
+                ? new[] { baseOption.ShortName }
+                : Array.Empty<string>();
+
             switch (baseOption)
             {
                 case IMultiValueOption multiValueOption:
                     {
-                        var option = new Option<string[]>(baseOption.Name, baseOption.Description);
-                        return (option, (context) => multiValueOption.ReceiveValue(context.ParseResult.GetValueForOption(option)));
+                        var option = new Option<string[]>(baseOption.Name, aliases);
+                        option.Description = baseOption.Description;
+                        return (option, (parseResult) => multiValueOption.ReceiveValue(parseResult.GetValue(option)));
                     }
                 case ISingleValueOption singleValueOption:
                     {
-                        var option = new Option<string>(baseOption.Name, baseOption.Description);
-                        return (option, (context) => singleValueOption.ReceiveValue(context.ParseResult.GetValueForOption(option)));
+                        var option = new Option<string>(baseOption.Name, aliases);
+                        option.Description = baseOption.Description;
+                        return (option, (parseResult) => singleValueOption.ReceiveValue(parseResult.GetValue(option)));
                     }
                 case INoValueOption noValueOptions:
                     {
-                        var option = new Option<bool>(baseOption.Name, baseOption.Description);
-                        return (option, (context) => noValueOptions.ReceiveValue(context.ParseResult.GetValueForOption(option)));
+                        var option = new Option<bool>(baseOption.Name, aliases);
+                        option.Description = baseOption.Description;
+                        return (option, (parseResult) => noValueOptions.ReceiveValue(parseResult.GetValue(option)));
                     }
                 default:
                     throw new NotImplementedException();
