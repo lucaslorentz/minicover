@@ -182,11 +182,20 @@ namespace MiniCover.Reports.Clover
             var localInstructions = instructions.ToArray();
             var coveredInstructions = localInstructions
                 .Where(instruction => hits.WasHit(instruction.HitId)).ToArray();
+            var allConditionals = localInstructions
+                .SelectMany(instruction => instruction.Conditions)
+                .SelectMany(condition => condition.Branches)
+                .ToArray();
+            var coveredConditionals = allConditionals
+                .Where(branch => hits.WasHit(branch.HitId))
+                .ToArray();
 
             return new CloverCounter
             {
                 Statements = localInstructions.Length,
                 CoveredStatements = coveredInstructions.Length,
+                Conditionals = allConditionals.Length,
+                CoveredConditionals = coveredConditionals.Length,
                 Methods = localInstructions
                     .GroupBy(instruction => instruction.Method.FullName)
                     .Count(),
