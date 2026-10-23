@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Model;
 
 namespace MiniCover.Core.UnitTests.Instrumentation

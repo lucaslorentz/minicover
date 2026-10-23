@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Model;
 using MiniCover.HitServices;
 using MiniCover.TestHelpers;

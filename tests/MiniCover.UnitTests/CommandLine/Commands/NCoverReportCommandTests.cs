@@ -1,6 +1,6 @@
 ﻿using System.IO.Abstractions;
 using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.CommandLine.Commands;
 using MiniCover.CommandLine.Options;
 using MiniCover.Core.Model;

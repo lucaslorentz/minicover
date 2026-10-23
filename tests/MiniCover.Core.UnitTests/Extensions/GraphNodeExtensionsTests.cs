@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Extensions;
 using MiniCover.Core.Model;
 using Xunit;

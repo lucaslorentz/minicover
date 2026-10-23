@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Utils;
 using MiniCover.TestHelpers;
 using Xunit;

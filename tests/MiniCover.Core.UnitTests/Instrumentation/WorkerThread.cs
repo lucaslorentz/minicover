@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Model;
 
 namespace MiniCover.Core.UnitTests.Instrumentation

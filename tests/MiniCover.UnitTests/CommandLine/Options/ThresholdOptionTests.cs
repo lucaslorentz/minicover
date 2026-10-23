@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using MiniCover.CommandLine.Options;
 using Xunit;
 
