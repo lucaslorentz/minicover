@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.CommandLine.Options;
 using MiniCover.Commands;
 using MiniCover.Core.Instrumentation;

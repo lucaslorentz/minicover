@@ -1,5 +1,5 @@
 ﻿using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.CommandLine.Options;
 using MiniCover.Exceptions;
 using MiniCover.TestHelpers;

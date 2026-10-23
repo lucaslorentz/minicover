@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Model;
 
 namespace MiniCover.Core.UnitTests.Instrumentation

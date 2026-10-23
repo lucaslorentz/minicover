@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Xml.Linq;
-using FluentAssertions;
+using AwesomeAssertions;
 using MiniCover.Core.Hits;
 using MiniCover.Core.Model;
 using MiniCover.HitServices;
